@@ -11,6 +11,7 @@ import { CheckingModule } from './modules/checking/checking.module';
 import { PublicModule } from './modules/public/public.module';
 import { MediaModule } from './modules/media/media.module';
 import { SearchModule } from './modules/search/search.module';
+import { DevModule } from './modules/dev/dev.module';
 import { databaseConfig } from './config/database.config';
 
 @Module({
@@ -28,6 +29,7 @@ import { databaseConfig } from './config/database.config';
     PublicModule,
     MediaModule,
     SearchModule,
+    DevModule,
   ],
   controllers: [AppController],
   providers: [AppService],

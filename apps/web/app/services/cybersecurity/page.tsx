@@ -1,0 +1,337 @@
+'use client';
+
+import { motion } from 'framer-motion';
+import { useMounted } from '../../../lib/use-mounted';
+import Navbar from '../../../components/Navbar';
+import Footer from '../../../components/Footer';
+import { Shield, Lock, Eye, AlertTriangle, CheckCircle, Database, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
+
+const features = [
+  {
+    icon: Shield,
+    title: 'Security Audits',
+    description: 'Comprehensive security assessments of your systems and infrastructure',
+  },
+  {
+    icon: Lock,
+    title: 'Data Encryption',
+    description: 'Protect sensitive data with advanced encryption technologies',
+  },
+  {
+    icon: Eye,
+    title: 'Security Monitoring',
+    description: '24/7 monitoring and threat detection systems',
+  },
+  {
+    icon: AlertTriangle,
+    title: 'Penetration Testing',
+    description: 'Identify vulnerabilities through ethical hacking techniques',
+  },
+  {
+    icon: Database,
+    title: 'Access Control',
+    description: 'Implement robust access management and authentication systems',
+  },
+];
+
+const technologies = [
+  'OWASP', 'NIST', 'ISO 27001', 'GDPR', 'SOC 2', 'Firewall',
+  'VPN', 'SSL/TLS', 'Multi-Factor Auth', 'SIEM', 'IDS/IPS', 'WAF'
+];
+
+const securityServices = [
+  { 
+    name: 'Security Assessment', 
+    icon: '🔍', 
+    description: 'Comprehensive evaluation of your security posture' 
+  },
+  { 
+    name: 'Threat Protection', 
+    icon: '🛡️', 
+    description: 'Advanced protection against cyber threats and attacks' 
+  },
+  { 
+    name: 'Compliance Management', 
+    icon: '📋', 
+    description: 'Ensure compliance with industry standards and regulations' 
+  },
+  { 
+    name: 'Incident Response', 
+    icon: '🚨', 
+    description: 'Rapid response and recovery from security incidents' 
+  },
+];
+
+export default function Cybersecurity() {
+  const isMounted = useMounted();
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+      },
+    },
+  };
+
+  return (
+    <main className="min-h-screen bg-bg">
+      <Navbar />
+      
+      <div className="container mx-auto px-4 py-8 pt-24">
+        {/* Back Button */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={isMounted ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8"
+        >
+          <Link 
+            href="/services"
+            className="inline-flex items-center gap-2 text-white/70 hover:text-white transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Services
+          </Link>
+        </motion.div>
+
+        {/* Hero Section */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate={isMounted ? "visible" : "hidden"}
+          className="text-center mb-16"
+        >
+          <motion.div
+            variants={itemVariants}
+            className="w-20 h-20 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-6"
+          >
+            <Shield className="w-10 h-10 text-primary" />
+          </motion.div>
+          
+          <motion.h1 
+            variants={itemVariants}
+            className="text-4xl md:text-5xl font-bold text-white mb-6"
+          >
+            Cybersecurity
+          </motion.h1>
+          
+          <motion.p 
+            variants={itemVariants}
+            className="text-xl text-white/70 max-w-3xl mx-auto mb-8"
+          >
+            Protect your business from cyber threats with comprehensive security solutions. 
+            From risk assessment to incident response, we keep your data and systems secure.
+          </motion.p>
+
+          <motion.div
+            variants={itemVariants}
+            className="flex flex-col sm:flex-row gap-4 justify-center"
+          >
+            <button className="px-8 py-3 bg-primary text-black rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+              Get Security Assessment
+            </button>
+            <button className="px-8 py-3 border border-white/20 text-white rounded-lg font-semibold hover:bg-white/5 transition-colors">
+              View Security Solutions
+            </button>
+          </motion.div>
+        </motion.div>
+
+        {/* Security Services */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView={isMounted ? "visible" : "hidden"}
+          viewport={{ once: true }}
+          className="mb-20"
+        >
+          <motion.h2 
+            variants={itemVariants}
+            className="text-3xl font-bold text-white text-center mb-12"
+          >
+            Security Services We Offer
+          </motion.h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {securityServices.map((service, index) => (
+              <motion.div
+                key={index}
+                variants={itemVariants}
+                whileHover={{ scale: 1.05 }}
+                className="glass rounded-2xl p-6"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="text-3xl">{service.icon}</div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-white mb-2">
+                      {service.name}
+                    </h3>
+                    <p className="text-white/70">
+                      {service.description}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Features Grid */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView={isMounted ? "visible" : "hidden"}
+          viewport={{ once: true }}
+          className="mb-20"
+        >
+          <motion.h2 
+            variants={itemVariants}
+            className="text-3xl font-bold text-white text-center mb-12"
+          >
+            Our Security Capabilities
+          </motion.h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                variants={itemVariants}
+                whileHover={{ scale: 1.05 }}
+                className="glass rounded-2xl p-6 text-center"
+              >
+                <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <feature.icon className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-3">
+                  {feature.title}
+                </h3>
+                <p className="text-white/70">
+                  {feature.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Technologies */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView={isMounted ? "visible" : "hidden"}
+          viewport={{ once: true }}
+          className="mb-20"
+        >
+          <motion.h2 
+            variants={itemVariants}
+            className="text-3xl font-bold text-white text-center mb-12"
+          >
+            Security Technologies We Use
+          </motion.h2>
+          
+          <motion.div
+            variants={itemVariants}
+            className="flex flex-wrap justify-center gap-4"
+          >
+            {technologies.map((tech, index) => (
+              <motion.span
+                key={tech}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-primary/20 hover:text-primary transition-colors"
+              >
+                {tech}
+              </motion.span>
+            ))}
+          </motion.div>
+        </motion.div>
+
+        {/* Process */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView={isMounted ? "visible" : "hidden"}
+          viewport={{ once: true }}
+          className="mb-20"
+        >
+          <motion.h2 
+            variants={itemVariants}
+            className="text-3xl font-bold text-white text-center mb-12"
+          >
+            Our Security Process
+          </motion.h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { step: '01', title: 'Assessment', description: 'Evaluate current security posture and risks' },
+              { step: '02', title: 'Planning', description: 'Develop comprehensive security strategy' },
+              { step: '03', title: 'Implementation', description: 'Deploy security solutions and controls' },
+              { step: '04', title: 'Monitoring', description: 'Continuous monitoring and improvement' },
+            ].map((process, index) => (
+              <motion.div
+                key={index}
+                variants={itemVariants}
+                className="text-center"
+              >
+                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl font-bold text-primary">{process.step}</span>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">
+                  {process.title}
+                </h3>
+                <p className="text-white/70">
+                  {process.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* CTA */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView={isMounted ? "visible" : "hidden"}
+          viewport={{ once: true }}
+          className="text-center"
+        >
+          <motion.div
+            variants={itemVariants}
+            className="glass rounded-2xl p-12"
+          >
+            <h2 className="text-3xl font-bold text-white mb-4">
+              Ready to Secure Your Business?
+            </h2>
+            <p className="text-xl text-white/70 mb-8 max-w-2xl mx-auto">
+              Let's assess your security needs and implement comprehensive protection for your business.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button className="px-8 py-3 bg-primary text-black rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+                Get Security Assessment
+              </button>
+              <button className="px-8 py-3 border border-white/20 text-white rounded-lg font-semibold hover:bg-white/5 transition-colors">
+                Schedule Consultation
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      </div>
+
+      <Footer />
+    </main>
+  );
+}
