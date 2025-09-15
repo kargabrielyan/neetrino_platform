@@ -2,71 +2,64 @@
 
 import { motion } from 'framer-motion';
 import { Star, Quote } from 'lucide-react';
-import { getTranslations, type Locale } from '../lib/i18n';
-
-interface TestimonialsProps {
-  locale: Locale;
-}
 
 const testimonials = [
   {
-    name: 'Արամ Մկրտչյան',
+    name: 'Aram Mkrtchyan',
     company: 'TechCorp Armenia',
     role: 'CEO',
-    content: 'Neetrino-ի AI լուծումները մեր բիզնեսը փոխակերպել են: Նրանց տեխնոլոգիաները մեզ թույլ են տվել ավելացնել արդյունավետությունը 300%-ով:',
+    content: 'Neetrino\'s AI solutions have transformed our business. Their technologies have allowed us to increase efficiency by 300%.',
     rating: 5,
     avatar: 'AM',
   },
   {
     name: 'Sarah Johnson',
-    company: 'Global Innovations',
+    company: 'InnovateLab',
     role: 'CTO',
-    content: 'The AI integration provided by Neetrino has revolutionized our data processing capabilities. Their neural networks are incredibly accurate and fast.',
+    content: 'The machine learning models provided by Neetrino are incredibly accurate and have revolutionized our data processing capabilities.',
     rating: 5,
     avatar: 'SJ',
   },
 ];
 
-export default function Testimonials({ locale }: TestimonialsProps) {
-  const t = getTranslations(locale);
-
+export default function Testimonials() {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3,
+        staggerChildren: 0.1,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.6,
-        ease: 'easeOut',
+        duration: 0.5,
       },
     },
   };
 
   return (
-    <section id="testimonials" className="py-20 relative">
+    <section className="py-20 relative">
       <div className="container mx-auto px-4">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
           viewport={{ once: true }}
           className="text-center mb-16"
         >
           <h2 className="heading-lg text-white mb-4">
-            {t.testimonials.title}
+            Client Testimonials
           </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-primary to-accent mx-auto rounded-full"></div>
+          <p className="text-xl text-white/70 max-w-3xl mx-auto">
+            See what our clients say about our AI solutions and services
+          </p>
         </motion.div>
 
         <motion.div
@@ -74,59 +67,56 @@ export default function Testimonials({ locale }: TestimonialsProps) {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto"
         >
           {testimonials.map((testimonial, index) => (
             <motion.div
               key={index}
               variants={itemVariants}
               whileHover={{ 
-                y: -5,
-                transition: { duration: 0.3 }
+                scale: 1.02,
+                boxShadow: '0 20px 40px rgba(0,209,255,0.1)'
               }}
-              className="card-glass relative"
+              className="glass rounded-2xl p-8 relative"
             >
-              {/* Иконка кавычек */}
+              {/* Quote Icon */}
               <div className="absolute top-6 right-6">
                 <Quote className="w-8 h-8 text-primary/30" />
               </div>
 
-              {/* Рейтинг */}
+              {/* Rating */}
               <div className="flex items-center gap-1 mb-4">
-                {[...Array(testimonial.rating)].map((_, i) => (
+                {Array.from({ length: testimonial.rating }).map((_, i) => (
                   <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
                 ))}
               </div>
 
-              {/* Отзыв */}
-              <blockquote className="text-white/90 text-lg leading-relaxed mb-6">
+              {/* Content */}
+              <p className="text-white/80 leading-relaxed mb-6 text-lg">
                 "{testimonial.content}"
-              </blockquote>
+              </p>
 
-              {/* Информация об авторе */}
+              {/* Author */}
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 glass rounded-full flex items-center justify-center">
-                  <span className="text-primary font-semibold text-lg">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center">
+                  <span className="text-white font-semibold text-sm">
                     {testimonial.avatar}
                   </span>
                 </div>
+                
                 <div>
-                  <div className="text-white font-semibold">
+                  <h4 className="text-white font-semibold">
                     {testimonial.name}
-                  </div>
-                  <div className="text-white/60 text-sm">
-                    {testimonial.role}, {testimonial.company}
-                  </div>
+                  </h4>
+                  <p className="text-white/60 text-sm">
+                    {testimonial.role} at {testimonial.company}
+                  </p>
                 </div>
               </div>
             </motion.div>
           ))}
         </motion.div>
       </div>
-
-      {/* Декоративные элементы */}
-      <div className="absolute top-20 right-20 w-40 h-40 border border-primary/5 rounded-full animate-pulse-slow"></div>
-      <div className="absolute bottom-20 left-20 w-28 h-28 border border-accent/5 rounded-full animate-pulse-slow" style={{ animationDelay: '1.5s' }}></div>
     </section>
   );
 }

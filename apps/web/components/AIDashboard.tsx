@@ -3,13 +3,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Activity, Database, Brain, TrendingUp } from 'lucide-react';
-import { getTranslations, type Locale } from '../lib/i18n';
 import { formatPercentage } from '../lib/format';
 import NNArchitecture from './NNArchitecture';
-
-interface AIDashboardProps {
-  locale: Locale;
-}
 
 const tabs = [
   { id: 'neural', label: 'Neural Networks', icon: Brain },
@@ -24,8 +19,7 @@ const metrics = [
   { label: 'Efficiency', value: 94.2, color: 'from-orange-400 to-red-500' },
 ];
 
-export default function AIDashboard({ locale }: AIDashboardProps) {
-  const t = getTranslations(locale);
+export default function AIDashboard() {
   const [activeTab, setActiveTab] = useState('neural');
 
   const containerVariants = {
@@ -34,70 +28,61 @@ export default function AIDashboard({ locale }: AIDashboardProps) {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
-        delayChildren: 0.2,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.6,
-        ease: 'easeOut',
+        duration: 0.5,
       },
     },
   };
 
   return (
-    <section id="dashboard" className="py-20 relative">
+    <section className="py-20 relative">
       <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <h2 className="heading-lg text-white mb-4">
-            {t.dashboard.title}
-          </h2>
-          <p className="text-xl text-white/70 mb-8 max-w-3xl mx-auto">
-            {t.dashboard.subtitle}
-          </p>
-          <div className="w-24 h-1 bg-gradient-to-r from-primary to-accent mx-auto rounded-full"></div>
-        </motion.div>
-
-        {/* Вкладки */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="flex flex-wrap justify-center gap-4 mb-12"
+          className="text-center mb-16"
+        >
+          <h2 className="heading-lg text-white mb-4">
+            AI Dashboard
+          </h2>
+          <p className="text-xl text-white/70 mb-8 max-w-3xl mx-auto">
+            Real-time monitoring of our AI systems and machine learning processes
+          </p>
+        </motion.div>
+
+        {/* Tabs */}
+        <motion.div
+          variants={itemVariants}
+          className="flex flex-wrap justify-center gap-2 mb-12"
         >
           {tabs.map((tab) => (
-            <motion.button
+            <button
               key={tab.id}
-              variants={itemVariants}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
                 activeTab === tab.id
-                  ? 'glass border border-primary/50 text-primary'
-                  : 'text-white/60 hover:text-white hover:bg-white/5'
+                  ? 'bg-primary text-black'
+                  : 'bg-white/5 text-white/70 hover:text-white hover:bg-white/10'
               }`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
             >
               <tab.icon className="w-5 h-5" />
               {tab.label}
-            </motion.button>
+            </button>
           ))}
         </motion.div>
 
-        {/* Контент вкладок */}
+        {/* Tab Content */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -107,59 +92,56 @@ export default function AIDashboard({ locale }: AIDashboardProps) {
             transition={{ duration: 0.3 }}
             className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
           >
-            {/* Метрики */}
-            <div className="space-y-6">
+            {/* Metrics */}
+            <div className="space-y-8">
               <h3 className="text-2xl font-bold text-white mb-6">
-                {activeTab === 'neural' && t.dashboard.neural_networks}
-                {activeTab === 'data' && t.dashboard.data_processing}
-                {activeTab === 'ml' && t.dashboard.machine_learning}
+                Performance Metrics
               </h3>
               
-              {metrics.map((metric, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="card-glass"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-white/80 font-medium">
-                      {metric.label}
-                    </span>
-                    <span className="text-2xl font-bold text-primary">
-                      {formatPercentage(metric.value)}
-                    </span>
-                  </div>
-                  
-                  <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${metric.value}%` }}
-                      transition={{ duration: 1, delay: index * 0.2 }}
-                      className={`h-full bg-gradient-to-r ${metric.color} rounded-full relative`}
-                    >
-                      <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
-                    </motion.div>
-                  </div>
-                </motion.div>
-              ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {metrics.map((metric, index) => (
+                  <motion.div
+                    key={index}
+                    variants={itemVariants}
+                    whileHover={{ scale: 1.05 }}
+                    className="glass rounded-2xl p-6"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-white font-semibold">{metric.label}</h4>
+                      <span className="text-2xl font-bold text-primary">
+                        {formatPercentage(metric.value)}
+                      </span>
+                    </div>
+                    
+                    <div className="w-full bg-white/10 rounded-full h-3 mb-2">
+                      <motion.div
+                        className={`h-3 rounded-full bg-gradient-to-r ${metric.color}`}
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${metric.value}%` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1, delay: index * 0.2 }}
+                      />
+                    </div>
+                    
+                    <div className="flex justify-between text-sm text-white/60">
+                      <span>0%</span>
+                      <span>100%</span>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
 
-            {/* Диаграмма архитектуры */}
-            <div className="card-glass">
-              <h4 className="text-xl font-semibold text-white mb-6 text-center">
+            {/* Neural Network Visualization */}
+            <div className="relative">
+              <h3 className="text-2xl font-bold text-white mb-6 text-center">
                 Neural Network Architecture
-              </h4>
+              </h3>
               <NNArchitecture />
             </div>
           </motion.div>
         </AnimatePresence>
       </div>
-
-      {/* Декоративные элементы */}
-      <div className="absolute top-10 right-20 w-40 h-40 border border-primary/5 rounded-full animate-pulse-slow"></div>
-      <div className="absolute bottom-10 left-20 w-28 h-28 border border-accent/5 rounded-full animate-pulse-slow" style={{ animationDelay: '1.5s' }}></div>
     </section>
   );
 }
