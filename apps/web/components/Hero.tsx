@@ -115,9 +115,11 @@ export default function Hero() {
                 className="text-center"
               >
                 <div className="text-3xl md:text-4xl font-bold text-primary mb-2">
-                  {stat.value < 1000 
+                  {!isMounted 
                     ? `${stat.value}${stat.suffix}` 
-                    : `${formatNumber(stat.value)}${stat.suffix}`
+                    : stat.value < 1000 
+                      ? `${stat.value}${stat.suffix}` 
+                      : `${formatNumber(stat.value)}${stat.suffix}`
                   }
                 </div>
                 <div className="text-sm text-white/60 font-medium">

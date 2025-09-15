@@ -338,53 +338,57 @@ export default function NNArchitecture() {
         </motion.text>
 
         {/* Анимированные точки на линиях */}
-        <motion.circle
-          variants={nodeVariants}
-          cx="115"
-          cy="160"
-          r="3"
-          fill="#00D1FF"
-          opacity="0.8"
-        >
-          <motion.animate
-            attributeName="opacity"
-            values="0.8;0.2;0.8"
-            dur="2s"
-            repeatCount="indefinite"
-          />
-        </motion.circle>
-        
-        <motion.circle
-          variants={nodeVariants}
-          cx="185"
-          cy="160"
-          r="3"
-          fill="#FF9A3E"
-          opacity="0.8"
-        >
-          <motion.animate
-            attributeName="opacity"
-            values="0.2;0.8;0.2"
-            dur="2s"
-            repeatCount="indefinite"
-          />
-        </motion.circle>
-        
-        <motion.circle
-          variants={nodeVariants}
-          cx="355"
-          cy="160"
-          r="3"
-          fill="#00D1FF"
-          opacity="0.8"
-        >
-          <motion.animate
-            attributeName="opacity"
-            values="0.8;0.2;0.8"
-            dur="2s"
-            repeatCount="indefinite"
-          />
-        </motion.circle>
+        {isMounted && (
+          <>
+            <motion.circle
+              variants={nodeVariants}
+              cx="115"
+              cy="160"
+              r="3"
+              fill="#00D1FF"
+              opacity="0.8"
+            >
+              <motion.animate
+                attributeName="opacity"
+                values="0.8;0.2;0.8"
+                dur="2s"
+                repeatCount="indefinite"
+              />
+            </motion.circle>
+            
+            <motion.circle
+              variants={nodeVariants}
+              cx="185"
+              cy="160"
+              r="3"
+              fill="#FF9A3E"
+              opacity="0.8"
+            >
+              <motion.animate
+                attributeName="opacity"
+                values="0.2;0.8;0.2"
+                dur="2s"
+                repeatCount="indefinite"
+              />
+            </motion.circle>
+            
+            <motion.circle
+              variants={nodeVariants}
+              cx="355"
+              cy="160"
+              r="3"
+              fill="#00D1FF"
+              opacity="0.8"
+            >
+              <motion.animate
+                attributeName="opacity"
+                values="0.8;0.2;0.8"
+                dur="2s"
+                repeatCount="indefinite"
+              />
+            </motion.circle>
+          </>
+        )}
       </motion.svg>
     </div>
   );

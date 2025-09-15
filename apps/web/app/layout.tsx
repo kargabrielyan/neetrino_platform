@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   robots: 'index, follow',
   openGraph: {
     type: 'website',
-    locale: 'hy_AM',
+    locale: 'en_US',
     url: 'https://neetrino.com',
     title: 'Neetrino - AI-Powered Solutions',
     description: 'Инновационные AI решения для будущего',
@@ -26,7 +26,11 @@ export const metadata: Metadata = {
     description: 'Инновационные AI решения для будущего',
     creator: '@neetrino',
   },
-  viewport: 'width=device-width, initial-scale=1',
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
   themeColor: '#00D1FF',
 }
 
@@ -36,7 +40,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="hy" className="dark">
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
