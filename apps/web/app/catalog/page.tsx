@@ -7,7 +7,7 @@ import Footer from '../../components/Footer';
 import { Search, Filter, Grid, List } from 'lucide-react';
 
 export default function Catalog() {
-  const [locale, setLocale] = useState<Locale>('hy');
+  const [locale, setLocale] = useState<Locale>('en');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Моковые данные для демо
@@ -46,10 +46,10 @@ export default function Catalog() {
       <Navbar locale={locale} onLocaleChange={setLocale} />
       
       <div className="container mx-auto px-4 py-8">
-        {/* Заголовок */}
+        {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Каталог демо</h1>
-          <p className="text-white/70">Найдите подходящий дизайн для вашего проекта</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Demo Catalog</h1>
+          <p className="text-white/70">Find the perfect design for your project</p>
         </div>
 
         {/* Фильтры и поиск */}
@@ -60,7 +60,7 @@ export default function Catalog() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
               <input
                 type="text"
-                placeholder="Поиск по названию или вендору..."
+                placeholder="Search by name or vendor..."
                 className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-primary/50"
               />
             </div>
@@ -68,14 +68,14 @@ export default function Catalog() {
             {/* Фильтры */}
             <div className="flex gap-2">
               <select className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-primary/50">
-                <option value="">Все категории</option>
+                <option value="">All Categories</option>
                 <option value="ecommerce">E-commerce</option>
                 <option value="portfolio">Portfolio</option>
                 <option value="blog">Blog</option>
               </select>
               
               <select className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-primary/50">
-                <option value="">Все вендоры</option>
+                <option value="">All Vendors</option>
                 <option value="shopify">Shopify</option>
                 <option value="webflow">Webflow</option>
                 <option value="wordpress">WordPress</option>
@@ -86,7 +86,7 @@ export default function Catalog() {
           {/* Переключатель вида */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-white/70 text-sm">Найдено: {demos.length} демо</span>
+              <span className="text-white/70 text-sm">Found: {demos.length} demos</span>
             </div>
             
             <div className="flex items-center gap-2">
@@ -150,16 +150,16 @@ export default function Catalog() {
                 </div>
                 
                 <div className="text-white/60 text-sm mb-3">
-                  <div>Вендор: {demo.vendor}</div>
-                  <div>Категория: {demo.category}</div>
+                  <div>Vendor: {demo.vendor}</div>
+                  <div>Category: {demo.category}</div>
                 </div>
                 
                 <div className="flex gap-2">
                   <button className="flex-1 px-3 py-2 bg-primary text-black rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
-                    Смотреть
+                    View
                   </button>
                   <button className="px-3 py-2 border border-white/20 text-white rounded-lg text-sm hover:bg-white/5 transition-colors">
-                    Открыть
+                    Open
                   </button>
                 </div>
               </div>
@@ -167,11 +167,11 @@ export default function Catalog() {
           ))}
         </div>
 
-        {/* Пагинация */}
+        {/* Pagination */}
         <div className="mt-8 flex justify-center">
           <div className="flex items-center gap-2">
             <button className="px-3 py-2 text-white/50 hover:text-white transition-colors">
-              Назад
+              Previous
             </button>
             <button className="px-3 py-2 bg-primary text-black rounded-lg font-medium">
               1
@@ -183,7 +183,7 @@ export default function Catalog() {
               3
             </button>
             <button className="px-3 py-2 text-white/50 hover:text-white transition-colors">
-              Далее
+              Next
             </button>
           </div>
         </div>
