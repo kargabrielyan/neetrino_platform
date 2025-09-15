@@ -87,6 +87,20 @@ export default function DigitalMarketing() {
     },
   };
 
+  if (!isMounted) {
+    return (
+      <main className="min-h-screen bg-bg">
+        <Navbar />
+        <div className="container mx-auto px-4 py-8 pt-24">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+            <p className="text-white/70 mt-4">Loading...</p>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-bg">
       <Navbar />

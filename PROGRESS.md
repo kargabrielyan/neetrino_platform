@@ -219,6 +219,23 @@
 - ✅ Добавлена валидация и обработка ошибок
 - ✅ Завершены задачи A4 (Каталог/PDP/Viewer) и A5 (Медиа-пайплайн)
 
+### 2025-01-15 - Создание всех страниц сервисов и исправление каталога
+- ✅ Созданы страницы для всех сервисов:
+  * /services/mobile-development - Mobile App Development
+  * /services/ai-integration - AI Integration  
+  * /services/digital-marketing - Digital Marketing
+  * /services/cybersecurity - Cybersecurity
+  * /services/cloud-solutions - Cloud Solutions
+- ✅ Каждая страница содержит детальное описание, технологии, процесс и CTA
+- ✅ Исправлена проблема 'No demos found' в каталоге:
+  * Создан DevModule с endpoints для разработки (/dev/seed, /dev/status)
+  * Добавлены fallback данные в PublicService для работы без БД
+  * 5 тестовых демо и 3 вендора с полной информацией
+  * Поддержка поиска, фильтрации и пагинации для fallback данных
+- ✅ API теперь работает даже без подключения к PostgreSQL
+- ✅ Все ссылки 'Learn More' работают корректно
+- ✅ Улучшена навигация между страницами сервисов
+
 ---
 
 *Этот файл будет обновляться после каждого значимого шага в разработке.*
