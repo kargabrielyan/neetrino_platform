@@ -1,43 +1,175 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useMounted } from '../../lib/use-mounted';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
-import { Search, Filter, Grid, List } from 'lucide-react';
+import { Search, Filter, Grid, List, ExternalLink, Eye } from 'lucide-react';
+
+interface Demo {
+  id: string;
+  title: string;
+  description: string;
+  url: string;
+  category: string;
+  subcategory: string;
+  imageUrl: string;
+  screenshotUrl: string;
+  viewCount: number;
+  isAccessible: boolean;
+  vendor: {
+    id: string;
+    name: string;
+    website: string;
+    logoUrl: string;
+  };
+  createdAt: string;
+}
+
+interface SearchFilters {
+  q: string;
+  vendors: string[];
+  categories: string[];
+  subcategories: string[];
+  sortBy: 'relevance' | 'createdAt' | 'viewCount' | 'title';
+  sortOrder: 'ASC' | 'DESC';
+}
+
+interface SearchResponse {
+  data: Demo[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  query: string;
+  suggestions: string[];
+  filters: {
+    vendors: Array<{ id: string; name: string; count: number }>;
+    categories: Array<{ name: string; count: number }>;
+    subcategories: Array<{ name: string; count: number }>;
+  };
+}
 
 export default function Catalog() {
+  const isMounted = useMounted();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [loading, setLoading] = useState(false);
+  const [searchData, setSearchData] = useState<SearchResponse | null>(null);
+  const [filters, setFilters] = useState<SearchFilters>({
+    q: '',
+    vendors: [],
+    categories: [],
+    subcategories: [],
+    sortBy: 'relevance',
+    sortOrder: 'DESC',
+  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showFilters, setShowFilters] = useState(false);
 
-  // Моковые данные для демо
-  const demos = [
-    {
-      id: 1,
-      title: 'E-commerce Platform',
-      vendor: 'Shopify',
-      category: 'E-commerce',
-      status: 'active',
-      url: 'https://example.com',
-      image: '/api/placeholder/300/200',
-    },
-    {
-      id: 2,
-      title: 'Portfolio Website',
-      vendor: 'Webflow',
-      category: 'Portfolio',
-      status: 'active',
-      url: 'https://example.com',
-      image: '/api/placeholder/300/200',
-    },
-    {
-      id: 3,
-      title: 'Blog Platform',
-      vendor: 'WordPress',
-      category: 'Blog',
-      status: 'draft',
-      url: 'https://example.com',
-      image: '/api/placeholder/300/200',
-    },
-  ];
+  // Функция для выполнения поиска
+  const performSearch = useCallback(async (searchFilters: SearchFilters, page: number = 1) => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      
+      if (searchFilters.q.trim()) params.append('q', searchFilters.q.trim());
+      if (searchFilters.vendors.length > 0) {
+        searchFilters.vendors.forEach(vendor => params.append('vendors', vendor));
+      }
+      if (searchFilters.categories.length > 0) {
+        searchFilters.categories.forEach(category => params.append('categories', category));
+      }
+      if (searchFilters.subcategories.length > 0) {
+        searchFilters.subcategories.forEach(subcategory => params.append('subcategories', subcategory));
+      }
+      params.append('sortBy', searchFilters.sortBy);
+      params.append('sortOrder', searchFilters.sortOrder);
+      params.append('page', page.toString());
+      params.append('limit', '20');
+
+      const response = await fetch(`http://localhost:3001/search?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch search results');
+      }
+      
+      const data: SearchResponse = await response.json();
+      setSearchData(data);
+      setCurrentPage(page);
+    } catch (error) {
+      console.error('Search error:', error);
+      // Fallback to mock data
+      setSearchData({
+        data: [],
+        total: 0,
+        page: 1,
+        limit: 20,
+        totalPages: 0,
+        query: '',
+        suggestions: [],
+        filters: { vendors: [], categories: [], subcategories: [] }
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Выполняем поиск при изменении фильтров
+  useEffect(() => {
+    if (isMounted) {
+      performSearch(filters, 1);
+    }
+  }, [filters, isMounted, performSearch]);
+
+  // Обработчики для фильтров
+  const handleSearchChange = (value: string) => {
+    setFilters(prev => ({ ...prev, q: value }));
+  };
+
+  const handleVendorFilter = (vendorId: string) => {
+    setFilters(prev => ({
+      ...prev,
+      vendors: prev.vendors.includes(vendorId)
+        ? prev.vendors.filter(id => id !== vendorId)
+        : [...prev.vendors, vendorId]
+    }));
+  };
+
+  const handleCategoryFilter = (category: string) => {
+    setFilters(prev => ({
+      ...prev,
+      categories: prev.categories.includes(category)
+        ? prev.categories.filter(cat => cat !== category)
+        : [...prev.categories, category]
+    }));
+  };
+
+  const handleSubcategoryFilter = (subcategory: string) => {
+    setFilters(prev => ({
+      ...prev,
+      subcategories: prev.subcategories.includes(subcategory)
+        ? prev.subcategories.filter(sub => sub !== subcategory)
+        : [...prev.subcategories, subcategory]
+    }));
+  };
+
+  const handleSortChange = (sortBy: SearchFilters['sortBy']) => {
+    setFilters(prev => ({ ...prev, sortBy }));
+  };
+
+  const handlePageChange = (page: number) => {
+    performSearch(filters, page);
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      q: '',
+      vendors: [],
+      categories: [],
+      subcategories: [],
+      sortBy: 'relevance',
+      sortOrder: 'DESC',
+    });
+  };
 
   return (
     <main className="min-h-screen bg-bg">
@@ -50,7 +182,7 @@ export default function Catalog() {
           <p className="text-white/70">Find the perfect design for your project</p>
         </div>
 
-        {/* Фильтры и поиск */}
+        {/* Поиск и фильтры */}
         <div className="mb-8 space-y-4">
           <div className="flex flex-col md:flex-row gap-4">
             {/* Поиск */}
@@ -59,32 +191,137 @@ export default function Catalog() {
               <input
                 type="text"
                 placeholder="Search by name or vendor..."
+                value={filters.q}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-primary/50"
               />
             </div>
             
-            {/* Фильтры */}
-            <div className="flex gap-2">
-              <select className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-primary/50">
-                <option value="" className="text-black">All Categories</option>
-                <option value="ecommerce" className="text-black">E-commerce</option>
-                <option value="portfolio" className="text-black">Portfolio</option>
-                <option value="blog" className="text-black">Blog</option>
-              </select>
-              
-              <select className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-primary/50">
-                <option value="" className="text-black">All Vendors</option>
-                <option value="shopify" className="text-black">Shopify</option>
-                <option value="webflow" className="text-black">Webflow</option>
-                <option value="wordpress" className="text-black">WordPress</option>
-              </select>
-            </div>
+            {/* Кнопка фильтров */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`px-4 py-2 rounded-lg border transition-colors flex items-center gap-2 ${
+                showFilters || filters.vendors.length > 0 || filters.categories.length > 0 || filters.subcategories.length > 0
+                  ? 'bg-primary/20 border-primary/50 text-primary'
+                  : 'bg-white/5 border-white/10 text-white hover:bg-white/10'
+              }`}
+            >
+              <Filter className="w-4 h-4" />
+              Filters
+              {(filters.vendors.length + filters.categories.length + filters.subcategories.length) > 0 && (
+                <span className="bg-primary text-black text-xs px-2 py-1 rounded-full">
+                  {filters.vendors.length + filters.categories.length + filters.subcategories.length}
+                </span>
+              )}
+            </button>
           </div>
 
-          {/* Переключатель вида */}
+          {/* Расширенные фильтры */}
+          {showFilters && searchData && (
+            <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-4">
+              {/* Сортировка */}
+              <div>
+                <label className="block text-white/70 text-sm mb-2">Sort by</label>
+                <select
+                  value={filters.sortBy}
+                  onChange={(e) => handleSortChange(e.target.value as SearchFilters['sortBy'])}
+                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-primary/50"
+                >
+                  <option value="relevance" className="text-black">Relevance</option>
+                  <option value="createdAt" className="text-black">Date Created</option>
+                  <option value="viewCount" className="text-black">Most Popular</option>
+                  <option value="title" className="text-black">Title</option>
+                </select>
+              </div>
+
+              {/* Вендоры */}
+              {searchData.filters.vendors.length > 0 && (
+                <div>
+                  <label className="block text-white/70 text-sm mb-2">Vendors</label>
+                  <div className="flex flex-wrap gap-2">
+                    {searchData.filters.vendors.map(vendor => (
+                      <button
+                        key={vendor.id}
+                        onClick={() => handleVendorFilter(vendor.id)}
+                        className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                          filters.vendors.includes(vendor.id)
+                            ? 'bg-primary text-black'
+                            : 'bg-white/10 text-white hover:bg-white/20'
+                        }`}
+                      >
+                        {vendor.name} ({vendor.count})
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Категории */}
+              {searchData.filters.categories.length > 0 && (
+                <div>
+                  <label className="block text-white/70 text-sm mb-2">Categories</label>
+                  <div className="flex flex-wrap gap-2">
+                    {searchData.filters.categories.map(category => (
+                      <button
+                        key={category.name}
+                        onClick={() => handleCategoryFilter(category.name)}
+                        className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                          filters.categories.includes(category.name)
+                            ? 'bg-primary text-black'
+                            : 'bg-white/10 text-white hover:bg-white/20'
+                        }`}
+                      >
+                        {category.name} ({category.count})
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Подкатегории */}
+              {searchData.filters.subcategories.length > 0 && (
+                <div>
+                  <label className="block text-white/70 text-sm mb-2">Subcategories</label>
+                  <div className="flex flex-wrap gap-2">
+                    {searchData.filters.subcategories.map(subcategory => (
+                      <button
+                        key={subcategory.name}
+                        onClick={() => handleSubcategoryFilter(subcategory.name)}
+                        className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                          filters.subcategories.includes(subcategory.name)
+                            ? 'bg-primary text-black'
+                            : 'bg-white/10 text-white hover:bg-white/20'
+                        }`}
+                      >
+                        {subcategory.name} ({subcategory.count})
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Очистить фильтры */}
+              <div className="flex justify-end">
+                <button
+                  onClick={clearFilters}
+                  className="px-4 py-2 text-white/70 hover:text-white transition-colors"
+                >
+                  Clear all filters
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Статистика и переключатель вида */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-white/70 text-sm">Found: {demos.length} demos</span>
+              {loading ? (
+                <span className="text-white/70 text-sm">Searching...</span>
+              ) : (
+                <span className="text-white/70 text-sm">
+                  Found: {searchData?.total || 0} demos
+                </span>
+              )}
             </div>
             
             <div className="flex items-center gap-2">
@@ -112,79 +349,138 @@ export default function Catalog() {
           </div>
         </div>
 
-        {/* Сетка демо */}
-        <div className={`grid gap-6 ${
-          viewMode === 'grid' 
-            ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
-            : 'grid-cols-1'
-        }`}>
-          {demos.map((demo) => (
-            <div
-              key={demo.id}
-              className={`bg-white/5 border border-white/10 rounded-lg overflow-hidden hover:border-primary/30 transition-colors ${
-                viewMode === 'list' ? 'flex' : ''
-              }`}
-            >
-              {/* Изображение */}
-              <div className={`bg-white/5 ${
-                viewMode === 'list' ? 'w-48 h-32 flex-shrink-0' : 'h-48'
-              }`}>
-                <div className="w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                  <span className="text-white/50 text-sm">Preview</span>
-                </div>
-              </div>
-              
-              {/* Контент */}
-              <div className={`p-4 ${viewMode === 'list' ? 'flex-1' : ''}`}>
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-white font-semibold">{demo.title}</h3>
-                  <span className={`px-2 py-1 text-xs rounded-full ${
-                    demo.status === 'active' 
-                      ? 'bg-green-500/20 text-green-400' 
-                      : 'bg-yellow-500/20 text-yellow-400'
+        {/* Результаты поиска */}
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="text-white/70">Loading demos...</div>
+          </div>
+        ) : searchData && searchData.data.length > 0 ? (
+          <>
+            {/* Сетка демо */}
+            <div className={`grid gap-6 ${
+              viewMode === 'grid' 
+                ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
+                : 'grid-cols-1'
+            }`}>
+              {searchData.data.map((demo) => (
+                <div
+                  key={demo.id}
+                  className={`bg-white/5 border border-white/10 rounded-lg overflow-hidden hover:border-primary/30 transition-colors ${
+                    viewMode === 'list' ? 'flex' : ''
+                  }`}
+                >
+                  {/* Изображение */}
+                  <div className={`bg-white/5 ${
+                    viewMode === 'list' ? 'w-48 h-32 flex-shrink-0' : 'h-48'
                   }`}>
-                    {demo.status}
-                  </span>
+                    {demo.screenshotUrl ? (
+                      <img
+                        src={demo.screenshotUrl}
+                        alt={demo.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                        <span className="text-white/50 text-sm">Preview</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Контент */}
+                  <div className={`p-4 ${viewMode === 'list' ? 'flex-1' : ''}`}>
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="text-white font-semibold">{demo.title}</h3>
+                      <div className="flex items-center gap-2">
+                        <span className="flex items-center gap-1 text-white/60 text-xs">
+                          <Eye className="w-3 h-3" />
+                          {demo.viewCount}
+                        </span>
+                        <span className={`px-2 py-1 text-xs rounded-full ${
+                          demo.isAccessible 
+                            ? 'bg-green-500/20 text-green-400' 
+                            : 'bg-red-500/20 text-red-400'
+                        }`}>
+                          {demo.isAccessible ? 'Live' : 'Offline'}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="text-white/60 text-sm mb-3">
+                      <div>Vendor: {demo.vendor.name}</div>
+                      <div>Category: {demo.category}</div>
+                      {demo.subcategory && <div>Subcategory: {demo.subcategory}</div>}
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      <button className="flex-1 px-3 py-2 bg-primary text-black rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
+                        View
+                      </button>
+                      <a
+                        href={demo.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-2 border border-white/20 text-white rounded-lg text-sm hover:bg-white/5 transition-colors flex items-center gap-1"
+                      >
+                        <ExternalLink className="w-3 h-3" />
+                        Open
+                      </a>
+                    </div>
+                  </div>
                 </div>
-                
-                <div className="text-white/60 text-sm mb-3">
-                  <div>Vendor: {demo.vendor}</div>
-                  <div>Category: {demo.category}</div>
-                </div>
-                
-                <div className="flex gap-2">
-                  <button className="flex-1 px-3 py-2 bg-primary text-black rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
-                    View
+              ))}
+            </div>
+
+            {/* Пагинация */}
+            {searchData.totalPages > 1 && (
+              <div className="mt-8 flex justify-center">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="px-3 py-2 text-white/50 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Previous
                   </button>
-                  <button className="px-3 py-2 border border-white/20 text-white rounded-lg text-sm hover:bg-white/5 transition-colors">
-                    Open
+                  
+                  {Array.from({ length: Math.min(5, searchData.totalPages) }, (_, i) => {
+                    const page = i + 1;
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => handlePageChange(page)}
+                        className={`px-3 py-2 rounded-lg transition-colors ${
+                          currentPage === page
+                            ? 'bg-primary text-black'
+                            : 'text-white/50 hover:text-white'
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    );
+                  })}
+                  
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === searchData.totalPages}
+                    className="px-3 py-2 text-white/50 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Next
                   </button>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Pagination */}
-        <div className="mt-8 flex justify-center">
-          <div className="flex items-center gap-2">
-            <button className="px-3 py-2 text-white/50 hover:text-white transition-colors">
-              Previous
-            </button>
-            <button className="px-3 py-2 bg-primary text-black rounded-lg font-medium">
-              1
-            </button>
-            <button className="px-3 py-2 text-white/50 hover:text-white transition-colors">
-              2
-            </button>
-            <button className="px-3 py-2 text-white/50 hover:text-white transition-colors">
-              3
-            </button>
-            <button className="px-3 py-2 text-white/50 hover:text-white transition-colors">
-              Next
+            )}
+          </>
+        ) : (
+          <div className="text-center py-12">
+            <div className="text-white/70 mb-4">No demos found</div>
+            <button
+              onClick={clearFilters}
+              className="px-4 py-2 bg-primary text-black rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              Clear filters
             </button>
           </div>
-        </div>
+        )}
       </div>
 
       <Footer />
