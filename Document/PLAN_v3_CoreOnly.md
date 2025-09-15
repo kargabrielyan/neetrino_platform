@@ -10,10 +10,9 @@
 ## 0) Что входит/не входит сейчас
 
 ### IN SCOPE (делаем сейчас)
-- БД и модели: `vendors`, `themes?`, `demos`, `staging_imports`, `import_runs`, `media_sets?`.
+- БД и модели: `vendors`, `themes?`, `demos`, `staging_imports`, `import_runs`.
 - Админка: CRUD Vendors/Themes/Demos; **Импорт из CSV → DIFF → Добавить**.
 - Публичная часть: каталог, PDP, viewer; фильтры/поиск/сортировки.
-- Медиа (опц.): постеры/скрины и fallback.
 - SEO/OG/JSON-LD, аналитика событий, аудит-лог, роли (Owner/Admin/Editor).
 - **Фича-флаги:** `PARSING_ENABLED=false`, `CHECKING_ENABLED=false`.
 - **Стабы интерфейсов** Parsing/Checking (без логики) — для совместимости.
@@ -54,7 +53,6 @@
 - **demos**: id, vendor_id, theme_id?, name?, url, **url_canonical**, state(`active|draft|deleted`), first_seen_at, last_seen_at, first_failed_at?, last_ok_at?
 - **staging_imports**: id, vendor_id, brand, name?, url, **url_canonical**, imported_at, source(`csv|parsing`)
 - **import_runs**: id, vendor_id, started_at, finished_at, totals(found,new,ignored,errors), source
-- **media_sets** (опц.): id, demo_id, lcp_url, shot_375, shot_768, shot_1280, created_at
 
 > Уникальность демо: `vendor_id + url_canonical`. Канонизация URL — одна функция и для CSV, и для будущего Parsing.
 
@@ -86,7 +84,6 @@
 - `/import/csv` → загрузка CSV → `staging_imports`.
 - `/import/diff?vendorId=...` → DIFF из `staging_imports` против `demos`.
 - `/import/confirm` → массовое добавление в `demos`.
-- `/media/*` (опц.) — генерация/получение.
 - `/public/*` — каталог/PDP/вендоры.
 
 **Зарезервировано:** `/parse/*`, `/check/*`, `/webhooks/*` — **не реализуем сейчас**, только объявляем.
@@ -109,17 +106,15 @@
   _Хук:_ **Статус:** <!-- STATUS:A3 --> todo | **Обновлено:** <!-- UPDATED_AT:A3 --> — | **Ссылка:** <!-- LINK:A3 --> —
 - [ ] **A4** Каталог/PDP/Viewer (fallback)  
   _Хук:_ **Статус:** <!-- STATUS:A4 --> todo | **Обновлено:** <!-- UPDATED_AT:A4 --> — | **Ссылка:** <!-- LINK:A4 --> —
-- [ ] **A5** (опц.) Медиа‑постеры/скрины  
+- [ ] **A5** SEO/OG/Аналитика/Мониторинг  
   _Хук:_ **Статус:** <!-- STATUS:A5 --> todo | **Обновлено:** <!-- UPDATED_AT:A5 --> — | **Ссылка:** <!-- LINK:A5 --> —
-- [ ] **A6** SEO/OG/Аналитика/Мониторинг  
+- [ ] **A6** Флаги + Stubs Parsing/Checking  
   _Хук:_ **Статус:** <!-- STATUS:A6 --> todo | **Обновлено:** <!-- UPDATED_AT:A6 --> — | **Ссылка:** <!-- LINK:A6 --> —
-- [ ] **A7** Флаги + Stubs Parsing/Checking  
-  _Хук:_ **Статус:** <!-- STATUS:A7 --> todo | **Обновлено:** <!-- UPDATED_AT:A7 --> — | **Ссылка:** <!-- LINK:A7 --> —
 
 ---
 
 ## 8) Что править в PROGRESS.md
-- Добавить секцию «Core v3 (без Parsing/Checking)» и статусы A1…A7.  
+- Добавить секцию «Core v3 (без Parsing/Checking)» и статусы A1…A6.  
 - В таблице прогресса использовать те же якоря `<!-- STATUS:ID -->`, `<!-- UPDATED_AT:ID -->`, `<!-- LINK:ID -->`.
 
 ---
@@ -132,10 +127,9 @@
 **Шаг 4.** Реализуй админ‑CRUD Vendors/Themes/Demos и аудит‑лог. Обнови `A2`.  
 **Шаг 5.** Сделай импорт через CSV: загрузка → `staging_imports` → DIFF → «Добавить» → записи в `demos` и `import_runs`. Обнови `A3`.  
 **Шаг 6.** Публичная часть: каталог, PDP, viewer. Без зависимостей от Parsing/Checking. Обнови `A4`.  
-**Шаг 7.** (Опц.) Медиа‑постеры/скрины + fallback. Обнови `A5`.  
-**Шаг 8.** SEO/OG/JSON‑LD, аналитика событий, мониторинг. Обнови `A6`.  
-**Шаг 9.** Добавь стабы `ParsingAdapterStub`/`CheckingAdapterStub`, включи резервные роуты `/parse/*`, `/check/*`, `/webhooks/*` без логики. Обнови `A7`.  
-**Шаг 10.** Синхронизируй статус‑якоря в PROGRESS.md.
+**Шаг 7.** SEO/OG/JSON‑LD, аналитика событий, мониторинг. Обнови `A5`.  
+**Шаг 8.** Добавь стабы `ParsingAdapterStub`/`CheckingAdapterStub`, включи резервные роуты `/parse/*`, `/check/*`, `/webhooks/*` без логики. Обнови `A6`.  
+**Шаг 9.** Синхронизируй статус‑якоря в PROGRESS.md.
 
 ---
 
