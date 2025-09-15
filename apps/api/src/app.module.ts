@@ -8,7 +8,6 @@ import { DemosModule } from './modules/demos/demos.module';
 import { VendorsModule } from './modules/vendors/vendors.module';
 import { ImportModule } from './modules/import/import.module';
 import { CheckingModule } from './modules/checking/checking.module';
-import { PublicModule } from './modules/public/public.module';
 import { SearchModule } from './modules/search/search.module';
 import { DevModule } from './modules/dev/dev.module';
 import { databaseConfig } from './config/database.config';
@@ -25,7 +24,6 @@ import { databaseConfig } from './config/database.config';
     VendorsModule,
     ImportModule,
     CheckingModule,
-    PublicModule,
     SearchModule,
     DevModule,
   ],
