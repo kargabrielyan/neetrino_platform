@@ -1,8 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useMounted } from '../lib/use-mounted';
 
 export default function NNArchitecture() {
+  const isMounted = useMounted();
+  
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {

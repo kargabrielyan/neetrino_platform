@@ -11,6 +11,7 @@ import {
   MapPin,
   Clock
 } from 'lucide-react';
+import { useMounted } from '../lib/use-mounted';
 
 interface FooterProps {}
 
@@ -29,6 +30,8 @@ const menuItems = [
 ];
 
 export default function Footer({}: FooterProps) {
+  const isMounted = useMounted();
+  
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -58,7 +61,7 @@ export default function Footer({}: FooterProps) {
         <motion.div
           variants={containerVariants}
           initial="hidden"
-          whileInView="visible"
+          whileInView={isMounted ? "visible" : "hidden"}
           viewport={{ once: true }}
           className="grid grid-cols-1 md:grid-cols-3 gap-12"
         >

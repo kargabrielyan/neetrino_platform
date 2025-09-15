@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Activity, Database, Brain, TrendingUp } from 'lucide-react';
 import { formatPercentage } from '../lib/format';
 import NNArchitecture from './NNArchitecture';
+import { useMounted } from '../lib/use-mounted';
 
 const tabs = [
   { id: 'neural', label: 'Neural Networks', icon: Brain },
@@ -22,6 +23,7 @@ const metrics = [
 
 export default function AIDashboard() {
   const [activeTab, setActiveTab] = useState('neural');
+  const isMounted = useMounted();
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -50,7 +52,7 @@ export default function AIDashboard() {
         <motion.div
           variants={containerVariants}
           initial="hidden"
-          whileInView="visible"
+          whileInView={isMounted ? "visible" : "hidden"}
           viewport={{ once: true }}
           className="text-center mb-16"
         >

@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Check, Star } from 'lucide-react';
 import { formatCurrency } from '../lib/format';
+import { useMounted } from '../lib/use-mounted';
 
 const plans = [
   {
@@ -52,6 +53,8 @@ const plans = [
 ];
 
 export default function Pricing() {
+  const isMounted = useMounted();
+  
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -79,7 +82,7 @@ export default function Pricing() {
         <motion.div
           variants={containerVariants}
           initial="hidden"
-          whileInView="visible"
+          whileInView={isMounted ? "visible" : "hidden"}
           viewport={{ once: true }}
           className="text-center mb-16"
         >
