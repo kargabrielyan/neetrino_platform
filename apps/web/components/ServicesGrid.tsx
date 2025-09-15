@@ -9,6 +9,7 @@ import {
   Shield, 
   Cloud 
 } from 'lucide-react';
+import { useMounted } from '../lib/use-mounted';
 
 const services = [
   {
@@ -44,6 +45,8 @@ const services = [
 ];
 
 export default function ServicesGrid() {
+  const isMounted = useMounted();
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -88,7 +91,7 @@ export default function ServicesGrid() {
         <motion.div
           variants={containerVariants}
           initial="hidden"
-          whileInView="visible"
+          whileInView={isMounted ? "visible" : "hidden"}
           viewport={{ once: true }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >

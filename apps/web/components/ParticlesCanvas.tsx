@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useMounted } from '../lib/use-mounted';
 
 interface ParticlesCanvasProps {
   className?: string;
@@ -29,11 +29,7 @@ const textPositions = Array.from({ length: 8 }, (_, i) => ({
 }));
 
 export default function ParticlesCanvas({ className = '' }: ParticlesCanvasProps) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useMounted();
 
   if (!mounted) {
     return <div className={`absolute inset-0 overflow-hidden ${className}`} />;

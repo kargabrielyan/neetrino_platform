@@ -1,5 +1,6 @@
 'use client';
 
+import { useMounted } from '../lib/use-mounted';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import ParticlesCanvas from '../components/ParticlesCanvas';
@@ -10,6 +11,8 @@ import Testimonials from '../components/Testimonials';
 import Footer from '../components/Footer';
 
 export default function Home() {
+  const isMounted = useMounted();
+
   return (
     <main className="relative min-h-screen">
       {/* Фоновые частицы */}

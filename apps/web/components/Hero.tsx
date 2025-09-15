@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, Play } from 'lucide-react';
 import { formatNumber } from '../lib/format';
+import { useMounted } from '../lib/use-mounted';
 
 const stats = [
   { value: 50, suffix: '+', label: 'AI Models' },
@@ -12,6 +13,7 @@ const stats = [
 ];
 
 export default function Hero() {
+  const isMounted = useMounted();
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -47,7 +49,7 @@ export default function Hero() {
         <motion.div
           variants={containerVariants}
           initial="hidden"
-          animate="visible"
+          animate={isMounted ? "visible" : "hidden"}
           className="text-center max-w-6xl mx-auto"
         >
           {/* Бейдж */}
