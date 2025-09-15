@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { 
@@ -21,6 +22,7 @@ export default function Services() {
       icon: Globe,
       title: 'Web Development',
       description: 'Modern web applications using the latest technologies and frameworks',
+      href: '/services/web-development',
       features: [
         'Responsive Design',
         'Progressive Web Apps',
@@ -35,6 +37,7 @@ export default function Services() {
       icon: Smartphone,
       title: 'Mobile App Development',
       description: 'Native and cross-platform mobile applications for iOS and Android',
+      href: '/services/mobile-development',
       features: [
         'Native iOS Development',
         'Native Android Development',
@@ -49,6 +52,7 @@ export default function Services() {
       icon: Brain,
       title: 'AI Integration',
       description: 'Integrate artificial intelligence and machine learning into your projects',
+      href: '/services/ai-integration',
       features: [
         'Machine Learning Models',
         'Natural Language Processing',
@@ -63,6 +67,7 @@ export default function Services() {
       icon: TrendingUp,
       title: 'Digital Marketing',
       description: 'Comprehensive digital marketing strategies to grow your business',
+      href: '/services/digital-marketing',
       features: [
         'SEO Optimization',
         'Social Media Marketing',
@@ -77,6 +82,7 @@ export default function Services() {
       icon: Shield,
       title: 'Cybersecurity',
       description: 'Protect your data and systems with comprehensive security solutions',
+      href: '/services/cybersecurity',
       features: [
         'Security Audits',
         'Penetration Testing',
@@ -91,6 +97,7 @@ export default function Services() {
       icon: Cloud,
       title: 'Cloud Solutions',
       description: 'Scalable cloud infrastructure and DevOps solutions for your business',
+      href: '/services/cloud-solutions',
       features: [
         'Cloud Migration',
         'Infrastructure as Code',
@@ -163,10 +170,13 @@ export default function Services() {
               </div>
 
               {/* CTA Button */}
-              <button className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-black rounded-xl font-semibold hover:bg-primary/90 transition-colors group">
+              <Link 
+                href={service.href}
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-black rounded-xl font-semibold hover:bg-primary/90 transition-colors group"
+              >
                 Learn More
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
+              </Link>
             </div>
           ))}
         </div>

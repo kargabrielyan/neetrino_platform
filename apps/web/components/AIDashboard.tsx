@@ -1,8 +1,8 @@
 'use client';
 
 // Updated: Removed all translation references
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
 import { Activity, Database, Brain, TrendingUp } from 'lucide-react';
 import { formatPercentage } from '../lib/format';
 import NNArchitecture from './NNArchitecture';
@@ -20,6 +20,28 @@ const metrics = [
   { label: 'Uptime', value: 99.9, color: 'from-purple-400 to-violet-500' },
   { label: 'Efficiency', value: 94.2, color: 'from-orange-400 to-red-500' },
 ];
+
+// Компонент для анимированного счетчика
+function AnimatedCounter({ value, delay = 0 }: { value: number; delay?: number }) {
+  const motionValue = useMotionValue(0);
+  const springValue = useSpring(motionValue, { 
+    duration: 2000,
+    delay: delay * 1000,
+  });
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useEffect(() => {
+    const unsubscribe = springValue.on('change', (latest) => {
+      setDisplayValue(latest);
+    });
+
+    motionValue.set(value);
+
+    return unsubscribe;
+  }, [motionValue, springValue, value]);
+
+  return <span>{formatPercentage(displayValue)}</span>;
+}
 
 export default function AIDashboard() {
   const [activeTab, setActiveTab] = useState('neural');
@@ -113,12 +135,12 @@ export default function AIDashboard() {
                       <h4 className="text-white font-semibold">{metric.label}</h4>
                       <motion.span 
                         className="text-2xl font-bold text-primary"
-                        initial={{ opacity: 0, scale: 0.5 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.5, delay: index * 0.1 }}
                       >
-                        {formatPercentage(metric.value)}
+                        <AnimatedCounter value={metric.value} delay={index * 0.1} />
                       </motion.span>
                     </div>
                     
