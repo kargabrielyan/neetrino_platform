@@ -1,13 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { type Locale } from '../../lib/i18n';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { Search, Filter, Grid, List } from 'lucide-react';
 
 export default function Catalog() {
-  const [locale, setLocale] = useState<Locale>('en');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Моковые данные для демо
@@ -43,7 +41,7 @@ export default function Catalog() {
 
   return (
     <main className="min-h-screen bg-bg">
-      <Navbar locale={locale} onLocaleChange={setLocale} />
+      <Navbar />
       
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
@@ -189,7 +187,7 @@ export default function Catalog() {
         </div>
       </div>
 
-      <Footer locale={locale} />
+      <Footer />
     </main>
   );
 }

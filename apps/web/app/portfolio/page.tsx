@@ -1,13 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { type Locale } from '../../lib/i18n';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { ExternalLink, Github, Eye } from 'lucide-react';
 
 export default function Portfolio() {
-  const [locale, setLocale] = useState<Locale>('hy');
   const [activeCategory, setActiveCategory] = useState('all');
 
   const categories = [
@@ -66,7 +64,7 @@ export default function Portfolio() {
 
   return (
     <main className="min-h-screen bg-bg">
-      <Navbar locale={locale} onLocaleChange={setLocale} />
+      <Navbar />
       
       <div className="container mx-auto px-4 py-8">
         {/* Заголовок */}
@@ -180,7 +178,7 @@ export default function Portfolio() {
         </div>
       </div>
 
-      <Footer locale={locale} />
+      <Footer />
     </main>
   );
 }

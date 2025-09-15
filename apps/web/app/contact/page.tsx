@@ -1,13 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { type Locale } from '../../lib/i18n';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react';
 
 export default function Contact() {
-  const [locale, setLocale] = useState<Locale>('hy');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -30,7 +28,7 @@ export default function Contact() {
 
   return (
     <main className="min-h-screen bg-bg">
-      <Navbar locale={locale} onLocaleChange={setLocale} />
+      <Navbar />
       
       <div className="container mx-auto px-4 py-8">
         {/* Заголовок */}
@@ -218,7 +216,7 @@ export default function Contact() {
         </div>
       </div>
 
-      <Footer locale={locale} />
+      <Footer />
     </main>
   );
 }

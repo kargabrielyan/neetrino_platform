@@ -11,11 +11,8 @@ import {
   MapPin,
   Clock
 } from 'lucide-react';
-import { getTranslations, type Locale } from '../lib/i18n';
 
-interface FooterProps {
-  locale: Locale;
-}
+interface FooterProps {}
 
 const socialLinks = [
   { icon: Facebook, href: '#', label: 'Facebook' },
@@ -25,22 +22,20 @@ const socialLinks = [
 ];
 
 const menuItems = [
-  { key: 'about', href: '#about' },
-  { key: 'team', href: '#team' },
-  { key: 'programs', href: '#programs' },
-  { key: 'portfolio', href: '#portfolio' },
+  { key: 'about', href: '/about' },
+  { key: 'services', href: '/services' },
+  { key: 'portfolio', href: '/portfolio' },
+  { key: 'contact', href: '/contact' },
 ];
 
-export default function Footer({ locale }: FooterProps) {
-  const t = getTranslations(locale);
-
+export default function Footer({}: FooterProps) {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
-        delayChildren: 0.2,
+        ease: 'easeOut',
       },
     },
   };
@@ -51,7 +46,7 @@ export default function Footer({ locale }: FooterProps) {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.6,
+        duration: 0.5,
         ease: 'easeOut',
       },
     },
@@ -67,7 +62,7 @@ export default function Footer({ locale }: FooterProps) {
           viewport={{ once: true }}
           className="grid grid-cols-1 md:grid-cols-3 gap-12"
         >
-          {/* О компании */}
+          {/* Company Info */}
           <motion.div variants={itemVariants} className="space-y-6">
             <div className="flex items-center gap-2">
               <span className="text-2xl font-bold text-white">
@@ -77,10 +72,10 @@ export default function Footer({ locale }: FooterProps) {
             </div>
             
             <p className="text-white/70 leading-relaxed">
-              Մենք ստեղծում ենք ապագայի տեխնոլոգիաները՝ օգտագործելով արհեստական բանականությունը և մեքենայական ուսուցումը:
+              We create future technologies using artificial intelligence and machine learning.
             </p>
             
-            {/* Социальные сети */}
+            {/* Social Links */}
             <div className="flex items-center gap-4">
               {socialLinks.map((social, index) => (
                 <motion.a
@@ -88,7 +83,7 @@ export default function Footer({ locale }: FooterProps) {
                   href={social.href}
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-10 h-10 glass rounded-lg flex items-center justify-center text-white/60 hover:text-primary transition-colors"
+                  className="w-10 h-10 glass rounded-lg flex items-center justify-center text-white/70 hover:text-primary transition-colors"
                   aria-label={social.label}
                 >
                   <social.icon className="w-5 h-5" />
@@ -97,10 +92,10 @@ export default function Footer({ locale }: FooterProps) {
             </div>
           </motion.div>
 
-          {/* Меню */}
+          {/* Menu */}
           <motion.div variants={itemVariants} className="space-y-6">
             <h3 className="text-xl font-semibold text-white">
-              {t.footer.menu}
+              Menu
             </h3>
             
             <ul className="space-y-3">
@@ -110,62 +105,54 @@ export default function Footer({ locale }: FooterProps) {
                     href={item.href}
                     className="text-white/70 hover:text-primary transition-colors"
                   >
-                    {t.nav[item.key as keyof typeof t.nav]}
+                    {item.key.charAt(0).toUpperCase() + item.key.slice(1)}
                   </a>
                 </li>
               ))}
             </ul>
           </motion.div>
 
-          {/* Контакты */}
+          {/* Contact Info */}
           <motion.div variants={itemVariants} className="space-y-6">
             <h3 className="text-xl font-semibold text-white">
-              {t.footer.contacts}
+              Contact
             </h3>
             
             <div className="space-y-4">
-              {/* Адрес */}
-              <div className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                <span className="text-white/70">
-                  {t.footer.address}
-                </span>
+              <div className="flex items-center gap-3">
+                <MapPin className="w-5 h-5 text-primary" />
+                <span className="text-white/70">Yerevan, Armenia</span>
               </div>
               
-              {/* Email */}
               <div className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-primary flex-shrink-0" />
-                <a
-                  href="mailto:info@neetrino.com"
+                <Mail className="w-5 h-5 text-primary" />
+                <a 
+                  href="mailto:info@neetrino.com" 
                   className="text-white/70 hover:text-primary transition-colors"
                 >
-                  {t.footer.email}
+                  info@neetrino.com
                 </a>
               </div>
               
-              {/* Телефон */}
               <div className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-primary flex-shrink-0" />
-                <a
-                  href="tel:+37444343000"
+                <Phone className="w-5 h-5 text-primary" />
+                <a 
+                  href="tel:+37444343000" 
                   className="text-white/70 hover:text-primary transition-colors"
                 >
-                  {t.footer.phone}
+                  +374 44 343 000
                 </a>
               </div>
               
-              {/* Часы работы */}
               <div className="flex items-center gap-3">
-                <Clock className="w-5 h-5 text-primary flex-shrink-0" />
-                <span className="text-white/70">
-                  {t.footer.hours}
-                </span>
+                <Clock className="w-5 h-5 text-primary" />
+                <span className="text-white/70">Mon-Fri: 9:00 - 18:00</span>
               </div>
             </div>
           </motion.div>
         </motion.div>
 
-        {/* Нижняя полоса */}
+        {/* Copyright */}
         <motion.div
           variants={itemVariants}
           initial="hidden"
@@ -174,20 +161,20 @@ export default function Footer({ locale }: FooterProps) {
           className="mt-12 pt-8 border-t border-white/10"
         >
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-white/60 text-sm">
-              {t.footer.copyright}
+            <p className="text-white/50 text-sm">
+              © 2025 Neetrino. All rights reserved.
             </p>
             
-            <div className="flex items-center gap-6 text-sm">
-              <a
-                href="#privacy"
-                className="text-white/60 hover:text-primary transition-colors"
+            <div className="flex items-center gap-6">
+              <a 
+                href="#" 
+                className="text-white/50 hover:text-white/70 text-sm transition-colors"
               >
                 Privacy Policy
               </a>
-              <a
-                href="#terms"
-                className="text-white/60 hover:text-primary transition-colors"
+              <a 
+                href="#" 
+                className="text-white/50 hover:text-white/70 text-sm transition-colors"
               >
                 Terms of Service
               </a>
@@ -195,10 +182,6 @@ export default function Footer({ locale }: FooterProps) {
           </div>
         </motion.div>
       </div>
-
-      {/* Декоративные элементы */}
-      <div className="absolute top-10 left-10 w-32 h-32 border border-primary/5 rounded-full animate-pulse-slow"></div>
-      <div className="absolute bottom-10 right-10 w-24 h-24 border border-accent/5 rounded-full animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
     </footer>
   );
 }

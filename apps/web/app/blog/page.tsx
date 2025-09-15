@@ -1,13 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { type Locale } from '../../lib/i18n';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { Calendar, User, ArrowRight, Tag } from 'lucide-react';
 
 export default function Blog() {
-  const [locale, setLocale] = useState<Locale>('hy');
 
   const posts = [
     {
@@ -49,7 +47,7 @@ export default function Blog() {
 
   return (
     <main className="min-h-screen bg-bg">
-      <Navbar locale={locale} onLocaleChange={setLocale} />
+      <Navbar />
       
       <div className="container mx-auto px-4 py-8">
         {/* Заголовок */}
@@ -167,7 +165,7 @@ export default function Blog() {
         </div>
       </div>
 
-      <Footer locale={locale} />
+      <Footer />
     </main>
   );
 }

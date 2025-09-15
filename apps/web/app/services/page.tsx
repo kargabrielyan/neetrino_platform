@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { type Locale } from '../../lib/i18n';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { 
@@ -16,7 +15,6 @@ import {
 } from 'lucide-react';
 
 export default function Services() {
-  const [locale, setLocale] = useState<Locale>('en');
 
   const services = [
     {
@@ -107,7 +105,7 @@ export default function Services() {
 
   return (
     <main className="min-h-screen bg-bg">
-      <Navbar locale={locale} onLocaleChange={setLocale} />
+      <Navbar />
       
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
@@ -213,7 +211,7 @@ export default function Services() {
         </div>
       </div>
 
-      <Footer locale={locale} />
+      <Footer />
     </main>
   );
 }

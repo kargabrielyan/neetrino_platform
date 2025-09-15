@@ -1,13 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { type Locale } from '../../lib/i18n';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { Users, Target, Award, Lightbulb } from 'lucide-react';
 
 export default function About() {
-  const [locale, setLocale] = useState<Locale>('hy');
 
   const team = [
     {
@@ -52,7 +50,7 @@ export default function About() {
 
   return (
     <main className="min-h-screen bg-bg">
-      <Navbar locale={locale} onLocaleChange={setLocale} />
+      <Navbar />
       
       <div className="container mx-auto px-4 py-8 pt-24">
         {/* Заголовок */}
@@ -157,7 +155,7 @@ export default function About() {
         </section>
       </div>
 
-      <Footer locale={locale} />
+      <Footer />
     </main>
   );
 }
