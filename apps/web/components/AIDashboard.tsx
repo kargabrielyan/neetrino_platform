@@ -111,9 +111,15 @@ export default function AIDashboard() {
                   >
                     <div className="flex items-center justify-between mb-4">
                       <h4 className="text-white font-semibold">{metric.label}</h4>
-                      <span className="text-2xl font-bold text-primary">
+                      <motion.span 
+                        className="text-2xl font-bold text-primary"
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                      >
                         {formatPercentage(metric.value)}
-                      </span>
+                      </motion.span>
                     </div>
                     
                     <div className="w-full bg-white/10 rounded-full h-3 mb-2">

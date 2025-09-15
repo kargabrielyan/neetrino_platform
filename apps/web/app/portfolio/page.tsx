@@ -9,7 +9,7 @@ export default function Portfolio() {
   const [activeCategory, setActiveCategory] = useState('all');
 
   const categories = [
-    { id: 'all', label: 'All Projects' },
+    { id: 'all', label: 'All project' },
     { id: 'web', label: 'Web Development' },
     { id: 'mobile', label: 'Mobile Apps' },
     { id: 'ai', label: 'AI Solutions' },
@@ -56,6 +56,37 @@ export default function Portfolio() {
       liveUrl: 'https://example.com',
       githubUrl: 'https://github.com/example',
     },
+    // Добавляем 3 тестовых демо
+    {
+      id: 5,
+      title: 'Neetrino Demo Platform',
+      description: 'Demo showcase platform with advanced search and filtering',
+      category: 'web',
+      image: '/api/placeholder/400/300',
+      technologies: ['Next.js', 'NestJS', 'PostgreSQL'],
+      liveUrl: 'https://neetrino-demo.com',
+      githubUrl: 'https://github.com/neetrino/demo-platform',
+    },
+    {
+      id: 6,
+      title: 'AI-Powered Analytics Dashboard',
+      description: 'Real-time analytics dashboard with machine learning insights',
+      category: 'ai',
+      image: '/api/placeholder/400/300',
+      technologies: ['React', 'Python', 'TensorFlow'],
+      liveUrl: 'https://analytics-demo.com',
+      githubUrl: 'https://github.com/neetrino/analytics-dashboard',
+    },
+    {
+      id: 7,
+      title: 'Mobile E-Learning App',
+      description: 'Cross-platform mobile app for online education',
+      category: 'mobile',
+      image: '/api/placeholder/400/300',
+      technologies: ['React Native', 'Firebase', 'AI'],
+      liveUrl: 'https://elearning-demo.com',
+      githubUrl: 'https://github.com/neetrino/elearning-app',
+    },
   ];
 
   const filteredProjects = activeCategory === 'all' 
@@ -84,7 +115,7 @@ export default function Portfolio() {
               className={`px-6 py-2 rounded-lg font-medium transition-colors ${
                 activeCategory === category.id
                   ? 'bg-primary text-black'
-                  : 'bg-white/5 text-black hover:text-black hover:bg-white/10'
+                  : 'bg-white text-black hover:bg-white/90'
               }`}
             >
               {category.label}

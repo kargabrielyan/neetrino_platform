@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
-import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react';
+import { Mail, Phone, MapPin, Clock, Send, Facebook, Instagram, Linkedin, MessageCircle } from 'lucide-react';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -110,16 +110,16 @@ export default function Contact() {
               <h3 className="text-white font-semibold mb-4">Follow Us</h3>
               <div className="flex gap-4">
                 <a href="#" className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center hover:bg-primary/20 transition-colors">
-                  <span className="text-white/70 text-sm">FB</span>
+                  <Facebook className="w-5 h-5 text-white/70" />
                 </a>
                 <a href="#" className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center hover:bg-primary/20 transition-colors">
-                  <span className="text-white/70 text-sm">IG</span>
+                  <Instagram className="w-5 h-5 text-white/70" />
                 </a>
                 <a href="#" className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center hover:bg-primary/20 transition-colors">
-                  <span className="text-white/70 text-sm">LI</span>
+                  <Linkedin className="w-5 h-5 text-white/70" />
                 </a>
                 <a href="#" className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center hover:bg-primary/20 transition-colors">
-                  <span className="text-white/70 text-sm">WA</span>
+                  <MessageCircle className="w-5 h-5 text-white/70" />
                 </a>
               </div>
             </div>

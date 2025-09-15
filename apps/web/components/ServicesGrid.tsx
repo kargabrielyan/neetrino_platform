@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import { 
   Globe, 
   Smartphone, 
@@ -16,31 +17,37 @@ const services = [
     icon: Globe,
     title: 'Web Development',
     description: 'Modern web applications using the latest technologies',
+    href: '/services/web-development',
   },
   {
     icon: Smartphone,
     title: 'Mobile App Development',
     description: 'Native and cross-platform mobile applications',
+    href: '/services/mobile-development',
   },
   {
     icon: Brain,
     title: 'AI Integration',
     description: 'Integrate artificial intelligence into your projects',
+    href: '/services/ai-integration',
   },
   {
     icon: TrendingUp,
     title: 'Digital Marketing',
     description: 'Comprehensive digital marketing strategies',
+    href: '/services/digital-marketing',
   },
   {
     icon: Shield,
     title: 'Cybersecurity',
     description: 'Protect your data with security solutions',
+    href: '/services/cybersecurity',
   },
   {
     icon: Cloud,
     title: 'Cloud Solutions',
     description: 'Scalable cloud infrastructure and DevOps',
+    href: '/services/cloud-solutions',
   },
 ];
 
@@ -116,9 +123,17 @@ export default function ServicesGrid() {
               </h3>
 
               {/* Описание */}
-              <p className="text-white/70 leading-relaxed">
+              <p className="text-white/70 leading-relaxed mb-6">
                 {service.description}
               </p>
+
+              {/* Learn More Button */}
+              <Link
+                href={service.href}
+                className="inline-block px-6 py-2 bg-primary text-black rounded-lg font-medium hover:bg-primary/90 transition-colors"
+              >
+                Learn More
+              </Link>
             </motion.div>
           ))}
         </motion.div>
