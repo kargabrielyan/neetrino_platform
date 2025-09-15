@@ -65,14 +65,14 @@ export default function Catalog() {
             
             {/* Фильтры */}
             <div className="flex gap-2">
-              <select className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-black focus:outline-none focus:border-primary/50">
+              <select className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-primary/50">
                 <option value="" className="text-black">All Categories</option>
                 <option value="ecommerce" className="text-black">E-commerce</option>
                 <option value="portfolio" className="text-black">Portfolio</option>
                 <option value="blog" className="text-black">Blog</option>
               </select>
               
-              <select className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-black focus:outline-none focus:border-primary/50">
+              <select className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-primary/50">
                 <option value="" className="text-black">All Vendors</option>
                 <option value="shopify" className="text-black">Shopify</option>
                 <option value="webflow" className="text-black">Webflow</option>

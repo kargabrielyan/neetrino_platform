@@ -109,7 +109,7 @@ export default function Admin() {
                   className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-primary/50"
                 />
               </div>
-              <select className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-black focus:outline-none focus:border-primary/50">
+              <select className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-primary/50">
                 <option value="" className="text-black">All Statuses</option>
                 <option value="active" className="text-black">Active</option>
                 <option value="draft" className="text-black">Drafts</option>
