@@ -1,13 +1,33 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import Link from 'next/link'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Neetrino Platform',
-  description: 'Современная платформа для поиска и просмотра демо-сайтов',
+  title: 'Neetrino - AI-Powered Solutions',
+  description: 'Инновационные AI решения для будущего. Мы создаем технологии будущего, используя искусственный интеллект и машинное обучение.',
+  keywords: 'AI, искусственный интеллект, машинное обучение, нейронные сети, разработка, технологии',
+  authors: [{ name: 'Neetrino Team' }],
+  creator: 'Neetrino',
+  publisher: 'Neetrino',
+  robots: 'index, follow',
+  openGraph: {
+    type: 'website',
+    locale: 'hy_AM',
+    url: 'https://neetrino.com',
+    title: 'Neetrino - AI-Powered Solutions',
+    description: 'Инновационные AI решения для будущего',
+    siteName: 'Neetrino',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Neetrino - AI-Powered Solutions',
+    description: 'Инновационные AI решения для будущего',
+    creator: '@neetrino',
+  },
+  viewport: 'width=device-width, initial-scale=1',
+  themeColor: '#00D1FF',
 }
 
 export default function RootLayout({
@@ -16,38 +36,13 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ru">
+    <html lang="hy" className="dark">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="icon" href="/favicon.ico" />
+      </head>
       <body className={inter.className}>
-        <nav className="bg-white shadow-sm border-b">
-          <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between h-16">
-              <Link href="/" className="text-xl font-bold text-gray-900">
-                Neetrino Platform
-              </Link>
-              <div className="flex space-x-4">
-                <Link 
-                  href="/catalog" 
-                  className="text-gray-600 hover:text-gray-900 transition-colors"
-                >
-                  Каталог
-                </Link>
-                <Link 
-                  href="/admin" 
-                  className="text-gray-600 hover:text-gray-900 transition-colors"
-                >
-                  Админ
-                </Link>
-                <Link 
-                  href="http://localhost:3001/api/docs" 
-                  target="_blank"
-                  className="text-gray-600 hover:text-gray-900 transition-colors"
-                >
-                  API Docs
-                </Link>
-              </div>
-            </div>
-          </div>
-        </nav>
         {children}
       </body>
     </html>

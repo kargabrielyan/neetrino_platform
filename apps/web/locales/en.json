@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "about": "About Us",
+    "programs": "Programs",
+    "portfolio": "Portfolio",
+    "blog": "Blog",
+    "contact": "Contact"
+  },
+  "hero": {
+    "badge": "AI-POWERED SOLUTIONS",
+    "title": "Innovative AI Solutions",
+    "subtitle": "We create future technologies using artificial intelligence and machine learning",
+    "cta_primary": "Get Started",
+    "cta_secondary": "Get Consultation"
+  },
+  "stats": {
+    "ai_models": "AI Models",
+    "neural_networks": "Neural Networks",
+    "data_points": "Data Points",
+    "processing_speed": "Processing Speed"
+  },
+  "services": {
+    "title": "Our Innovative Services",
+    "web_development": "Web Development",
+    "mobile_apps": "Mobile App Development (iOS/Android)",
+    "ai_integration": "AI System Integration",
+    "digital_marketing": "Digital Marketing (SEO, SMM…)",
+    "cybersecurity": "Cybersecurity",
+    "cloud_solutions": "Cloud Solutions (hosting/devops etc.)"
+  },
+  "dashboard": {
+    "title": "AI Dashboard",
+    "subtitle": "Real-time monitoring of our AI systems and machine learning",
+    "neural_networks": "Neural Networks",
+    "data_processing": "Data Processing",
+    "machine_learning": "Machine Learning",
+    "accuracy": "Accuracy",
+    "processing": "Processing",
+    "uptime": "Uptime",
+    "efficiency": "Efficiency"
+  },
+  "pricing": {
+    "title": "Our Pricing Packages",
+    "platform": "Platform",
+    "business": "Business",
+    "premium": "Premium",
+    "recommended": "Recommended",
+    "order": "Order"
+  },
+  "testimonials": {
+    "title": "Our Clients' Reviews"
+  },
+  "footer": {
+    "about": "About Company",
+    "menu": "Menu",
+    "contacts": "Contacts",
+    "address": "Yerevan, Armenia",
+    "email": "info@neetrino.com",
+    "phone": "+374 44 343 000",
+    "hours": "Mon-Fri: 09:00-18:00",
+    "copyright": "© 2025 Neetrino. All rights reserved."
+  }
+}

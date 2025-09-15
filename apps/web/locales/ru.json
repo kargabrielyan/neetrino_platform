@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "home": "Главная",
+    "services": "Услуги",
+    "about": "О нас",
+    "programs": "Программы",
+    "portfolio": "Портфолио",
+    "blog": "Блог",
+    "contact": "Контакты"
+  },
+  "hero": {
+    "badge": "AI-POWERED SOLUTIONS",
+    "title": "Инновационные AI Решения",
+    "subtitle": "Мы создаем технологии будущего, используя искусственный интеллект и машинное обучение",
+    "cta_primary": "Начать сейчас",
+    "cta_secondary": "Получить консультацию"
+  },
+  "stats": {
+    "ai_models": "AI Модели",
+    "neural_networks": "Нейронные сети",
+    "data_points": "Точки данных",
+    "processing_speed": "Скорость обработки"
+  },
+  "services": {
+    "title": "Наши Инновационные Услуги",
+    "web_development": "Разработка веб-сайтов",
+    "mobile_apps": "Разработка приложений (iOS/Android)",
+    "ai_integration": "Интеграция AI систем",
+    "digital_marketing": "Цифровой маркетинг (SEO, SMM…)",
+    "cybersecurity": "Кибербезопасность",
+    "cloud_solutions": "Облачные решения (hosting/devops и др.)"
+  },
+  "dashboard": {
+    "title": "AI Dashboard",
+    "subtitle": "Мониторинг в реальном времени наших AI систем и машинного обучения",
+    "neural_networks": "Neural Networks",
+    "data_processing": "Data Processing",
+    "machine_learning": "Machine Learning",
+    "accuracy": "Точность",
+    "processing": "Обработка",
+    "uptime": "Время работы",
+    "efficiency": "Эффективность"
+  },
+  "pricing": {
+    "title": "Наши Ценовые Пакеты",
+    "platform": "Платформа",
+    "business": "Бизнес",
+    "premium": "Премиум",
+    "recommended": "Рекомендуется",
+    "order": "Заказать"
+  },
+  "testimonials": {
+    "title": "Отзывы наших клиентов"
+  },
+  "footer": {
+    "about": "О компании",
+    "menu": "Меню",
+    "contacts": "Контакты",
+    "address": "Ереван, Армения",
+    "email": "info@neetrino.com",
+    "phone": "+374 44 343 000",
+    "hours": "Пн-Пт: 09:00-18:00",
+    "copyright": "© 2025 Neetrino. Все права защищены."
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "home": "Գլխավոր",
+    "services": "Ծառայություններ",
+    "about": "Մեր Մասին",
+    "programs": "Ծրագրեր",
+    "portfolio": "Պորտֆոլիո",
+    "blog": "Բլոգ",
+    "contact": "Կապ"
+  },
+  "hero": {
+    "badge": "AI-POWERED SOLUTIONS",
+    "title": "Նորարարական AI Լուծումներ",
+    "subtitle": "Մենք ստեղծում ենք ապագայի տեխնոլոգիաները՝ օգտագործելով արհեստական բանականությունը և մեքենայական ուսուցումը",
+    "cta_primary": "Սկսել հիմա",
+    "cta_secondary": "Դիմել Խորհրդատվություն"
+  },
+  "stats": {
+    "ai_models": "AI Models",
+    "neural_networks": "Neural Networks",
+    "data_points": "Data Points",
+    "processing_speed": "Processing Speed"
+  },
+  "services": {
+    "title": "Մեր Ինովացիոն Ծառայությունները",
+    "web_development": "Վեբ Կայքերի Պատրաստում",
+    "mobile_apps": "Հավելվածների Պատրաստում (iOS/Android)",
+    "ai_integration": "AI համակարգերի ինտեգրում",
+    "digital_marketing": "Թվային մարքեթինգ (SEO, SMM…)",
+    "cybersecurity": "Կիբեր անվտանգություն",
+    "cloud_solutions": "Կայք լուծումներ (hosting/devops և այլն)"
+  },
+  "dashboard": {
+    "title": "AI Dashboard",
+    "subtitle": "Իրական ժամանակի մոնիտորինգ մեր AI համակարգերի և մեքենայական ուսուցման",
+    "neural_networks": "Neural Networks",
+    "data_processing": "Data Processing",
+    "machine_learning": "Machine Learning",
+    "accuracy": "Accuracy",
+    "processing": "Processing",
+    "uptime": "Uptime",
+    "efficiency": "Efficiency"
+  },
+  "pricing": {
+    "title": "Մեր Գնային Փաթեթները",
+    "platform": "Պլատֆորմ",
+    "business": "Բիզնես",
+    "premium": "Պրեմիում",
+    "recommended": "Առաջարկվում է",
+    "order": "Պատվիրել"
+  },
+  "testimonials": {
+    "title": "Մեր Հաճախորդների Կարծիքները"
+  },
+  "footer": {
+    "about": "Կազմակերպության մասին",
+    "menu": "Մենյու",
+    "contacts": "Կապ",
+    "address": "Երևան, Հայաստան",
+    "email": "info@neetrino.com",
+    "phone": "+374 44 343 000",
+    "hours": "Երկ-Ուրբ: 09:00-18:00",
+    "copyright": "© 2025 Neetrino. Բոլոր իրավունքները պաշտպանված են։"
+  }
+}
