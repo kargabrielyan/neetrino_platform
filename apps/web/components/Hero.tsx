@@ -2,12 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { ArrowRight, Play } from 'lucide-react';
-import { getTranslations, type Locale } from '../lib/i18n';
 import { formatNumber } from '../lib/format';
-
-interface HeroProps {
-  locale: Locale;
-}
 
 const stats = [
   { value: 50, suffix: '+', label: 'AI Models' },
@@ -16,8 +11,7 @@ const stats = [
   { value: 99.9, suffix: '%', label: 'Processing Speed' },
 ];
 
-export default function Hero({ locale }: HeroProps) {
-  const t = getTranslations(locale);
+export default function Hero() {
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -63,7 +57,7 @@ export default function Hero({ locale }: HeroProps) {
           >
             <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
             <span className="text-sm font-medium text-primary">
-              {t.hero.badge}
+              AI-POWERED SOLUTIONS
             </span>
           </motion.div>
 
@@ -72,7 +66,7 @@ export default function Hero({ locale }: HeroProps) {
             variants={itemVariants}
             className="heading-xl text-rainbow mb-6"
           >
-            {t.hero.title}
+            Future Technologies with Artificial Intelligence
           </motion.h1>
 
           {/* Подзаголовок */}
@@ -80,7 +74,7 @@ export default function Hero({ locale }: HeroProps) {
             variants={itemVariants}
             className="text-xl md:text-2xl text-white/80 mb-12 max-w-4xl mx-auto leading-relaxed"
           >
-            {t.hero.subtitle}
+            We create future technologies using artificial intelligence and machine learning.
           </motion.p>
 
           {/* Кнопки */}
@@ -93,7 +87,7 @@ export default function Hero({ locale }: HeroProps) {
               whileTap={{ scale: 0.95 }}
               className="btn-primary flex items-center gap-2 group"
             >
-              {t.hero.cta_primary}
+              Get Started
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </motion.button>
 
@@ -103,7 +97,7 @@ export default function Hero({ locale }: HeroProps) {
               className="btn-outline flex items-center gap-2 group"
             >
               <Play className="w-4 h-4 group-hover:scale-110 transition-transform" />
-              {t.hero.cta_secondary}
+              Request Consultation
             </motion.button>
           </motion.div>
 

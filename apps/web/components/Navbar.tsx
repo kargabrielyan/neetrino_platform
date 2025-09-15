@@ -2,37 +2,23 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Globe, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { getTranslations, type Locale } from '../lib/i18n';
 
-interface NavbarProps {
-  locale: Locale;
-  onLocaleChange: (locale: Locale) => void;
-}
-
-export default function Navbar({ locale, onLocaleChange }: NavbarProps) {
+export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
-  const t = getTranslations(locale);
-
   const menuItems = [
-    { key: 'home', href: '/' },
-    { key: 'services', href: '/services' },
-    { key: 'about', href: '/about' },
-    { key: 'programs', href: '/catalog' },
-    { key: 'portfolio', href: '/portfolio' },
-    { key: 'blog', href: '/blog' },
-    { key: 'contact', href: '/contact' },
-  ];
-
-  const languages = [
-    { code: 'hy' as Locale, name: 'Հայ', flag: '🇦🇲' },
-    { code: 'ru' as Locale, name: 'RU', flag: '🇷🇺' },
-    { code: 'en' as Locale, name: 'EN', flag: '🇺🇸' },
+    { key: 'home', label: 'Home', href: '/' },
+    { key: 'services', label: 'Services', href: '/services' },
+    { key: 'about', label: 'About', href: '/about' },
+    { key: 'programs', label: 'Catalog', href: '/catalog' },
+    { key: 'portfolio', label: 'Portfolio', href: '/portfolio' },
+    { key: 'blog', label: 'Blog', href: '/blog' },
+    { key: 'contact', label: 'Contact', href: '/contact' },
   ];
 
   useEffect(() => {
@@ -95,7 +81,7 @@ export default function Navbar({ locale, onLocaleChange }: NavbarProps) {
                       : 'text-white/80 hover:text-white'
                   }`}
                 >
-                  {t.nav[item.key as keyof typeof t.nav]}
+                  {item.label}
                   
                   {/* Анимированная подчеркивающая линия */}
                   {isActivePage(item.href) && (
@@ -111,37 +97,8 @@ export default function Navbar({ locale, onLocaleChange }: NavbarProps) {
             ))}
           </div>
 
-          {/* Языковой переключатель и мобильное меню */}
+          {/* Мобильное меню */}
           <div className="flex items-center gap-4">
-            {/* Языковой переключатель */}
-            <div className="relative group">
-              <button className="flex items-center gap-2 text-white/80 hover:text-white transition-colors">
-                <Globe className="w-4 h-4" />
-                <span className="text-sm font-medium">
-                  {languages.find(lang => lang.code === locale)?.flag}
-                </span>
-              </button>
-              
-              {/* Выпадающий список языков */}
-              <div className="absolute right-0 top-full mt-2 w-32 glass rounded-lg border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                {languages.map((lang) => (
-                  <button
-                    key={lang.code}
-                    onClick={() => onLocaleChange(lang.code)}
-                    className={`w-full px-3 py-2 text-left text-sm transition-colors first:rounded-t-lg last:rounded-b-lg ${
-                      locale === lang.code
-                        ? 'text-primary bg-primary/10'
-                        : 'text-white/80 hover:text-white hover:bg-white/5'
-                    }`}
-                  >
-                    <span className="mr-2">{lang.flag}</span>
-                    {lang.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Мобильное меню */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="md:hidden text-white/80 hover:text-white transition-colors"
@@ -173,7 +130,7 @@ export default function Navbar({ locale, onLocaleChange }: NavbarProps) {
                     : 'text-white/80 hover:text-white hover:bg-white/5'
                 }`}
               >
-                {t.nav[item.key as keyof typeof t.nav]}
+                {item.label}
               </Link>
             ))}
           </div>
