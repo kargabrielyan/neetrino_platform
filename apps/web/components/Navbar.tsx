@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Globe, Menu, X } from 'lucide-react';
+import Link from 'next/link';
 import { getTranslations, type Locale } from '../lib/i18n';
 
 interface NavbarProps {
@@ -18,13 +19,13 @@ export default function Navbar({ locale, onLocaleChange }: NavbarProps) {
   const t = getTranslations(locale);
 
   const menuItems = [
-    { key: 'home', href: '#home' },
+    { key: 'home', href: '/' },
     { key: 'services', href: '#services' },
-    { key: 'about', href: '#about' },
-    { key: 'programs', href: '#programs' },
-    { key: 'portfolio', href: '#portfolio' },
-    { key: 'blog', href: '#blog' },
-    { key: 'contact', href: '#contact' },
+    { key: 'about', href: '/about' },
+    { key: 'programs', href: '/catalog' },
+    { key: 'portfolio', href: '/portfolio' },
+    { key: 'blog', href: '/blog' },
+    { key: 'contact', href: '/contact' },
   ];
 
   const languages = [
@@ -43,8 +44,12 @@ export default function Navbar({ locale, onLocaleChange }: NavbarProps) {
   }, []);
 
   const handleNavClick = (href: string) => {
-    const section = href.replace('#', '');
-    setActiveSection(section);
+    if (href.startsWith('#')) {
+      const section = href.replace('#', '');
+      setActiveSection(section);
+    } else {
+      setActiveSection(href);
+    }
     setIsMobileMenuOpen(false);
   };
 
@@ -75,29 +80,32 @@ export default function Navbar({ locale, onLocaleChange }: NavbarProps) {
           {/* Десктопное меню */}
           <div className="hidden md:flex items-center gap-8">
             {menuItems.map((item) => (
-              <motion.a
+              <motion.div
                 key={item.key}
-                href={item.href}
-                onClick={() => handleNavClick(item.href)}
-                className={`relative text-sm font-medium transition-colors duration-300 ${
-                  activeSection === item.key
-                    ? 'text-primary'
-                    : 'text-white/80 hover:text-white'
-                }`}
                 whileHover={{ y: -2 }}
               >
-                {t.nav[item.key as keyof typeof t.nav]}
-                
-                {/* Анимированная подчеркивающая линия */}
-                {activeSection === item.key && (
-                  <motion.div
-                    layoutId="activeTab"
-                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary"
-                    initial={false}
-                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                  />
-                )}
-              </motion.a>
+                <Link
+                  href={item.href}
+                  onClick={() => handleNavClick(item.href)}
+                  className={`relative text-sm font-medium transition-colors duration-300 ${
+                    activeSection === item.key
+                      ? 'text-primary'
+                      : 'text-white/80 hover:text-white'
+                  }`}
+                >
+                  {t.nav[item.key as keyof typeof t.nav]}
+                  
+                  {/* Анимированная подчеркивающая линия */}
+                  {activeSection === item.key && (
+                    <motion.div
+                      layoutId="activeTab"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary"
+                      initial={false}
+                      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                    />
+                  )}
+                </Link>
+              </motion.div>
             ))}
           </div>
 
@@ -153,7 +161,7 @@ export default function Navbar({ locale, onLocaleChange }: NavbarProps) {
         >
           <div className="py-4 space-y-2">
             {menuItems.map((item) => (
-              <a
+              <Link
                 key={item.key}
                 href={item.href}
                 onClick={() => handleNavClick(item.href)}
@@ -164,7 +172,7 @@ export default function Navbar({ locale, onLocaleChange }: NavbarProps) {
                 }`}
               >
                 {t.nav[item.key as keyof typeof t.nav]}
-              </a>
+              </Link>
             ))}
           </div>
         </motion.div>
