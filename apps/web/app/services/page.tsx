@@ -107,7 +107,7 @@ export default function Services() {
     <main className="min-h-screen bg-bg">
       <Navbar />
       
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 pt-24">
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold text-white mb-4">Our Services</h1>

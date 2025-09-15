@@ -84,7 +84,7 @@ export default function Portfolio() {
               className={`px-6 py-2 rounded-lg font-medium transition-colors ${
                 activeCategory === category.id
                   ? 'bg-primary text-black'
-                  : 'bg-white/5 text-white/70 hover:text-white hover:bg-white/10'
+                  : 'bg-white/5 text-black hover:text-black hover:bg-white/10'
               }`}
             >
               {category.label}
