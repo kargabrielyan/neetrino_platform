@@ -30,23 +30,23 @@ export default function About() {
   const values = [
     {
       icon: Target,
-      title: 'Целеустремленность',
-      description: 'Мы всегда стремимся к достижению лучших результатов для наших клиентов',
+      title: 'Determination',
+      description: 'We always strive to achieve the best results for our clients',
     },
     {
       icon: Lightbulb,
-      title: 'Инновации',
-      description: 'Используем передовые технологии и креативные решения',
+      title: 'Innovation',
+      description: 'We use cutting-edge technologies and creative solutions',
     },
     {
       icon: Users,
-      title: 'Команда',
-      description: 'Наша команда - это наша сила и основа успеха',
+      title: 'Team',
+      description: 'Our team is our strength and the foundation of success',
     },
     {
       icon: Award,
-      title: 'Качество',
-      description: 'Обеспечиваем высокое качество во всех наших проектах',
+      title: 'Quality',
+      description: 'We ensure high quality in all our projects',
     },
   ];
 
@@ -54,13 +54,13 @@ export default function About() {
     <main className="min-h-screen bg-bg">
       <Navbar locale={locale} onLocaleChange={setLocale} />
       
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 pt-24">
         {/* Заголовок */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-white mb-4">О компании</h1>
+          <h1 className="text-4xl font-bold text-white mb-4">About Company</h1>
           <p className="text-xl text-white/70 max-w-3xl mx-auto">
-            Neetrino - это инновационная IT компания, специализирующаяся на создании 
-            современных веб-решений с использованием искусственного интеллекта
+            Neetrino is an innovative IT company specializing in creating 
+            modern web solutions using artificial intelligence
           </p>
         </div>
 
@@ -68,52 +68,52 @@ export default function About() {
         <section className="mb-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-2xl font-bold text-white mb-6">Наша история</h2>
+              <h2 className="text-2xl font-bold text-white mb-6">Our Story</h2>
               <div className="space-y-4 text-white/80 leading-relaxed">
                 <p>
-                  Основанная в 2020 году, Neetrino быстро стала ведущей IT компанией 
-                  в Армении. Мы специализируемся на разработке веб-приложений, 
-                  мобильных приложений и интеграции AI решений.
+                  Founded in 2020, Neetrino quickly became a leading IT company 
+                  in Armenia. We specialize in web application development, 
+                  mobile applications, and AI solution integration.
                 </p>
                 <p>
-                  Наша команда состоит из опытных разработчиков, дизайнеров и 
-                  специалистов по машинному обучению, которые работают вместе 
-                  для создания инновационных продуктов.
+                  Our team consists of experienced developers, designers, and 
+                  machine learning specialists who work together 
+                  to create innovative products.
                 </p>
                 <p>
-                  Мы гордимся тем, что помогаем нашим клиентам достигать их целей 
-                  с помощью передовых технологий и креативных решений.
+                  We are proud to help our clients achieve their goals 
+                  with cutting-edge technologies and creative solutions.
                 </p>
               </div>
             </div>
             
             <div className="bg-white/5 border border-white/10 rounded-lg p-8">
-              <h3 className="text-xl font-semibold text-white mb-4">Наши достижения</h3>
+              <h3 className="text-xl font-semibold text-white mb-4">Our Achievements</h3>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <span className="text-white/80">50+ успешных проектов</span>
+                  <span className="text-white/80">50+ successful projects</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <span className="text-white/80">30+ довольных клиентов</span>
+                  <span className="text-white/80">30+ satisfied clients</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <span className="text-white/80">5 лет опыта</span>
+                  <span className="text-white/80">5 years of experience</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <span className="text-white/80">100% качество</span>
+                  <span className="text-white/80">100% quality</span>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Ценности */}
+        {/* Values */}
         <section className="mb-16">
-          <h2 className="text-2xl font-bold text-white mb-8 text-center">Наши ценности</h2>
+          <h2 className="text-2xl font-bold text-white mb-8 text-center">Our Values</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {values.map((value, index) => (
               <div key={index} className="bg-white/5 border border-white/10 rounded-lg p-6 text-center">
@@ -127,9 +127,9 @@ export default function About() {
           </div>
         </section>
 
-        {/* Команда */}
+        {/* Team */}
         <section className="mb-16">
-          <h2 className="text-2xl font-bold text-white mb-8 text-center">Наша команда</h2>
+          <h2 className="text-2xl font-bold text-white mb-8 text-center">Our Team</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {team.map((member, index) => (
               <div key={index} className="bg-white/5 border border-white/10 rounded-lg p-6 text-center">
@@ -146,12 +146,12 @@ export default function About() {
         {/* CTA */}
         <section className="text-center">
           <div className="bg-white/5 border border-white/10 rounded-lg p-8">
-            <h2 className="text-2xl font-bold text-white mb-4">Готовы начать проект?</h2>
+            <h2 className="text-2xl font-bold text-white mb-4">Ready to Start Your Project?</h2>
             <p className="text-white/70 mb-6">
-              Свяжитесь с нами для обсуждения вашего проекта
+              Contact us to discuss your project
             </p>
             <button className="px-6 py-3 bg-primary text-black rounded-lg font-semibold hover:bg-primary/90 transition-colors">
-              Связаться с нами
+              Contact Us
             </button>
           </div>
         </section>

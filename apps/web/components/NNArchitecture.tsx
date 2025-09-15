@@ -38,140 +38,140 @@ export default function NNArchitecture() {
   };
 
   return (
-    <div className="w-full h-80 flex items-center justify-center">
+    <div className="w-full h-96 flex items-center justify-center">
       <motion.svg
         variants={containerVariants}
         initial="hidden"
         animate="visible"
         width="100%"
         height="100%"
-        viewBox="0 0 400 300"
+        viewBox="0 0 500 400"
         className="overflow-visible"
       >
         {/* Соединительные линии */}
         <motion.path
           variants={lineVariants}
-          d="M 50 150 L 120 100"
+          d="M 80 200 L 150 120"
           stroke="#00D1FF"
-          strokeWidth="2"
+          strokeWidth="3"
           fill="none"
-          opacity="0.6"
+          opacity="0.7"
         />
         <motion.path
           variants={lineVariants}
-          d="M 50 150 L 120 150"
+          d="M 80 200 L 150 200"
           stroke="#00D1FF"
-          strokeWidth="2"
+          strokeWidth="3"
           fill="none"
-          opacity="0.6"
+          opacity="0.7"
         />
         <motion.path
           variants={lineVariants}
-          d="M 50 150 L 120 200"
+          d="M 80 200 L 150 280"
           stroke="#00D1FF"
-          strokeWidth="2"
+          strokeWidth="3"
           fill="none"
-          opacity="0.6"
-        />
-        
-        <motion.path
-          variants={lineVariants}
-          d="M 180 100 L 250 100"
-          stroke="#00D1FF"
-          strokeWidth="2"
-          fill="none"
-          opacity="0.6"
-        />
-        <motion.path
-          variants={lineVariants}
-          d="M 180 100 L 250 150"
-          stroke="#00D1FF"
-          strokeWidth="2"
-          fill="none"
-          opacity="0.6"
-        />
-        <motion.path
-          variants={lineVariants}
-          d="M 180 150 L 250 100"
-          stroke="#00D1FF"
-          strokeWidth="2"
-          fill="none"
-          opacity="0.6"
-        />
-        <motion.path
-          variants={lineVariants}
-          d="M 180 150 L 250 150"
-          stroke="#00D1FF"
-          strokeWidth="2"
-          fill="none"
-          opacity="0.6"
-        />
-        <motion.path
-          variants={lineVariants}
-          d="M 180 150 L 250 200"
-          stroke="#00D1FF"
-          strokeWidth="2"
-          fill="none"
-          opacity="0.6"
-        />
-        <motion.path
-          variants={lineVariants}
-          d="M 180 200 L 250 150"
-          stroke="#00D1FF"
-          strokeWidth="2"
-          fill="none"
-          opacity="0.6"
-        />
-        <motion.path
-          variants={lineVariants}
-          d="M 180 200 L 250 200"
-          stroke="#00D1FF"
-          strokeWidth="2"
-          fill="none"
-          opacity="0.6"
+          opacity="0.7"
         />
         
         <motion.path
           variants={lineVariants}
-          d="M 320 100 L 350 150"
+          d="M 220 120 L 290 120"
           stroke="#00D1FF"
-          strokeWidth="2"
+          strokeWidth="3"
           fill="none"
-          opacity="0.6"
+          opacity="0.7"
         />
         <motion.path
           variants={lineVariants}
-          d="M 320 150 L 350 150"
+          d="M 220 120 L 290 200"
           stroke="#00D1FF"
-          strokeWidth="2"
+          strokeWidth="3"
           fill="none"
-          opacity="0.6"
+          opacity="0.7"
         />
         <motion.path
           variants={lineVariants}
-          d="M 320 200 L 350 150"
+          d="M 220 200 L 290 120"
           stroke="#00D1FF"
-          strokeWidth="2"
+          strokeWidth="3"
           fill="none"
-          opacity="0.6"
+          opacity="0.7"
+        />
+        <motion.path
+          variants={lineVariants}
+          d="M 220 200 L 290 200"
+          stroke="#00D1FF"
+          strokeWidth="3"
+          fill="none"
+          opacity="0.7"
+        />
+        <motion.path
+          variants={lineVariants}
+          d="M 220 200 L 290 280"
+          stroke="#00D1FF"
+          strokeWidth="3"
+          fill="none"
+          opacity="0.7"
+        />
+        <motion.path
+          variants={lineVariants}
+          d="M 220 280 L 290 200"
+          stroke="#00D1FF"
+          strokeWidth="3"
+          fill="none"
+          opacity="0.7"
+        />
+        <motion.path
+          variants={lineVariants}
+          d="M 220 280 L 290 280"
+          stroke="#00D1FF"
+          strokeWidth="3"
+          fill="none"
+          opacity="0.7"
+        />
+        
+        <motion.path
+          variants={lineVariants}
+          d="M 360 120 L 420 200"
+          stroke="#00D1FF"
+          strokeWidth="3"
+          fill="none"
+          opacity="0.7"
+        />
+        <motion.path
+          variants={lineVariants}
+          d="M 360 200 L 420 200"
+          stroke="#00D1FF"
+          strokeWidth="3"
+          fill="none"
+          opacity="0.7"
+        />
+        <motion.path
+          variants={lineVariants}
+          d="M 360 280 L 420 200"
+          stroke="#00D1FF"
+          strokeWidth="3"
+          fill="none"
+          opacity="0.7"
         />
 
         {/* Входной слой */}
         <motion.circle
           variants={nodeVariants}
-          cx="50"
-          cy="150"
-          r="20"
-          fill="rgba(0, 209, 255, 0.2)"
+          cx="80"
+          cy="200"
+          r="25"
+          fill="rgba(0, 209, 255, 0.3)"
           stroke="#00D1FF"
-          strokeWidth="2"
+          strokeWidth="3"
         />
         <motion.text
           variants={nodeVariants}
-          x="50"
-          y="155"
+          x="80"
+          y="205"
           textAnchor="middle"
-          className="fill-white text-sm font-mono"
+          className="fill-white text-sm font-mono font-semibold"
         >
           Input
         </motion.text>
@@ -179,106 +179,106 @@ export default function NNArchitecture() {
         {/* Скрытый слой 1 */}
         <motion.circle
           variants={nodeVariants}
-          cx="120"
-          cy="100"
-          r="15"
-          fill="rgba(255, 154, 62, 0.2)"
+          cx="150"
+          cy="120"
+          r="18"
+          fill="rgba(255, 154, 62, 0.3)"
           stroke="#FF9A3E"
-          strokeWidth="2"
+          strokeWidth="3"
         />
         <motion.circle
           variants={nodeVariants}
-          cx="120"
-          cy="150"
-          r="15"
-          fill="rgba(255, 154, 62, 0.2)"
-          stroke="#FF9A3E"
-          strokeWidth="2"
-        />
-        <motion.circle
-          variants={nodeVariants}
-          cx="120"
+          cx="150"
           cy="200"
-          r="15"
-          fill="rgba(255, 154, 62, 0.2)"
+          r="18"
+          fill="rgba(255, 154, 62, 0.3)"
           stroke="#FF9A3E"
-          strokeWidth="2"
+          strokeWidth="3"
+        />
+        <motion.circle
+          variants={nodeVariants}
+          cx="150"
+          cy="280"
+          r="18"
+          fill="rgba(255, 154, 62, 0.3)"
+          stroke="#FF9A3E"
+          strokeWidth="3"
         />
 
         {/* Скрытый слой 2 */}
         <motion.circle
           variants={nodeVariants}
-          cx="180"
-          cy="100"
-          r="15"
-          fill="rgba(0, 209, 255, 0.2)"
+          cx="220"
+          cy="120"
+          r="18"
+          fill="rgba(0, 209, 255, 0.3)"
           stroke="#00D1FF"
-          strokeWidth="2"
+          strokeWidth="3"
         />
         <motion.circle
           variants={nodeVariants}
-          cx="180"
-          cy="150"
-          r="15"
-          fill="rgba(0, 209, 255, 0.2)"
-          stroke="#00D1FF"
-          strokeWidth="2"
-        />
-        <motion.circle
-          variants={nodeVariants}
-          cx="180"
+          cx="220"
           cy="200"
-          r="15"
-          fill="rgba(0, 209, 255, 0.2)"
+          r="18"
+          fill="rgba(0, 209, 255, 0.3)"
           stroke="#00D1FF"
-          strokeWidth="2"
+          strokeWidth="3"
+        />
+        <motion.circle
+          variants={nodeVariants}
+          cx="220"
+          cy="280"
+          r="18"
+          fill="rgba(0, 209, 255, 0.3)"
+          stroke="#00D1FF"
+          strokeWidth="3"
         />
 
         {/* Скрытый слой 3 */}
         <motion.circle
           variants={nodeVariants}
-          cx="250"
-          cy="100"
-          r="15"
-          fill="rgba(255, 154, 62, 0.2)"
+          cx="290"
+          cy="120"
+          r="18"
+          fill="rgba(255, 154, 62, 0.3)"
           stroke="#FF9A3E"
-          strokeWidth="2"
+          strokeWidth="3"
         />
         <motion.circle
           variants={nodeVariants}
-          cx="250"
-          cy="150"
-          r="15"
-          fill="rgba(255, 154, 62, 0.2)"
-          stroke="#FF9A3E"
-          strokeWidth="2"
-        />
-        <motion.circle
-          variants={nodeVariants}
-          cx="250"
+          cx="290"
           cy="200"
-          r="15"
-          fill="rgba(255, 154, 62, 0.2)"
+          r="18"
+          fill="rgba(255, 154, 62, 0.3)"
           stroke="#FF9A3E"
-          strokeWidth="2"
+          strokeWidth="3"
+        />
+        <motion.circle
+          variants={nodeVariants}
+          cx="290"
+          cy="280"
+          r="18"
+          fill="rgba(255, 154, 62, 0.3)"
+          stroke="#FF9A3E"
+          strokeWidth="3"
         />
 
         {/* Выходной слой */}
         <motion.circle
           variants={nodeVariants}
-          cx="350"
-          cy="150"
-          r="20"
-          fill="rgba(0, 209, 255, 0.2)"
+          cx="420"
+          cy="200"
+          r="25"
+          fill="rgba(0, 209, 255, 0.3)"
           stroke="#00D1FF"
-          strokeWidth="2"
+          strokeWidth="3"
         />
         <motion.text
           variants={nodeVariants}
-          x="350"
-          y="155"
+          x="420"
+          y="205"
           textAnchor="middle"
-          className="fill-white text-sm font-mono"
+          className="fill-white text-sm font-mono font-semibold"
         >
           Output
         </motion.text>
@@ -286,8 +286,8 @@ export default function NNArchitecture() {
         {/* Подписи слоев */}
         <motion.text
           variants={nodeVariants}
-          x="50"
-          y="190"
+          x="80"
+          y="240"
           textAnchor="middle"
           className="fill-white/60 text-xs font-mono"
         >
@@ -296,8 +296,8 @@ export default function NNArchitecture() {
         
         <motion.text
           variants={nodeVariants}
-          x="120"
-          y="230"
+          x="150"
+          y="310"
           textAnchor="middle"
           className="fill-white/60 text-xs font-mono"
         >
@@ -306,8 +306,8 @@ export default function NNArchitecture() {
         
         <motion.text
           variants={nodeVariants}
-          x="180"
-          y="230"
+          x="220"
+          y="310"
           textAnchor="middle"
           className="fill-white/60 text-xs font-mono"
         >
@@ -316,8 +316,8 @@ export default function NNArchitecture() {
         
         <motion.text
           variants={nodeVariants}
-          x="250"
-          y="230"
+          x="290"
+          y="310"
           textAnchor="middle"
           className="fill-white/60 text-xs font-mono"
         >
@@ -326,8 +326,8 @@ export default function NNArchitecture() {
         
         <motion.text
           variants={nodeVariants}
-          x="350"
-          y="190"
+          x="420"
+          y="240"
           textAnchor="middle"
           className="fill-white/60 text-xs font-mono"
         >
@@ -337,9 +337,9 @@ export default function NNArchitecture() {
         {/* Анимированные точки на линиях */}
         <motion.circle
           variants={nodeVariants}
-          cx="85"
-          cy="125"
-          r="2"
+          cx="115"
+          cy="160"
+          r="3"
           fill="#00D1FF"
           opacity="0.8"
         >
@@ -353,9 +353,9 @@ export default function NNArchitecture() {
         
         <motion.circle
           variants={nodeVariants}
-          cx="150"
-          cy="125"
-          r="2"
+          cx="185"
+          cy="160"
+          r="3"
           fill="#FF9A3E"
           opacity="0.8"
         >
@@ -369,9 +369,9 @@ export default function NNArchitecture() {
         
         <motion.circle
           variants={nodeVariants}
-          cx="285"
-          cy="125"
-          r="2"
+          cx="355"
+          cy="160"
+          r="3"
           fill="#00D1FF"
           opacity="0.8"
         >

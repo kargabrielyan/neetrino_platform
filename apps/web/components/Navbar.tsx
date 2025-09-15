@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Globe, Menu, X } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { getTranslations, type Locale } from '../lib/i18n';
 
 interface NavbarProps {
@@ -14,13 +15,13 @@ interface NavbarProps {
 export default function Navbar({ locale, onLocaleChange }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('home');
+  const pathname = usePathname();
 
   const t = getTranslations(locale);
 
   const menuItems = [
     { key: 'home', href: '/' },
-    { key: 'services', href: '#services' },
+    { key: 'services', href: '/services' },
     { key: 'about', href: '/about' },
     { key: 'programs', href: '/catalog' },
     { key: 'portfolio', href: '/portfolio' },
@@ -43,14 +44,15 @@ export default function Navbar({ locale, onLocaleChange }: NavbarProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleNavClick = (href: string) => {
-    if (href.startsWith('#')) {
-      const section = href.replace('#', '');
-      setActiveSection(section);
-    } else {
-      setActiveSection(href);
-    }
+  const handleNavClick = () => {
     setIsMobileMenuOpen(false);
+  };
+
+  const isActivePage = (href: string) => {
+    if (href === '/') {
+      return pathname === '/';
+    }
+    return pathname.startsWith(href);
   };
 
   return (
@@ -86,9 +88,9 @@ export default function Navbar({ locale, onLocaleChange }: NavbarProps) {
               >
                 <Link
                   href={item.href}
-                  onClick={() => handleNavClick(item.href)}
+                  onClick={handleNavClick}
                   className={`relative text-sm font-medium transition-colors duration-300 ${
-                    activeSection === item.key
+                    isActivePage(item.href)
                       ? 'text-primary'
                       : 'text-white/80 hover:text-white'
                   }`}
@@ -96,7 +98,7 @@ export default function Navbar({ locale, onLocaleChange }: NavbarProps) {
                   {t.nav[item.key as keyof typeof t.nav]}
                   
                   {/* Анимированная подчеркивающая линия */}
-                  {activeSection === item.key && (
+                  {isActivePage(item.href) && (
                     <motion.div
                       layoutId="activeTab"
                       className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary"
@@ -164,9 +166,9 @@ export default function Navbar({ locale, onLocaleChange }: NavbarProps) {
               <Link
                 key={item.key}
                 href={item.href}
-                onClick={() => handleNavClick(item.href)}
+                onClick={handleNavClick}
                 className={`block px-4 py-2 text-sm font-medium transition-colors rounded-lg ${
-                  activeSection === item.key
+                  isActivePage(item.href)
                     ? 'text-primary bg-primary/10'
                     : 'text-white/80 hover:text-white hover:bg-white/5'
                 }`}
