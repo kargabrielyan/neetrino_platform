@@ -33,16 +33,16 @@ export default function Contact() {
       <div className="container mx-auto px-4 py-8">
         {/* Заголовок */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">Свяжитесь с нами</h1>
+          <h1 className="text-4xl font-bold text-white mb-4">Contact Us</h1>
           <p className="text-xl text-white/70 max-w-2xl mx-auto">
-            Готовы начать проект? Давайте обсудим ваши идеи и создадим что-то удивительное
+            Ready to start a project? Let's discuss your ideas and create something amazing
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Контактная информация */}
           <div>
-            <h2 className="text-2xl font-bold text-white mb-6">Контактная информация</h2>
+            <h2 className="text-2xl font-bold text-white mb-6">Contact Information</h2>
             
             <div className="space-y-6">
               {/* Адрес */}
@@ -51,10 +51,10 @@ export default function Contact() {
                   <MapPin className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold mb-1">Адрес</h3>
+                  <h3 className="text-white font-semibold mb-1">Address</h3>
                   <p className="text-white/70">
-                    Ереван, Армения<br />
-                    ул. Примерная, 123
+                    Yerevan, Armenia<br />
+                    Example Street, 123
                   </p>
                 </div>
               </div>
@@ -65,7 +65,7 @@ export default function Contact() {
                   <Phone className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold mb-1">Телефон</h3>
+                  <h3 className="text-white font-semibold mb-1">Phone</h3>
                   <p className="text-white/70">
                     <a href="tel:+37444343000" className="hover:text-primary transition-colors">
                       +374 44 343 000
@@ -95,11 +95,11 @@ export default function Contact() {
                   <Clock className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold mb-1">Часы работы</h3>
+                  <h3 className="text-white font-semibold mb-1">Working Hours</h3>
                   <p className="text-white/70">
-                    Понедельник - Пятница: 09:00 - 18:00<br />
-                    Суббота: 10:00 - 16:00<br />
-                    Воскресенье: Выходной
+                    Monday - Friday: 09:00 - 18:00<br />
+                    Saturday: 10:00 - 16:00<br />
+                    Sunday: Closed
                   </p>
                 </div>
               </div>
@@ -107,7 +107,7 @@ export default function Contact() {
 
             {/* Социальные сети */}
             <div className="mt-8">
-              <h3 className="text-white font-semibold mb-4">Мы в социальных сетях</h3>
+              <h3 className="text-white font-semibold mb-4">Follow Us</h3>
               <div className="flex gap-4">
                 <a href="#" className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center hover:bg-primary/20 transition-colors">
                   <span className="text-white/70 text-sm">FB</span>
@@ -127,13 +127,13 @@ export default function Contact() {
 
           {/* Форма обратной связи */}
           <div>
-            <h2 className="text-2xl font-bold text-white mb-6">Напишите нам</h2>
+            <h2 className="text-2xl font-bold text-white mb-6">Send us a Message</h2>
             
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="name" className="block text-white/70 text-sm mb-2">
-                    Имя *
+                    Name *
                   </label>
                   <input
                     type="text"
@@ -143,7 +143,7 @@ export default function Contact() {
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-primary/50"
-                    placeholder="Ваше имя"
+                    placeholder="Your name"
                   />
                 </div>
                 
@@ -166,7 +166,7 @@ export default function Contact() {
 
               <div>
                 <label htmlFor="subject" className="block text-white/70 text-sm mb-2">
-                  Тема *
+                  Subject *
                 </label>
                 <input
                   type="text"
@@ -176,13 +176,13 @@ export default function Contact() {
                   onChange={handleChange}
                   required
                   className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-primary/50"
-                  placeholder="Тема сообщения"
+                  placeholder="Message subject"
                 />
               </div>
 
               <div>
                 <label htmlFor="message" className="block text-white/70 text-sm mb-2">
-                  Сообщение *
+                  Message *
                 </label>
                 <textarea
                   id="message"
@@ -192,7 +192,7 @@ export default function Contact() {
                   required
                   rows={6}
                   className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-primary/50 resize-none"
-                  placeholder="Расскажите о вашем проекте..."
+                  placeholder="Tell us about your project..."
                 />
               </div>
 
@@ -201,7 +201,7 @@ export default function Contact() {
                 className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-black rounded-lg font-semibold hover:bg-primary/90 transition-colors"
               >
                 <Send className="w-4 h-4" />
-                Отправить сообщение
+                Send Message
               </button>
             </form>
           </div>
@@ -209,9 +209,9 @@ export default function Contact() {
 
         {/* Карта (заглушка) */}
         <div className="mt-16">
-          <h2 className="text-2xl font-bold text-white mb-6 text-center">Как нас найти</h2>
+          <h2 className="text-2xl font-bold text-white mb-6 text-center">Find Us</h2>
           <div className="bg-white/5 border border-white/10 rounded-lg h-64 flex items-center justify-center">
-            <span className="text-white/50">Карта будет здесь</span>
+            <span className="text-white/50">Map will be here</span>
           </div>
         </div>
       </div>

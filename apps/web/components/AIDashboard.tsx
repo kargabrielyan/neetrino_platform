@@ -1,5 +1,6 @@
 'use client';
 
+// Updated: Removed all translation references
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Activity, Database, Brain, TrendingUp } from 'lucide-react';

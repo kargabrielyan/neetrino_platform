@@ -9,17 +9,17 @@ export default function Portfolio() {
   const [activeCategory, setActiveCategory] = useState('all');
 
   const categories = [
-    { id: 'all', label: 'Все проекты' },
-    { id: 'web', label: 'Веб-разработка' },
-    { id: 'mobile', label: 'Мобильные приложения' },
-    { id: 'ai', label: 'AI решения' },
+    { id: 'all', label: 'All Projects' },
+    { id: 'web', label: 'Web Development' },
+    { id: 'mobile', label: 'Mobile Apps' },
+    { id: 'ai', label: 'AI Solutions' },
   ];
 
   const projects = [
     {
       id: 1,
       title: 'E-commerce Platform',
-      description: 'Современная платформа для онлайн-торговли с интеграцией AI',
+      description: 'Modern e-commerce platform with AI integration',
       category: 'web',
       image: '/api/placeholder/400/300',
       technologies: ['React', 'Node.js', 'AI'],
@@ -29,7 +29,7 @@ export default function Portfolio() {
     {
       id: 2,
       title: 'Mobile Banking App',
-      description: 'Безопасное мобильное приложение для банковских операций',
+      description: 'Secure mobile banking application',
       category: 'mobile',
       image: '/api/placeholder/400/300',
       technologies: ['React Native', 'Node.js', 'Blockchain'],
@@ -39,7 +39,7 @@ export default function Portfolio() {
     {
       id: 3,
       title: 'AI Chat Assistant',
-      description: 'Интеллектуальный чат-бот с машинным обучением',
+      description: 'Intelligent chatbot with machine learning',
       category: 'ai',
       image: '/api/placeholder/400/300',
       technologies: ['Python', 'TensorFlow', 'OpenAI'],
@@ -49,7 +49,7 @@ export default function Portfolio() {
     {
       id: 4,
       title: 'Corporate Website',
-      description: 'Корпоративный сайт с современным дизайном',
+      description: 'Corporate website with modern design',
       category: 'web',
       image: '/api/placeholder/400/300',
       technologies: ['Next.js', 'Tailwind', 'Framer Motion'],
@@ -69,9 +69,9 @@ export default function Portfolio() {
       <div className="container mx-auto px-4 py-8">
         {/* Заголовок */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">Наше портфолио</h1>
+          <h1 className="text-4xl font-bold text-white mb-4">Our Portfolio</h1>
           <p className="text-xl text-white/70 max-w-2xl mx-auto">
-            Посмотрите на наши лучшие проекты и решения, которые мы создали для наших клиентов
+            Explore our best projects and solutions we've created for our clients
           </p>
         </div>
 
@@ -148,7 +148,7 @@ export default function Portfolio() {
                     className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-primary text-black rounded-lg font-medium hover:bg-primary/90 transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
-                    Посмотреть
+                    View Project
                   </a>
                   <a
                     href={project.githubUrl}
@@ -167,12 +167,12 @@ export default function Portfolio() {
         {/* CTA */}
         <div className="mt-16 text-center">
           <div className="bg-white/5 border border-white/10 rounded-lg p-8">
-            <h2 className="text-2xl font-bold text-white mb-4">Заинтересованы в сотрудничестве?</h2>
+            <h2 className="text-2xl font-bold text-white mb-4">Interested in Collaboration?</h2>
             <p className="text-white/70 mb-6">
-              Давайте обсудим ваш проект и создадим что-то удивительное вместе
+              Let's discuss your project and create something amazing together
             </p>
             <button className="px-6 py-3 bg-primary text-black rounded-lg font-semibold hover:bg-primary/90 transition-colors">
-              Обсудить проект
+              Discuss Project
             </button>
           </div>
         </div>
