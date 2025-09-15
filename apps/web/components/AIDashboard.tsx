@@ -26,7 +26,6 @@ function AnimatedCounter({ value, delay = 0 }: { value: number; delay?: number }
   const motionValue = useMotionValue(0);
   const springValue = useSpring(motionValue, { 
     duration: 2000,
-    delay: delay * 1000,
   });
   const [displayValue, setDisplayValue] = useState(0);
 
@@ -35,10 +34,16 @@ function AnimatedCounter({ value, delay = 0 }: { value: number; delay?: number }
       setDisplayValue(latest);
     });
 
-    motionValue.set(value);
+    // Добавляем задержку перед анимацией
+    const timer = setTimeout(() => {
+      motionValue.set(value);
+    }, delay * 1000);
 
-    return unsubscribe;
-  }, [motionValue, springValue, value]);
+    return () => {
+      unsubscribe();
+      clearTimeout(timer);
+    };
+  }, [motionValue, springValue, value, delay]);
 
   return <span>{formatPercentage(displayValue)}</span>;
 }
