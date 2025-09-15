@@ -22,9 +22,9 @@ else
     NODE_VERSION=$(node --version)
     echo "Текущая версия Node.js: $NODE_VERSION"
     
-    if [[ "$NODE_VERSION" != "v18."* ]]; then
-        echo "❌ Требуется Node.js версии 18.x.x"
-        echo "Установите Node.js 18.x.x или используйте NVM"
+    if [[ "$NODE_VERSION" != "v24."* ]]; then
+        echo "❌ Требуется Node.js версии 24.x.x (LTS)"
+        echo "Установите Node.js 24.x.x или используйте NVM"
         exit 1
     fi
 fi
