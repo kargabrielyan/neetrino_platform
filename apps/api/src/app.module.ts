@@ -8,6 +8,9 @@ import { DemosModule } from './modules/demos/demos.module';
 import { VendorsModule } from './modules/vendors/vendors.module';
 import { ImportModule } from './modules/import/import.module';
 import { CheckingModule } from './modules/checking/checking.module';
+import { PublicModule } from './modules/public/public.module';
+import { MediaModule } from './modules/media/media.module';
+import { SearchModule } from './modules/search/search.module';
 import { databaseConfig } from './config/database.config';
 
 @Module({
@@ -22,6 +25,9 @@ import { databaseConfig } from './config/database.config';
     VendorsModule,
     ImportModule,
     CheckingModule,
+    PublicModule,
+    MediaModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [AppService],
