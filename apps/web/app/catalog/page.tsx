@@ -87,7 +87,7 @@ export default function Catalog() {
       params.append('page', page.toString());
       params.append('limit', '20');
 
-      const response = await fetch(`http://localhost:3001/search?${params.toString()}`);
+      const response = await fetch(`http://localhost:3001/public/catalog?${params.toString()}`);
       if (!response.ok) {
         throw new Error('Failed to fetch search results');
       }
@@ -98,15 +98,126 @@ export default function Catalog() {
     } catch (error) {
       console.error('Search error:', error);
       // Fallback to mock data
+      const fallbackDemos = [
+        {
+          id: '1',
+          title: 'E-commerce Store',
+          description: 'Modern e-commerce platform with advanced features',
+          url: 'https://example-store.com',
+          category: 'E-commerce',
+          subcategory: 'Online Store',
+          imageUrl: 'https://api.placeholder.com/400/300',
+          screenshotUrl: 'https://api.placeholder.com/800/600',
+          viewCount: 150,
+          isAccessible: true,
+          vendor: {
+            id: '1',
+            name: 'Shopify',
+            website: 'https://shopify.com',
+            logoUrl: 'https://cdn.shopify.com/s/files/1/0070/7032/files/shopify-logo.png',
+          },
+          createdAt: new Date().toISOString(),
+        },
+        {
+          id: '2',
+          title: 'Portfolio Website',
+          description: 'Creative portfolio website with modern design',
+          url: 'https://example-portfolio.com',
+          category: 'Portfolio',
+          subcategory: 'Creative',
+          imageUrl: 'https://api.placeholder.com/400/300',
+          screenshotUrl: 'https://api.placeholder.com/800/600',
+          viewCount: 89,
+          isAccessible: true,
+          vendor: {
+            id: '2',
+            name: 'Webflow',
+            website: 'https://webflow.com',
+            logoUrl: 'https://uploads-ssl.webflow.com/5d3e265ac8bcb6bc2f86b3c6/5d5595354c65721b5a0b8e0c_webflow-logo.png',
+          },
+          createdAt: new Date().toISOString(),
+        },
+        {
+          id: '3',
+          title: 'Blog Platform',
+          description: 'Content management system for bloggers',
+          url: 'https://example-blog.com',
+          category: 'Blog',
+          subcategory: 'CMS',
+          imageUrl: 'https://api.placeholder.com/400/300',
+          screenshotUrl: 'https://api.placeholder.com/800/600',
+          viewCount: 234,
+          isAccessible: true,
+          vendor: {
+            id: '3',
+            name: 'WordPress',
+            website: 'https://wordpress.org',
+            logoUrl: 'https://s.w.org/images/wmark.png',
+          },
+          createdAt: new Date().toISOString(),
+        },
+      ];
+
+      // Применяем фильтры к fallback данным
+      let filteredDemos = fallbackDemos;
+
+      if (searchFilters.q.trim()) {
+        const searchTerm = searchFilters.q.toLowerCase();
+        filteredDemos = filteredDemos.filter(demo => 
+          demo.title.toLowerCase().includes(searchTerm) ||
+          demo.description.toLowerCase().includes(searchTerm) ||
+          demo.vendor.name.toLowerCase().includes(searchTerm)
+        );
+      }
+
+      if (searchFilters.vendors.length > 0) {
+        filteredDemos = filteredDemos.filter(demo => 
+          searchFilters.vendors.includes(demo.vendor.id)
+        );
+      }
+
+      if (searchFilters.categories.length > 0) {
+        filteredDemos = filteredDemos.filter(demo => 
+          searchFilters.categories.includes(demo.category)
+        );
+      }
+
+      if (searchFilters.subcategories.length > 0) {
+        filteredDemos = filteredDemos.filter(demo => 
+          searchFilters.subcategories.includes(demo.subcategory)
+        );
+      }
+
+      // Пагинация
+      const limit = 20;
+      const skip = (page - 1) * limit;
+      const paginatedDemos = filteredDemos.slice(skip, skip + limit);
+
       setSearchData({
-        data: [],
-        total: 0,
-        page: 1,
-        limit: 20,
-        totalPages: 0,
-        query: '',
+        data: paginatedDemos,
+        total: filteredDemos.length,
+        page,
+        limit,
+        totalPages: Math.ceil(filteredDemos.length / limit),
+        query: searchFilters.q,
         suggestions: [],
-        filters: { vendors: [], categories: [], subcategories: [] }
+        filters: { 
+          vendors: [
+            { id: '1', name: 'Shopify', count: 1 },
+            { id: '2', name: 'Webflow', count: 1 },
+            { id: '3', name: 'WordPress', count: 1 },
+          ], 
+          categories: [
+            { name: 'E-commerce', count: 1 },
+            { name: 'Portfolio', count: 1 },
+            { name: 'Blog', count: 1 },
+          ], 
+          subcategories: [
+            { name: 'Online Store', count: 1 },
+            { name: 'Creative', count: 1 },
+            { name: 'CMS', count: 1 },
+          ] 
+        }
       });
     } finally {
       setLoading(false);
