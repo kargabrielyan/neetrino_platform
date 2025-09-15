@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, ConflictException } from '@nestjs/common
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Vendor } from './vendor.entity';
+import { Demo } from '../demos/demo.entity';
 import { CreateVendorDto } from './dto/create-vendor.dto';
 import { UpdateVendorDto } from './dto/update-vendor.dto';
 
@@ -10,6 +11,8 @@ export class VendorsService {
   constructor(
     @InjectRepository(Vendor)
     private vendorsRepository: Repository<Vendor>,
+    @InjectRepository(Demo)
+    private demoRepository: Repository<Demo>,
   ) {}
 
   async create(createVendorDto: CreateVendorDto): Promise<Vendor> {
@@ -102,11 +105,12 @@ export class VendorsService {
 
   async updateDemoCount(id: string): Promise<void> {
     const vendor = await this.findOne(id);
-    const demoCount = await this.vendorsRepository
-      .createQueryBuilder('vendor')
-      .leftJoin('vendor.demos', 'demo')
-      .where('vendor.id = :id', { id })
-      .andWhere('demo.status != :deleted', { deleted: 'deleted' })
+    
+    // Используем Demo repository для подсчета
+    const demoCount = await this.demoRepository
+      .createQueryBuilder('demo')
+      .where('demo.vendorId = :vendorId', { vendorId: id })
+      .andWhere('demo.status = :status', { status: 'active' })
       .getCount();
 
     vendor.demoCount = demoCount;
