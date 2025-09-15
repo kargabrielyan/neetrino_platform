@@ -110,10 +110,10 @@ export default function Admin() {
                 />
               </div>
               <select className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-black focus:outline-none focus:border-primary/50">
-                <option value="">All Statuses</option>
-                <option value="active">Active</option>
-                <option value="draft">Drafts</option>
-                <option value="deleted">Deleted</option>
+                <option value="" className="text-black">All Statuses</option>
+                <option value="active" className="text-black">Active</option>
+                <option value="draft" className="text-black">Drafts</option>
+                <option value="deleted" className="text-black">Deleted</option>
               </select>
             </div>
 

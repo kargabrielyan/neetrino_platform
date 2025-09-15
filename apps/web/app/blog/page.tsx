@@ -6,6 +6,7 @@ import Footer from '../../components/Footer';
 import { Calendar, User, ArrowRight, Tag } from 'lucide-react';
 
 export default function Blog() {
+  const [activeCategory, setActiveCategory] = useState('All');
 
   const posts = [
     {
@@ -63,7 +64,12 @@ export default function Blog() {
           {categories.map((category) => (
             <button
               key={category}
-              className="px-4 py-2 bg-white/5 text-black rounded-lg hover:text-black hover:bg-white/10 transition-colors"
+              onClick={() => setActiveCategory(category)}
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                activeCategory === category
+                  ? 'bg-primary text-black'
+                  : 'bg-white/5 text-black hover:text-black hover:bg-white/10'
+              }`}
             >
               {category}
             </button>
