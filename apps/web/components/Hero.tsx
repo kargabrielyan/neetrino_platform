@@ -58,7 +58,7 @@ export default function Hero() {
             className="inline-flex items-center gap-2 px-4 py-2 glass rounded-full border border-primary/30 mb-8"
           >
             <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-            <span className="text-sm font-bold bg-gradient-to-r from-[#00d1ff] via-[#228cfb] via-[#9968e6] via-[#e54397] via-[#ff3f47] to-[#ff7b15] bg-clip-text text-transparent">
+            <span className="text-sm font-bold text-[#00d1ff]">
               AI-POWERED SOLUTIONS
             </span>
           </motion.div>
