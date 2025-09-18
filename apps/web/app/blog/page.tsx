@@ -50,10 +50,12 @@ export default function Blog() {
       <div className="container mx-auto px-4 py-8 pt-24">
         {/* Заголовок */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">Blog</h1>
-          <p className="text-xl text-white/70 max-w-2xl mx-auto">
-            Latest news, articles and insights from the world of technology
-          </p>
+          <div className="glass p-8 rounded-3xl">
+            <h1 className="text-4xl font-bold text-ink mb-4">Blog</h1>
+            <p className="text-xl text-ink/70 max-w-2xl mx-auto">
+              Latest news, articles and insights from the world of technology
+            </p>
+          </div>
         </div>
 
         {/* Фильтры категорий */}
@@ -62,10 +64,10 @@ export default function Blog() {
             <button
               key={category}
               onClick={() => setActiveCategory(category)}
-              className={`px-4 py-2 rounded-lg transition-colors ${
+              className={`px-6 py-2 rounded-full font-medium transition-all duration-200 focus-ring ${
                 activeCategory === category
-                  ? 'bg-primary text-black'
-                  : 'bg-white text-black hover:bg-white/90'
+                  ? 'glass-strong text-ink'
+                  : 'glass text-ink/70 hover:text-ink hover:glass-strong'
               }`}
             >
               {category}
@@ -78,17 +80,17 @@ export default function Blog() {
           {posts.map((post) => (
             <article
               key={post.id}
-              className="bg-white/5 border border-white/10 rounded-lg overflow-hidden hover:border-primary/30 transition-colors group"
+              className="glass rounded-3xl overflow-hidden hover:glass-strong transition-all duration-200 group focus-ring"
             >
               {/* Изображение статьи */}
-              <div className="h-48 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                <span className="text-white/50 text-sm">Article Image</span>
+              <div className="h-48 bg-a1/10 flex items-center justify-center">
+                <span className="text-ink/50 text-sm">Article Image</span>
               </div>
               
               {/* Контент статьи */}
               <div className="p-6">
                 {/* Мета информация */}
-                <div className="flex items-center gap-4 text-sm text-white/60 mb-3">
+                <div className="flex items-center gap-4 text-sm text-ink/60 mb-3">
                   <div className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
                     {post.date}
@@ -104,19 +106,19 @@ export default function Blog() {
                 </div>
                 
                 {/* Заголовок */}
-                <h2 className="text-xl font-semibold text-white mb-3 group-hover:text-primary transition-colors">
+                <h2 className="text-xl font-semibold text-ink mb-3 group-hover:text-a1 transition-colors">
                   {post.title}
                 </h2>
                 
                 {/* Краткое описание */}
-                <p className="text-white/70 mb-4 leading-relaxed">
+                <p className="text-ink/70 mb-4 leading-relaxed">
                   {post.excerpt}
                 </p>
                 
                 {/* Время чтения и ссылка */}
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-white/50">{post.readTime} read</span>
-                  <button className="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors text-sm font-medium">
+                  <span className="text-sm text-ink/50">{post.readTime} read</span>
+                  <button className="flex items-center gap-1 text-a1 hover:text-a1/80 transition-colors text-sm font-medium focus-ring rounded-lg p-1">
                     Read More
                     <ArrowRight className="w-4 h-4" />
                   </button>
@@ -129,19 +131,19 @@ export default function Blog() {
         {/* Пагинация */}
         <div className="mt-12 flex justify-center">
           <div className="flex items-center gap-2">
-            <button className="px-3 py-2 text-white/50 hover:text-white transition-colors">
+            <button className="px-3 py-2 text-ink/50 hover:text-ink transition-colors focus-ring rounded-lg">
               Previous
             </button>
-            <button className="px-3 py-2 bg-primary text-black rounded-lg font-medium">
+            <button className="px-3 py-2 glass-strong text-ink rounded-full font-medium focus-ring">
               1
             </button>
-            <button className="px-3 py-2 text-white/50 hover:text-white transition-colors">
+            <button className="px-3 py-2 text-ink/50 hover:text-ink transition-colors focus-ring rounded-lg">
               2
             </button>
-            <button className="px-3 py-2 text-white/50 hover:text-white transition-colors">
+            <button className="px-3 py-2 text-ink/50 hover:text-ink transition-colors focus-ring rounded-lg">
               3
             </button>
-            <button className="px-3 py-2 text-white/50 hover:text-white transition-colors">
+            <button className="px-3 py-2 text-ink/50 hover:text-ink transition-colors focus-ring rounded-lg">
               Next
             </button>
           </div>
@@ -149,18 +151,18 @@ export default function Blog() {
 
         {/* Подписка на новости */}
         <div className="mt-16">
-          <div className="bg-white/5 border border-white/10 rounded-lg p-8 text-center">
-            <h2 className="text-2xl font-bold text-white mb-4">Subscribe to Newsletter</h2>
-            <p className="text-white/70 mb-6">
+          <div className="glass p-8 rounded-3xl text-center">
+            <h2 className="text-2xl font-bold text-ink mb-4">Subscribe to Newsletter</h2>
+            <p className="text-ink/70 mb-6">
               Get the latest articles and news delivered to your inbox
             </p>
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <input
                 type="email"
                 placeholder="Your email"
-                className="flex-1 px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-primary/50"
+                className="flex-1 px-4 py-2 glass-subtle rounded-full text-ink placeholder-ink/50 focus-ring"
               />
-              <button className="px-6 py-2 bg-primary text-black rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+              <button className="px-6 py-2 glass-strong text-ink rounded-full font-semibold hover:glass transition-all duration-200 focus-ring">
                 Subscribe
               </button>
             </div>

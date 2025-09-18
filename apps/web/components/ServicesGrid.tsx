@@ -132,7 +132,7 @@ export default function ServicesGrid() {
               {/* Learn More Button */}
               <Link
                 href={service.href}
-                className="inline-block glass-subtle px-5 py-3 rounded-full font-medium text-ink hover:bg-white/10 transition-colors focus-ring"
+                className="inline-block glass px-5 py-3 rounded-full font-medium text-ink hover:glass-strong transition-all duration-200 focus-ring"
               >
                 Learn More
               </Link>

@@ -97,10 +97,12 @@ export default function Portfolio() {
       <div className="container mx-auto px-4 py-8 pt-24">
         {/* Заголовок */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">Our Portfolio</h1>
-          <p className="text-xl text-white/70 max-w-2xl mx-auto">
-            Explore our best projects and solutions we've created for our clients
-          </p>
+          <div className="glass p-8 rounded-3xl">
+            <h1 className="text-4xl font-bold text-ink mb-4">Our Portfolio</h1>
+            <p className="text-xl text-ink/70 max-w-2xl mx-auto">
+              Explore our best projects and solutions we've created for our clients
+            </p>
+          </div>
         </div>
 
         {/* Фильтры категорий */}
@@ -109,10 +111,10 @@ export default function Portfolio() {
             <button
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
-              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-6 py-2 rounded-full font-medium transition-all duration-200 focus-ring ${
                 activeCategory === category.id
-                  ? 'bg-primary text-black'
-                  : 'bg-white text-black hover:bg-white/90'
+                  ? 'glass-strong text-ink'
+                  : 'glass text-ink/70 hover:text-ink hover:glass-strong'
               }`}
             >
               {category.label}
@@ -125,42 +127,42 @@ export default function Portfolio() {
           {filteredProjects.map((project) => (
             <div
               key={project.id}
-              className="bg-white/5 border border-white/10 rounded-lg overflow-hidden hover:border-primary/30 transition-colors group"
+              className="glass rounded-3xl overflow-hidden hover:glass-strong transition-all duration-200 group focus-ring"
             >
               {/* Изображение проекта */}
-              <div className="h-48 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center relative overflow-hidden">
-                <span className="text-white/50 text-sm">Project Image</span>
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+              <div className="h-48 bg-a1/10 flex items-center justify-center relative overflow-hidden">
+                <span className="text-ink/50 text-sm">Project Image</span>
+                <div className="absolute inset-0 bg-ink/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
                   <a
                     href={project.liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
+                    className="p-2 glass-subtle rounded-lg hover:glass transition-colors focus-ring"
                   >
-                    <Eye className="w-5 h-5 text-white" />
+                    <Eye className="w-5 h-5 text-ink" />
                   </a>
                   <a
                     href={project.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
+                    className="p-2 glass-subtle rounded-lg hover:glass transition-colors focus-ring"
                   >
-                    <Github className="w-5 h-5 text-white" />
+                    <Github className="w-5 h-5 text-ink" />
                   </a>
                 </div>
               </div>
               
               {/* Контент проекта */}
               <div className="p-6">
-                <h3 className="text-xl font-semibold text-white mb-2">{project.title}</h3>
-                <p className="text-white/70 mb-4 leading-relaxed">{project.description}</p>
+                <h3 className="text-xl font-semibold text-ink mb-2">{project.title}</h3>
+                <p className="text-ink/70 mb-4 leading-relaxed">{project.description}</p>
                 
                 {/* Технологии */}
                 <div className="flex flex-wrap gap-2 mb-4">
                   {project.technologies.map((tech, index) => (
                     <span
                       key={index}
-                      className="px-2 py-1 bg-primary/20 text-primary text-xs rounded-full"
+                      className="px-2 py-1 glass-subtle text-ink text-xs rounded-full"
                     >
                       {tech}
                     </span>
@@ -173,7 +175,7 @@ export default function Portfolio() {
                     href={project.liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-primary text-black rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 glass-strong text-ink rounded-full font-medium hover:glass transition-all duration-200 focus-ring"
                   >
                     <ExternalLink className="w-4 h-4" />
                     View Project
@@ -182,7 +184,7 @@ export default function Portfolio() {
                     href={project.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-4 py-2 border border-white/20 text-white rounded-lg hover:bg-white/5 transition-colors"
+                    className="px-4 py-2 glass text-ink rounded-full hover:glass-strong transition-all duration-200 focus-ring"
                   >
                     <Github className="w-4 h-4" />
                   </a>
@@ -194,12 +196,12 @@ export default function Portfolio() {
 
         {/* CTA */}
         <div className="mt-16 text-center">
-          <div className="bg-white/5 border border-white/10 rounded-lg p-8">
-            <h2 className="text-2xl font-bold text-white mb-4">Interested in Collaboration?</h2>
-            <p className="text-white/70 mb-6">
+          <div className="glass p-8 rounded-3xl">
+            <h2 className="text-2xl font-bold text-ink mb-4">Interested in Collaboration?</h2>
+            <p className="text-ink/70 mb-6">
               Let's discuss your project and create something amazing together
             </p>
-            <button className="px-6 py-3 bg-primary text-black rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+            <button className="px-6 py-3 glass-strong text-ink rounded-full font-semibold hover:glass transition-all duration-200 focus-ring">
               Discuss Project
             </button>
           </div>

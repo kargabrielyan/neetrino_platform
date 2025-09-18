@@ -19,6 +19,18 @@ export default function ThemeToggle() {
     }
   }, []);
 
+  // Listen for storage changes (when theme is changed in another tab)
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'theme') {
+        setIsDark(e.newValue === 'dark');
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
   useEffect(() => {
     // Apply theme to document
     const html = document.documentElement;
