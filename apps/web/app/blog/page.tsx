@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
+import Layout from '../../components/Layout';
 import { Calendar, User, ArrowRight, Tag } from 'lucide-react';
 
 export default function Blog() {
@@ -47,9 +46,7 @@ export default function Blog() {
   const categories = ['All', 'AI', 'Design', 'Development', 'Business'];
 
   return (
-    <main className="min-h-screen bg-bg">
-      <Navbar />
-      
+    <Layout>
       <div className="container mx-auto px-4 py-8 pt-24">
         {/* Заголовок */}
         <div className="text-center mb-12">
@@ -170,8 +167,6 @@ export default function Blog() {
           </div>
         </div>
       </div>
-
-      <Footer />
-    </main>
+    </Layout>
   );
 }

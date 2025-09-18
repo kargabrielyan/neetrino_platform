@@ -1,6 +1,7 @@
 import { DataSource } from 'typeorm';
 import { Demo } from './modules/demos/demo.entity';
 import { Vendor } from './modules/vendors/vendor.entity';
+import { Order } from './modules/orders/order.entity';
 
 const AppDataSource = new DataSource({
   type: 'postgres',
@@ -9,7 +10,7 @@ const AppDataSource = new DataSource({
   username: process.env.DB_USERNAME || 'postgres',
   password: process.env.DB_PASSWORD || 'password',
   database: process.env.DB_DATABASE || 'neetrino_platform',
-  entities: [Demo, Vendor],
+  entities: [Demo, Vendor, Order],
   synchronize: true,
 });
 

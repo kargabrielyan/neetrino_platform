@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
+import Layout from '../../components/Layout';
 import { ExternalLink, Github, Eye } from 'lucide-react';
 
 export default function Portfolio() {
@@ -94,9 +93,7 @@ export default function Portfolio() {
     : projects.filter(project => project.category === activeCategory);
 
   return (
-    <main className="min-h-screen bg-bg">
-      <Navbar />
-      
+    <Layout>
       <div className="container mx-auto px-4 py-8 pt-24">
         {/* Заголовок */}
         <div className="text-center mb-12">
@@ -208,8 +205,6 @@ export default function Portfolio() {
           </div>
         </div>
       </div>
-
-      <Footer />
-    </main>
+    </Layout>
   );
 }

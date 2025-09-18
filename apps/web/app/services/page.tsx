@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
+import Layout from '../../components/Layout';
 import { 
   Globe, 
   Smartphone, 
@@ -111,9 +110,7 @@ export default function Services() {
   ];
 
   return (
-    <main className="min-h-screen bg-bg">
-      <Navbar />
-      
+    <Layout>
       <div className="container mx-auto px-4 py-8 pt-24">
         {/* Header */}
         <div className="text-center mb-16">
@@ -220,8 +217,6 @@ export default function Services() {
           </div>
         </div>
       </div>
-
-      <Footer />
-    </main>
+    </Layout>
   );
 }

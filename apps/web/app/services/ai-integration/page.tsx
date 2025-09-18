@@ -2,8 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useMounted } from '../../../lib/use-mounted';
-import Navbar from '../../../components/Navbar';
-import Footer from '../../../components/Footer';
+import Layout from '../../../components/Layout';
 import { Brain, Cpu, Database, BarChart3, MessageSquare, Eye, ArrowLeft, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
@@ -89,22 +88,19 @@ export default function AIIntegration() {
 
   if (!isMounted) {
     return (
-      <main className="min-h-screen bg-bg">
-        <Navbar />
+      <Layout>
         <div className="container mx-auto px-4 py-8 pt-24">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
             <p className="text-white/70 mt-4">Loading...</p>
           </div>
         </div>
-      </main>
+      </Layout>
     );
   }
 
   return (
-    <main className="min-h-screen bg-bg">
-      <Navbar />
-      
+    <Layout>
       <div className="container mx-auto px-4 py-8 pt-24">
         {/* Back Button */}
         <motion.div
@@ -345,8 +341,6 @@ export default function AIIntegration() {
           </motion.div>
         </motion.div>
       </div>
-
-      <Footer />
-    </main>
+    </Layout>
   );
 }

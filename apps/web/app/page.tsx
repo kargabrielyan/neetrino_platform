@@ -1,35 +1,29 @@
 'use client';
 
-import { useMounted } from '../lib/use-mounted';
-import Navbar from '../components/Navbar';
+import Layout from '../components/Layout';
 import Hero from '../components/Hero';
 import ParticlesCanvas from '../components/ParticlesCanvas';
 import ServicesGrid from '../components/ServicesGrid';
 import AIDashboard from '../components/AIDashboard';
 import Pricing from '../components/Pricing';
 import Testimonials from '../components/Testimonials';
-import Footer from '../components/Footer';
+import NoSSR from '../components/NoSSR';
 
 export default function Home() {
-  const isMounted = useMounted();
-
   return (
-    <main className="relative min-h-screen">
+    <>
       {/* Фоновые частицы */}
-      <ParticlesCanvas className="fixed inset-0 z-0" />
+      <NoSSR fallback={<div className="fixed inset-0 z-0" />}>
+        <ParticlesCanvas className="fixed inset-0 z-0" />
+      </NoSSR>
       
-      {/* Навигация */}
-      <Navbar />
-      
-      {/* Основной контент */}
-      <div className="relative z-10">
+      <Layout>
         <Hero />
         <ServicesGrid />
         <AIDashboard />
         <Pricing />
         <Testimonials />
-        <Footer />
-      </div>
-    </main>
+      </Layout>
+    </>
   );
 }

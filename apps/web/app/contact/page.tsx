@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
+import Layout from '../../components/Layout';
 import { Mail, Phone, MapPin, Clock, Send, Facebook, Instagram, Linkedin, MessageCircle } from 'lucide-react';
 
 export default function Contact() {
@@ -27,9 +26,7 @@ export default function Contact() {
   };
 
   return (
-    <main className="min-h-screen bg-bg">
-      <Navbar />
-      
+    <Layout>
       <div className="container mx-auto px-4 py-8 pt-24">
         {/* Заголовок */}
         <div className="text-center mb-12">
@@ -215,8 +212,6 @@ export default function Contact() {
           </div>
         </div>
       </div>
-
-      <Footer />
-    </main>
+    </Layout>
   );
 }

@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useMounted } from '../../lib/use-mounted';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
+import Layout from '../../components/Layout';
 import { Search, Filter, Grid, List, ExternalLink, Eye } from 'lucide-react';
 
 interface Demo {
@@ -87,7 +86,7 @@ export default function Catalog() {
       params.append('page', page.toString());
       params.append('limit', '20');
 
-      const response = await fetch(`http://localhost:3001/public/catalog?${params.toString()}`);
+      const response = await fetch(`http://localhost:3001/search?${params.toString()}`);
       if (!response.ok) {
         throw new Error('Failed to fetch search results');
       }
@@ -284,22 +283,19 @@ export default function Catalog() {
 
   if (!isMounted) {
     return (
-      <main className="min-h-screen bg-bg">
-        <Navbar />
+      <Layout>
         <div className="container mx-auto px-4 py-8 pt-24">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
             <p className="text-white/70 mt-4">Loading...</p>
           </div>
         </div>
-      </main>
+      </Layout>
     );
   }
 
   return (
-    <main className="min-h-screen bg-bg">
-      <Navbar />
-      
+    <Layout>
       <div className="container mx-auto px-4 py-8 pt-24">
         {/* Header */}
         <div className="mb-8">
@@ -607,8 +603,6 @@ export default function Catalog() {
           </div>
         )}
       </div>
-
-      <Footer />
-    </main>
+    </Layout>
   );
 }
