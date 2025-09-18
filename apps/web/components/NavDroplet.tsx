@@ -126,8 +126,8 @@ export default function NavDroplet() {
             style={{
               top: 0,
               left: 0,
-              background: "linear-gradient(90deg, rgba(0,122,255,0.4), rgba(175,82,222,0.4) 38%, rgba(255,45,85,0.4) 72%, rgba(255,149,0,0.4))",
-              boxShadow: "0 4px 20px rgba(0,122,255,0.2), inset 0 1px 0 rgba(255,255,255,0.3), 0 0 0 1px rgba(255,255,255,0.1)",
+              background: "var(--glass-fill)",
+              boxShadow: "0 4px 20px var(--glass-shadow), inset 0 1px 0 var(--glass-highlight), 0 0 0 1px var(--glass-border)",
               backdropFilter: "blur(16px) saturate(120%)",
               WebkitBackdropFilter: "blur(16px) saturate(120%)",
               filter: "url(#wave)",

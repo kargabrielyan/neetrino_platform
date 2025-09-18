@@ -76,7 +76,6 @@ module.exports = {
         'glass-subtle': '0 4px 16px var(--glass-shadow)',
       },
       backgroundImage: {
-        'hero-gradient': 'linear-gradient(90deg, var(--a1), var(--a2) 38%, var(--a3) 72%, var(--a4))',
         'glass-gradient': 'linear-gradient(135deg, var(--glass-fill) 0%, rgba(255,255,255,0.05) 100%)',
       },
       borderRadius: { 

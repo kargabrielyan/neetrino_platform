@@ -58,10 +58,10 @@ export default function Hero() {
             </span>
           </motion.div>
 
-          {/* Main heading with proper line break and gradient */}
+          {/* Main heading with proper line break */}
           <motion.h1
             variants={itemVariants}
-            className="text-center font-semibold leading-tight tracking-tight text-hero-gradient text-5xl md:text-7xl mb-6"
+            className="text-center font-semibold leading-tight tracking-tight text-ink text-5xl md:text-7xl mb-6"
           >
             Future Technologies with Artificial<br/>
             Intelligence
