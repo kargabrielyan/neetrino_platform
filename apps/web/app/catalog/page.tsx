@@ -64,6 +64,7 @@ export default function Catalog() {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
+  const [isUsingFallback, setIsUsingFallback] = useState(false);
 
   // Функция для выполнения поиска
   const performSearch = useCallback(async (searchFilters: SearchFilters, page: number = 1) => {
@@ -86,23 +87,43 @@ export default function Catalog() {
       params.append('page', page.toString());
       params.append('limit', '20');
 
-      const response = await fetch(`http://localhost:3001/search?${params.toString()}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch search results');
-      }
+      // Try to fetch from API with timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
       
-      const data: SearchResponse = await response.json();
-      setSearchData(data);
-      setCurrentPage(page);
+      try {
+        const response = await fetch(`http://localhost:3001/search?${params.toString()}`, {
+          signal: controller.signal,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          throw new Error(`API returned ${response.status}: ${response.statusText}`);
+        }
+        
+        const data: SearchResponse = await response.json();
+        setSearchData(data);
+        setCurrentPage(page);
+        setIsUsingFallback(false);
+        return; // Success, exit early
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        console.warn('API fetch failed, using fallback data:', fetchError);
+        throw fetchError; // Re-throw to trigger fallback
+      }
     } catch (error) {
-      console.error('Search error:', error);
+      console.warn('Search error, using fallback data:', error);
       // Fallback to mock data
       const fallbackDemos = [
         {
           id: '1',
           title: 'E-commerce Store',
-          description: 'Modern e-commerce platform with advanced features',
-          url: 'https://example-store.com',
+          description: 'Modern e-commerce platform with advanced features and AI-powered recommendations',
+          url: 'https://demo-store.neetrino.com',
           category: 'E-commerce',
           subcategory: 'Online Store',
           imageUrl: 'https://api.placeholder.com/400/300',
@@ -111,17 +132,17 @@ export default function Catalog() {
           isAccessible: true,
           vendor: {
             id: '1',
-            name: 'Shopify',
-            website: 'https://shopify.com',
-            logoUrl: 'https://cdn.shopify.com/s/files/1/0070/7032/files/shopify-logo.png',
+            name: 'Neetrino',
+            website: 'https://neetrino.com',
+            logoUrl: 'https://neetrino.com/logo.png',
           },
-          createdAt: new Date().toISOString(),
+          createdAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
         },
         {
           id: '2',
           title: 'Portfolio Website',
-          description: 'Creative portfolio website with modern design',
-          url: 'https://example-portfolio.com',
+          description: 'Creative portfolio website with modern design and smooth animations',
+          url: 'https://demo-portfolio.neetrino.com',
           category: 'Portfolio',
           subcategory: 'Creative',
           imageUrl: 'https://api.placeholder.com/400/300',
@@ -130,17 +151,17 @@ export default function Catalog() {
           isAccessible: true,
           vendor: {
             id: '2',
-            name: 'Webflow',
-            website: 'https://webflow.com',
-            logoUrl: 'https://uploads-ssl.webflow.com/5d3e265ac8bcb6bc2f86b3c6/5d5595354c65721b5a0b8e0c_webflow-logo.png',
+            name: 'Neetrino',
+            website: 'https://neetrino.com',
+            logoUrl: 'https://neetrino.com/logo.png',
           },
-          createdAt: new Date().toISOString(),
+          createdAt: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
         },
         {
           id: '3',
           title: 'Blog Platform',
-          description: 'Content management system for bloggers',
-          url: 'https://example-blog.com',
+          description: 'Content management system for bloggers with AI content suggestions',
+          url: 'https://demo-blog.neetrino.com',
           category: 'Blog',
           subcategory: 'CMS',
           imageUrl: 'https://api.placeholder.com/400/300',
@@ -149,11 +170,68 @@ export default function Catalog() {
           isAccessible: true,
           vendor: {
             id: '3',
-            name: 'WordPress',
-            website: 'https://wordpress.org',
-            logoUrl: 'https://s.w.org/images/wmark.png',
+            name: 'Neetrino',
+            website: 'https://neetrino.com',
+            logoUrl: 'https://neetrino.com/logo.png',
           },
-          createdAt: new Date().toISOString(),
+          createdAt: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
+        },
+        {
+          id: '4',
+          title: 'AI Dashboard',
+          description: 'Real-time analytics dashboard with machine learning insights',
+          url: 'https://demo-ai.neetrino.com',
+          category: 'AI Solutions',
+          subcategory: 'Analytics',
+          imageUrl: 'https://api.placeholder.com/400/300',
+          screenshotUrl: 'https://api.placeholder.com/800/600',
+          viewCount: 312,
+          isAccessible: true,
+          vendor: {
+            id: '4',
+            name: 'Neetrino',
+            website: 'https://neetrino.com',
+            logoUrl: 'https://neetrino.com/logo.png',
+          },
+          createdAt: new Date(Date.now() - 345600000).toISOString(), // 4 days ago
+        },
+        {
+          id: '5',
+          title: 'Mobile Banking App',
+          description: 'Secure mobile banking application with biometric authentication',
+          url: 'https://demo-banking.neetrino.com',
+          category: 'Mobile Apps',
+          subcategory: 'Finance',
+          imageUrl: 'https://api.placeholder.com/400/300',
+          screenshotUrl: 'https://api.placeholder.com/800/600',
+          viewCount: 178,
+          isAccessible: true,
+          vendor: {
+            id: '5',
+            name: 'Neetrino',
+            website: 'https://neetrino.com',
+            logoUrl: 'https://neetrino.com/logo.png',
+          },
+          createdAt: new Date(Date.now() - 432000000).toISOString(), // 5 days ago
+        },
+        {
+          id: '6',
+          title: 'Learning Management System',
+          description: 'Online education platform with AI-powered course recommendations',
+          url: 'https://demo-lms.neetrino.com',
+          category: 'Education',
+          subcategory: 'E-Learning',
+          imageUrl: 'https://api.placeholder.com/400/300',
+          screenshotUrl: 'https://api.placeholder.com/800/600',
+          viewCount: 267,
+          isAccessible: true,
+          vendor: {
+            id: '6',
+            name: 'Neetrino',
+            website: 'https://neetrino.com',
+            logoUrl: 'https://neetrino.com/logo.png',
+          },
+          createdAt: new Date(Date.now() - 518400000).toISOString(), // 6 days ago
         },
       ];
 
@@ -202,22 +280,27 @@ export default function Catalog() {
         suggestions: [],
         filters: { 
           vendors: [
-            { id: '1', name: 'Shopify', count: 1 },
-            { id: '2', name: 'Webflow', count: 1 },
-            { id: '3', name: 'WordPress', count: 1 },
+            { id: '1', name: 'Neetrino', count: 6 },
           ], 
           categories: [
             { name: 'E-commerce', count: 1 },
             { name: 'Portfolio', count: 1 },
             { name: 'Blog', count: 1 },
+            { name: 'AI Solutions', count: 1 },
+            { name: 'Mobile Apps', count: 1 },
+            { name: 'Education', count: 1 },
           ], 
           subcategories: [
             { name: 'Online Store', count: 1 },
             { name: 'Creative', count: 1 },
             { name: 'CMS', count: 1 },
+            { name: 'Analytics', count: 1 },
+            { name: 'Finance', count: 1 },
+            { name: 'E-Learning', count: 1 },
           ] 
         }
       });
+      setIsUsingFallback(true);
     } finally {
       setLoading(false);
     }
@@ -302,6 +385,14 @@ export default function Catalog() {
           <div className="glass p-6 rounded-3xl">
             <h1 className="text-3xl font-bold text-ink mb-2">Demo Catalog</h1>
             <p className="text-ink/70">Find the perfect design for your project</p>
+            {isUsingFallback && (
+              <div className="mt-4 p-3 glass-subtle rounded-2xl border border-a4/30">
+                <p className="text-sm text-ink/80">
+                  <span className="text-a4 font-medium">ℹ️ Demo Mode:</span> Showing sample projects. 
+                  API server is not available, but you can still explore our demo catalog.
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
