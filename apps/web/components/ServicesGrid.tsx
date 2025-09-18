@@ -8,7 +8,8 @@ import {
   Brain, 
   TrendingUp, 
   Shield, 
-  Cloud 
+  Cloud,
+  ArrowRight
 } from 'lucide-react';
 import { useMounted } from '../lib/use-mounted';
 
@@ -132,9 +133,12 @@ export default function ServicesGrid() {
               {/* Learn More Button */}
               <Link
                 href={service.href}
-                className="inline-block glass px-5 py-3 rounded-full font-medium text-ink hover:glass-strong transition-all duration-200 focus-ring"
+                className="inline-block glass px-5 py-3 rounded-full font-medium text-ink hover:glass-strong transition-all duration-200 focus-ring group"
               >
-                Learn More
+                <span className="flex items-center gap-2">
+                  Learn More
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+                </span>
               </Link>
             </motion.article>
           ))}

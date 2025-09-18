@@ -114,8 +114,8 @@ export default function Services() {
       <div className="container mx-auto px-4 py-8 pt-24">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-white mb-4">Our Services</h1>
-          <p className="text-xl text-white/70 max-w-3xl mx-auto">
+          <h1 className="text-4xl font-bold text-ink mb-4">Our Services</h1>
+          <p className="text-xl text-ink/70 max-w-3xl mx-auto">
             We provide comprehensive technology solutions to help your business grow and succeed in the digital world
           </p>
         </div>
@@ -125,7 +125,7 @@ export default function Services() {
           {services.map((service, index) => (
             <div
               key={index}
-              className="bg-white/5 border border-white/10 rounded-2xl p-8 hover:border-primary/30 transition-all duration-300 group"
+              className="glass rounded-2xl p-8 hover:glass-strong transition-all duration-300 group"
             >
               {/* Icon and Title */}
               <div className="flex items-center gap-4 mb-6">
@@ -133,19 +133,19 @@ export default function Services() {
                   <service.icon className="w-8 h-8 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-white mb-2">{service.title}</h3>
-                  <p className="text-white/70">{service.description}</p>
+                  <h3 className="text-2xl font-bold text-ink mb-2">{service.title}</h3>
+                  <p className="text-ink/70">{service.description}</p>
                 </div>
               </div>
 
               {/* Features */}
               <div className="mb-6">
-                <h4 className="text-white font-semibold mb-3">Key Features:</h4>
+                <h4 className="text-ink font-semibold mb-3">Key Features:</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   {service.features.map((feature, featureIndex) => (
                     <div key={featureIndex} className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-primary flex-shrink-0" />
-                      <span className="text-white/80 text-sm">{feature}</span>
+                      <CheckCircle className="w-4 h-4 text-a1 flex-shrink-0" />
+                      <span className="text-ink/80 text-sm">{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -153,12 +153,12 @@ export default function Services() {
 
               {/* Technologies */}
               <div className="mb-6">
-                <h4 className="text-white font-semibold mb-3">Technologies:</h4>
+                <h4 className="text-ink font-semibold mb-3">Technologies:</h4>
                 <div className="flex flex-wrap gap-2">
                   {service.technologies.map((tech, techIndex) => (
                     <span
                       key={techIndex}
-                      className="px-3 py-1 bg-primary/20 text-primary text-sm rounded-full"
+                      className="px-3 py-1 bg-a1/20 text-a1 text-sm rounded-full"
                     >
                       {tech}
                     </span>
@@ -169,7 +169,7 @@ export default function Services() {
               {/* CTA Button */}
               <Link 
                 href={service.href}
-                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-black rounded-xl font-semibold hover:bg-primary/90 transition-colors group"
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 glass-strong text-ink rounded-xl font-semibold hover:glass transition-colors group"
               >
                 Learn More
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -179,8 +179,8 @@ export default function Services() {
         </div>
 
         {/* Process Section */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mb-16">
-          <h2 className="text-3xl font-bold text-white mb-8 text-center">Our Process</h2>
+        <div className="glass rounded-2xl p-8 mb-16">
+          <h2 className="text-3xl font-bold text-ink mb-8 text-center">Our Process</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {[
               { step: '01', title: 'Discovery', description: 'We understand your needs and goals' },
@@ -189,11 +189,11 @@ export default function Services() {
               { step: '04', title: 'Launch', description: 'We deploy and support your project' }
             ].map((item, index) => (
               <div key={index} className="text-center">
-                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-primary font-bold text-lg">{item.step}</span>
+                <div className="w-16 h-16 bg-a1/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-a1 font-bold text-lg">{item.step}</span>
                 </div>
-                <h3 className="text-white font-semibold mb-2">{item.title}</h3>
-                <p className="text-white/70 text-sm">{item.description}</p>
+                <h3 className="text-ink font-semibold mb-2">{item.title}</h3>
+                <p className="text-ink/70 text-sm">{item.description}</p>
               </div>
             ))}
           </div>
@@ -207,12 +207,20 @@ export default function Services() {
               Let's discuss your requirements and create something amazing together
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-8 py-3 glass-strong text-ink rounded-full font-semibold hover:glass transition-all duration-200 focus-ring">
+              <Link 
+                href="/contact"
+                className="px-8 py-3 glass-strong text-ink rounded-full font-semibold hover:glass transition-all duration-200 focus-ring group flex items-center justify-center gap-2"
+              >
                 Get Started
-              </button>
-              <button className="px-8 py-3 glass text-ink rounded-full hover:glass-strong transition-all duration-200 focus-ring">
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+              </Link>
+              <Link 
+                href="/portfolio"
+                className="px-8 py-3 glass text-ink rounded-full hover:glass-strong transition-all duration-200 focus-ring group flex items-center justify-center gap-2"
+              >
                 View Portfolio
-              </button>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+              </Link>
             </div>
           </div>
         </div>

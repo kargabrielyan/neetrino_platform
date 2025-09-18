@@ -286,8 +286,8 @@ export default function Catalog() {
       <Layout>
         <div className="container mx-auto px-4 py-8 pt-24">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="text-white/70 mt-4">Loading...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-a1 mx-auto"></div>
+            <p className="text-ink/70 mt-4">Loading...</p>
           </div>
         </div>
       </Layout>
@@ -535,16 +535,17 @@ export default function Catalog() {
                     </div>
                     
                     <div className="flex gap-2">
-                      <button className="flex-1 px-3 py-2 glass-strong text-ink rounded-full text-sm font-medium hover:glass transition-all duration-200 focus-ring">
+                      <button className="flex-1 px-3 py-2 glass-strong text-ink rounded-full text-sm font-medium hover:glass transition-all duration-200 focus-ring group flex items-center justify-center gap-1">
+                        <Eye className="w-3 h-3" />
                         View
                       </button>
                       <a
                         href={demo.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-3 py-2 glass text-ink rounded-full text-sm hover:glass-strong transition-all duration-200 focus-ring flex items-center gap-1"
+                        className="px-3 py-2 glass text-ink rounded-full text-sm hover:glass-strong transition-all duration-200 focus-ring flex items-center gap-1 group"
                       >
-                        <ExternalLink className="w-3 h-3" />
+                        <ExternalLink className="w-3 h-3 group-hover:scale-110 transition-transform duration-200" />
                         Open
                       </a>
                     </div>
