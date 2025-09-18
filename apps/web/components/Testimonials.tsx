@@ -49,7 +49,7 @@ export default function Testimonials() {
 
   return (
     <section className="py-20 relative">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -57,12 +57,14 @@ export default function Testimonials() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="heading-lg text-white mb-4">
-            Client Testimonials
-          </h2>
-          <p className="text-xl text-white/70 max-w-3xl mx-auto">
-            See what our clients say about our AI solutions and services
-          </p>
+          <div className="glass p-8 rounded-3xl">
+            <h2 className="heading-lg text-ink mb-4">
+              Client Testimonials
+            </h2>
+            <p className="text-xl text-ink/70 max-w-3xl mx-auto">
+              See what our clients say about our AI solutions and services
+            </p>
+          </div>
         </motion.div>
 
         <motion.div
@@ -70,53 +72,53 @@ export default function Testimonials() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto"
         >
           {testimonials.map((testimonial, index) => (
-            <motion.div
+            <motion.article
               key={index}
               variants={itemVariants}
               whileHover={{ 
-                scale: 1.02,
-                boxShadow: '0 20px 40px rgba(0,209,255,0.1)'
+                scale: 1.01,
+                boxShadow: '0 8px 30px rgba(0,0,0,0.12)'
               }}
-              className="glass rounded-2xl p-8 relative"
+              className="glass p-6 rounded-3xl relative hover:scale-[1.01] transition-transform focus-ring"
             >
               {/* Quote Icon */}
               <div className="absolute top-6 right-6">
-                <Quote className="w-8 h-8 text-primary/30" />
+                <Quote className="w-8 h-8 text-a1/30" />
               </div>
 
               {/* Rating */}
               <div className="flex items-center gap-1 mb-4">
                 {Array.from({ length: testimonial.rating }).map((_, i) => (
-                  <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                  <Star key={i} className="w-5 h-5 text-a4 fill-current" />
                 ))}
               </div>
 
               {/* Content */}
-              <p className="text-white/80 leading-relaxed mb-6 text-lg">
+              <p className="text-ink/80 leading-relaxed mb-6 text-lg">
                 "{testimonial.content}"
               </p>
 
               {/* Author */}
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center">
-                  <span className="text-white font-semibold text-sm">
+                <div className="w-12 h-12 bg-gradient-to-br from-a1/20 to-a4/20 rounded-full flex items-center justify-center">
+                  <span className="text-ink font-semibold text-sm">
                     {testimonial.avatar}
                   </span>
                 </div>
                 
                 <div>
-                  <h4 className="text-white font-semibold">
+                  <h4 className="text-ink font-semibold">
                     {testimonial.name}
                   </h4>
-                  <p className="text-white/60 text-sm">
+                  <p className="text-ink/60 text-sm">
                     {testimonial.role} at {testimonial.company}
                   </p>
                 </div>
               </div>
-            </motion.div>
+            </motion.article>
           ))}
         </motion.div>
       </div>

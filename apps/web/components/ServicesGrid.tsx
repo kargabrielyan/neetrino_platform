@@ -77,7 +77,7 @@ export default function ServicesGrid() {
 
   return (
     <section className="py-20 relative">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Заголовок секции */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -86,12 +86,14 @@ export default function ServicesGrid() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-white">
-            Our Innovative Services
-          </h2>
-          <p className="text-xl text-white/70 max-w-3xl mx-auto">
-            We provide comprehensive technology solutions to help your business grow and succeed
-          </p>
+          <div className="glass p-8 rounded-3xl">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-ink">
+              Our Innovative Services
+            </h2>
+            <p className="text-xl text-ink/70 max-w-3xl mx-auto">
+              We provide comprehensive technology solutions to help your business grow and succeed
+            </p>
+          </div>
         </motion.div>
 
         {/* Сетка услуг */}
@@ -100,41 +102,41 @@ export default function ServicesGrid() {
           initial="hidden"
           whileInView={isMounted ? "visible" : "hidden"}
           viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
           {services.map((service, index) => (
-            <motion.div
+            <motion.article
               key={index}
               variants={itemVariants}
               whileHover={{ 
-                scale: 1.05,
-                boxShadow: '0 20px 40px rgba(0,209,255,0.1)'
+                scale: 1.01,
+                boxShadow: '0 8px 30px rgba(0,0,0,0.12)'
               }}
-              className="glass rounded-2xl p-8 text-center group cursor-pointer"
+              className="glass p-6 text-center group cursor-pointer hover:scale-[1.01] transition-transform rounded-3xl focus-ring"
             >
               {/* Иконка */}
-              <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-primary/30 transition-colors">
-                <service.icon className="w-8 h-8 text-primary" />
+              <div className="w-16 h-16 bg-a1/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-a1/30 transition-colors">
+                <service.icon className="w-8 h-8 text-a1" />
               </div>
 
               {/* Заголовок */}
-              <h3 className="text-xl font-semibold text-white mb-4">
+              <h3 className="text-xl font-semibold text-ink mb-4">
                 {service.title}
               </h3>
 
               {/* Описание */}
-              <p className="text-white/70 leading-relaxed mb-6">
+              <p className="text-ink/70 leading-relaxed mb-6">
                 {service.description}
               </p>
 
               {/* Learn More Button */}
               <Link
                 href={service.href}
-                className="inline-block px-6 py-2 bg-primary text-black rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                className="inline-block glass-subtle px-5 py-3 rounded-full font-medium text-ink hover:bg-white/10 transition-colors focus-ring"
               >
                 Learn More
               </Link>
-            </motion.div>
+            </motion.article>
           ))}
         </motion.div>
       </div>

@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
+import { inter } from './fonts'
 import './globals.css'
-
-const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Neetrino - AI-Powered Solutions',
@@ -46,7 +44,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body className={inter.className} suppressHydrationWarning>
+      <body className={`${inter.className}`} suppressHydrationWarning>
         {children}
       </body>
     </html>

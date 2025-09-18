@@ -20,12 +20,12 @@ export default function Layout({
   className = '' 
 }: LayoutProps) {
   return (
-    <main className={`min-h-screen bg-bg ${className}`}>
+    <main className={`min-h-screen ${className}`}>
       {/* Навигация */}
       <Navbar />
       
-      {/* Основной контент */}
-      <div className="relative z-10">
+      {/* Основной контент с отступом для header */}
+      <div className="relative z-10 pt-24">
         {children}
       </div>
       

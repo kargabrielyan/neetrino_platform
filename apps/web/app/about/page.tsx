@@ -49,22 +49,24 @@ export default function About() {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8 pt-24">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Заголовок */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-white mb-4">About Company</h1>
-          <p className="text-xl text-white/70 max-w-3xl mx-auto">
-            Neetrino is an innovative IT company specializing in creating 
-            modern web solutions using artificial intelligence
-          </p>
+          <div className="glass p-8 rounded-3xl">
+            <h1 className="text-4xl font-bold text-ink mb-4">About Company</h1>
+            <p className="text-xl text-ink/70 max-w-3xl mx-auto">
+              Neetrino is an innovative IT company specializing in creating 
+              modern web solutions using artificial intelligence
+            </p>
+          </div>
         </div>
 
         {/* О компании */}
         <section className="mb-16">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-2xl font-bold text-white mb-6">Our Story</h2>
-              <div className="space-y-4 text-white/80 leading-relaxed">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
+            <div className="glass p-6 rounded-3xl">
+              <h2 className="text-2xl font-bold text-ink mb-6">Our Story</h2>
+              <div className="space-y-4 text-ink/80 leading-relaxed">
                 <p>
                   Founded in 2020, Neetrino quickly became a leading IT company 
                   in Armenia. We specialize in web application development, 
@@ -82,24 +84,24 @@ export default function About() {
               </div>
             </div>
             
-            <div className="bg-white/5 border border-white/10 rounded-lg p-8">
-              <h3 className="text-xl font-semibold text-white mb-4">Our Achievements</h3>
+            <div className="glass p-6 rounded-3xl">
+              <h3 className="text-xl font-semibold text-ink mb-4">Our Achievements</h3>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <span className="text-white/80">50+ successful projects</span>
+                  <div className="w-2 h-2 bg-a1 rounded-full"></div>
+                  <span className="text-ink/80">50+ successful projects</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <span className="text-white/80">30+ satisfied clients</span>
+                  <div className="w-2 h-2 bg-a1 rounded-full"></div>
+                  <span className="text-ink/80">30+ satisfied clients</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <span className="text-white/80">5 years of experience</span>
+                  <div className="w-2 h-2 bg-a1 rounded-full"></div>
+                  <span className="text-ink/80">5 years of experience</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <span className="text-white/80">100% quality</span>
+                  <div className="w-2 h-2 bg-a1 rounded-full"></div>
+                  <span className="text-ink/80">100% quality</span>
                 </div>
               </div>
             </div>
@@ -108,44 +110,48 @@ export default function About() {
 
         {/* Values */}
         <section className="mb-16">
-          <h2 className="text-2xl font-bold text-white mb-8 text-center">Our Values</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {values.map((value, index) => (
-              <div key={index} className="bg-white/5 border border-white/10 rounded-lg p-6 text-center">
-                <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <value.icon className="w-6 h-6 text-primary" />
+          <div className="glass p-8 rounded-3xl">
+            <h2 className="text-2xl font-bold text-ink mb-8 text-center">Our Values</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {values.map((value, index) => (
+                <div key={index} className="glass p-6 rounded-2xl text-center">
+                  <div className="w-12 h-12 bg-a1/20 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <value.icon className="w-6 h-6 text-a1" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-ink mb-2">{value.title}</h3>
+                  <p className="text-ink/70 text-sm">{value.description}</p>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">{value.title}</h3>
-                <p className="text-white/70 text-sm">{value.description}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
 
         {/* Team */}
         <section className="mb-16">
-          <h2 className="text-2xl font-bold text-white mb-8 text-center">Our Team</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {team.map((member, index) => (
-              <div key={index} className="bg-white/5 border border-white/10 rounded-lg p-6 text-center">
-                <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-white/50 text-sm">Photo</span>
+          <div className="glass p-8 rounded-3xl">
+            <h2 className="text-2xl font-bold text-ink mb-8 text-center">Our Team</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {team.map((member, index) => (
+                <div key={index} className="glass p-6 rounded-2xl text-center">
+                  <div className="w-24 h-24 bg-gradient-to-br from-a1/20 to-a4/20 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <span className="text-ink/50 text-sm">Photo</span>
+                  </div>
+                  <h3 className="text-lg font-semibold text-ink mb-1">{member.name}</h3>
+                  <p className="text-a1 text-sm">{member.role}</p>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-1">{member.name}</h3>
-                <p className="text-primary text-sm">{member.role}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
 
         {/* CTA */}
         <section className="text-center">
-          <div className="bg-white/5 border border-white/10 rounded-lg p-8">
-            <h2 className="text-2xl font-bold text-white mb-4">Ready to Start Your Project?</h2>
-            <p className="text-white/70 mb-6">
+          <div className="glass p-8 rounded-3xl">
+            <h2 className="text-2xl font-bold text-ink mb-4">Ready to Start Your Project?</h2>
+            <p className="text-ink/70 mb-6">
               Contact us to discuss your project
             </p>
-            <button className="px-6 py-3 bg-primary text-black rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+            <button className="glass-strong px-6 py-3 rounded-full text-ink font-semibold hover:bg-white/10 transition-colors">
               Contact Us
             </button>
           </div>

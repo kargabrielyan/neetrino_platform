@@ -78,7 +78,7 @@ export default function Pricing() {
 
   return (
     <section className="py-20 relative">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -86,12 +86,14 @@ export default function Pricing() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="heading-lg text-white mb-4">
-            Our Pricing Plans
-          </h2>
-          <p className="text-xl text-white/70 max-w-3xl mx-auto">
-            Choose the perfect plan for your business needs
-          </p>
+          <div className="glass p-8 rounded-3xl">
+            <h2 className="heading-lg text-ink mb-4">
+              Our Pricing Plans
+            </h2>
+            <p className="text-xl text-ink/70 max-w-3xl mx-auto">
+              Choose the perfect plan for your business needs
+            </p>
+          </div>
         </motion.div>
 
         <motion.div
@@ -99,45 +101,45 @@ export default function Pricing() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto"
         >
           {plans.map((plan, index) => (
-            <motion.div
+            <motion.article
               key={index}
               variants={itemVariants}
               whileHover={{ 
-                scale: 1.05,
-                boxShadow: '0 20px 40px rgba(0,209,255,0.1)'
+                scale: 1.01,
+                boxShadow: '0 8px 30px rgba(0,0,0,0.12)'
               }}
-              className={`relative glass rounded-2xl p-8 ${
-                plan.popular ? 'border-2 border-primary' : ''
+              className={`relative glass p-6 rounded-3xl hover:scale-[1.01] transition-transform focus-ring ${
+                plan.popular ? 'border-2 border-a1' : ''
               }`}
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <div className="bg-primary text-black px-4 py-1 rounded-full text-sm font-semibold">
+                  <div className="glass-subtle text-ink px-4 py-1 rounded-full text-sm font-semibold">
                     Recommended
                   </div>
                 </div>
               )}
 
               <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-white mb-2">
+                <h3 className="text-2xl font-bold text-ink mb-2">
                   {plan.name}
                 </h3>
                 
                 <div className="mb-4">
-                  <span className="text-4xl font-bold text-primary">
+                  <span className="text-4xl font-bold text-a1">
                     {formatCurrency(plan.price)}
                   </span>
                   {plan.maxPrice && (
-                    <span className="text-white/60 ml-2">
+                    <span className="text-ink/60 ml-2">
                       up to {formatCurrency(plan.maxPrice)}
                     </span>
                   )}
                 </div>
                 
-                <p className="text-white/70">
+                <p className="text-ink/70">
                   {plan.maxPrice ? 'Monthly' : 'Custom pricing'}
                 </p>
               </div>
@@ -145,22 +147,22 @@ export default function Pricing() {
               <ul className="space-y-4 mb-8">
                 {plan.features.map((feature, featureIndex) => (
                   <li key={featureIndex} className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-primary flex-shrink-0" />
-                    <span className="text-white/80">{feature}</span>
+                    <Check className="w-5 h-5 text-a1 flex-shrink-0" />
+                    <span className="text-ink/80">{feature}</span>
                   </li>
                 ))}
               </ul>
 
               <button
-                className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${
+                className={`w-full py-3 rounded-full font-semibold transition-all duration-300 focus-ring ${
                   plan.popular
-                    ? 'bg-primary text-black hover:bg-primary/90'
-                    : 'bg-white/10 text-white hover:bg-white/20'
+                    ? 'glass-subtle text-ink hover:bg-white/10'
+                    : 'glass text-ink hover:bg-white/10'
                 }`}
               >
                 Order Now
               </button>
-            </motion.div>
+            </motion.article>
           ))}
         </motion.div>
       </div>

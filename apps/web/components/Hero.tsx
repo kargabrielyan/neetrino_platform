@@ -33,80 +33,76 @@ export default function Hero() {
       y: 0,
       transition: {
         duration: 0.6,
-        ease: 'easeOut',
+        ease: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
       },
     },
   };
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Фоновые частицы */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-bg via-bg to-bg/80"></div>
-      </div>
-
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate={isMounted ? "visible" : "hidden"}
-          className="text-center max-w-6xl mx-auto"
+          className="text-center max-w-7xl mx-auto"
         >
-          {/* Бейдж с градиентным текстом */}
+          {/* Badge with glass effect */}
           <motion.div
             variants={itemVariants}
-            className="inline-flex items-center gap-2 px-4 py-2 glass rounded-full border border-primary/30 mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 glass-subtle rounded-full mb-8"
           >
-            <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-            <span className="text-sm font-bold text-[#00d1ff]">
+            <div className="w-2 h-2 rounded-full bg-a1 animate-pulse"></div>
+            <span className="text-sm font-semibold text-ink/80">
               AI-POWERED SOLUTIONS
             </span>
           </motion.div>
 
-          {/* Главный заголовок */}
+          {/* Main heading with proper line break and gradient */}
           <motion.h1
             variants={itemVariants}
-            className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight bg-[linear-gradient(90deg,_#007AFF,_#AF52DE,_#FF2D55,_#FF9500)] bg-clip-text text-transparent inline-block font-['SF_Pro_Display','SF_Pro_Icons','Helvetica_Neue',Helvetica,Arial,sans-serif]"
+            className="text-center font-semibold leading-tight tracking-tight text-hero-gradient text-5xl md:text-7xl mb-6"
           >
-            Future Technologies with Artificial Intelligence
+            Future Technologies with Artificial<br/>
+            Intelligence
           </motion.h1>
 
-          {/* Подзаголовок */}
+          {/* Subtitle */}
           <motion.p
             variants={itemVariants}
-            className="text-xl md:text-2xl text-white/80 mb-12 max-w-4xl mx-auto leading-relaxed"
+            className="mt-6 text-ink/70 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed"
           >
             We create future technologies using artificial intelligence and machine learning.
           </motion.p>
 
-          {/* Кнопки */}
+          {/* Buttons */}
           <motion.div
             variants={itemVariants}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
+            className="mt-10 flex gap-4 justify-center mb-16"
           >
             <motion.button
-              whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(0,209,255,0.5)' }}
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="btn-primary flex items-center gap-2 group"
+              className="glass-strong px-6 py-3 rounded-full flex items-center gap-2 group focus-ring"
             >
-              Get Started
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <span className="font-medium">Get Started</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
             </motion.button>
 
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="btn-outline flex items-center gap-2 group"
+              className="glass px-6 py-3 rounded-full flex items-center gap-2 group focus-ring"
             >
-              <Play className="w-4 h-4 group-hover:scale-110 transition-transform" />
-              Request Consultation
+              <Play className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+              <span className="font-medium">Our Innovative Services</span>
             </motion.button>
           </motion.div>
 
-          {/* Статистика */}
+          {/* Statistics */}
           <motion.div
             variants={itemVariants}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
+            className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto"
           >
             {stats.map((stat, index) => (
               <motion.div
@@ -114,7 +110,7 @@ export default function Hero() {
                 whileHover={{ scale: 1.05 }}
                 className="text-center"
               >
-                <div className="text-3xl md:text-4xl font-bold text-primary mb-2">
+                <div className="text-3xl md:text-4xl font-bold text-a1 mb-2">
                   {!isMounted 
                     ? `${stat.value}${stat.suffix}` 
                     : stat.value < 1000 
@@ -122,7 +118,7 @@ export default function Hero() {
                       : `${formatNumber(stat.value)}${stat.suffix}`
                   }
                 </div>
-                <div className="text-sm text-white/60 font-medium">
+                <div className="text-sm text-ink/60 font-medium">
                   {stat.label}
                 </div>
               </motion.div>
@@ -131,10 +127,10 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      {/* Декоративные элементы */}
-      <div className="absolute top-1/4 left-10 w-20 h-20 border border-primary/20 rounded-full animate-pulse-slow"></div>
-      <div className="absolute bottom-1/4 right-10 w-32 h-32 border border-accent/20 rounded-full animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
-      <div className="absolute top-1/2 left-1/4 w-16 h-16 border border-primary/30 rounded-full animate-float"></div>
+      {/* Decorative elements */}
+      <div className="absolute top-1/4 left-10 w-20 h-20 border border-a1/20 rounded-full animate-pulse-slow"></div>
+      <div className="absolute bottom-1/4 right-10 w-32 h-32 border border-a4/20 rounded-full animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
+      <div className="absolute top-1/2 left-1/4 w-16 h-16 border border-a2/30 rounded-full animate-float"></div>
     </section>
   );
 }

@@ -75,7 +75,7 @@ export default function AIDashboard() {
 
   return (
     <section className="py-20 relative">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -83,12 +83,14 @@ export default function AIDashboard() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-white">
-            AI Dashboard
-          </h2>
-          <p className="text-xl text-white/70 mb-8 max-w-3xl mx-auto">
-            Real-time monitoring of our AI systems and machine learning processes
-          </p>
+          <div className="glass p-8 rounded-3xl">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-ink">
+              AI Dashboard
+            </h2>
+            <p className="text-xl text-ink/70 mb-8 max-w-3xl mx-auto">
+              Real-time monitoring of our AI systems and machine learning processes
+            </p>
+          </div>
         </motion.div>
 
         {/* Tabs */}
@@ -100,10 +102,10 @@ export default function AIDashboard() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
+              className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all duration-300 focus-ring ${
                 activeTab === tab.id
-                  ? 'bg-primary text-black'
-                  : 'bg-white/5 text-white/70 hover:text-white hover:bg-white/10'
+                  ? 'glass-subtle text-ink'
+                  : 'glass text-ink/70 hover:text-ink hover:bg-white/10'
               }`}
             >
               <tab.icon className="w-5 h-5" />
@@ -120,11 +122,11 @@ export default function AIDashboard() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center"
           >
             {/* Metrics */}
-            <div className="space-y-8">
-              <h3 className="text-2xl font-bold text-white mb-6">
+            <div className="glass p-6 rounded-3xl">
+              <h3 className="text-2xl font-bold text-ink mb-6">
                 Performance Metrics
               </h3>
               
@@ -133,13 +135,13 @@ export default function AIDashboard() {
                   <motion.div
                     key={index}
                     variants={itemVariants}
-                    whileHover={{ scale: 1.05 }}
-                    className="glass rounded-2xl p-6"
+                    whileHover={{ scale: 1.01 }}
+                    className="glass-subtle p-4 rounded-2xl"
                   >
                     <div className="flex items-center justify-between mb-4">
-                      <h4 className="text-white font-semibold">{metric.label}</h4>
+                      <h4 className="text-ink font-semibold">{metric.label}</h4>
                       <motion.span 
-                        className="text-2xl font-bold text-primary"
+                        className="text-2xl font-bold text-a1"
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true }}
@@ -149,7 +151,7 @@ export default function AIDashboard() {
                       </motion.span>
                     </div>
                     
-                    <div className="w-full bg-white/10 rounded-full h-3 mb-2">
+                    <div className="w-full bg-ink/10 rounded-full h-3 mb-2">
                       <motion.div
                         className={`h-3 rounded-full bg-gradient-to-r ${metric.color}`}
                         initial={{ width: 0 }}
@@ -159,7 +161,7 @@ export default function AIDashboard() {
                       />
                     </div>
                     
-                    <div className="flex justify-between text-sm text-white/60">
+                    <div className="flex justify-between text-sm text-ink/60">
                       <span>0%</span>
                       <span>100%</span>
                     </div>
@@ -169,8 +171,8 @@ export default function AIDashboard() {
             </div>
 
             {/* Neural Network Visualization */}
-            <div className="relative">
-              <h3 className="text-2xl font-bold text-white mb-6 text-center">
+            <div className="glass p-6 rounded-3xl">
+              <h3 className="text-2xl font-bold text-ink mb-6 text-center">
                 Neural Network Architecture
               </h3>
               <NNArchitecture />
