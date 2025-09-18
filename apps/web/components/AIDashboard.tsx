@@ -83,7 +83,7 @@ export default function AIDashboard() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-purple-500 via-pink-500 to-orange-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-[#00d1ff] via-[#228cfb] via-[#9968e6] via-[#e54397] via-[#ff3f47] to-[#ff7b15] bg-clip-text text-transparent">
             AI Dashboard
           </h2>
           <p className="text-xl text-white/70 mb-8 max-w-3xl mx-auto">
