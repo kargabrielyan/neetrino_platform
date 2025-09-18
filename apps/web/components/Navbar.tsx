@@ -49,7 +49,7 @@ export default function Navbar() {
     <motion.nav
       initial={{ y: -100 }}
       animate={isMounted ? { y: 0 } : { y: -100 }}
-      transition={{ duration: 0.5, ease: "cubic-bezier(0.2, 0.8, 0.2, 1)" }}
+      transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
       className="fixed top-6 left-4 right-4 md:left-8 md:right-8 z-50"
       role="navigation"
       aria-label="Main navigation"
@@ -98,7 +98,7 @@ export default function Navbar() {
             height: isMobileMenuOpen ? 'auto' : 0,
             opacity: isMobileMenuOpen ? 1 : 0,
           }}
-          transition={{ duration: 0.3, ease: "cubic-bezier(0.2, 0.8, 0.2, 1)" }}
+          transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
           className="md:hidden overflow-hidden"
         >
           <div className="py-4 space-y-2 px-4">
