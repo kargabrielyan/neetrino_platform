@@ -86,7 +86,7 @@ export default function Catalog() {
       params.append('page', page.toString());
       params.append('limit', '20');
 
-      const response = await fetch(`http://localhost:3002/search?${params.toString()}`);
+      const response = await fetch(`http://localhost:3001/search?${params.toString()}`);
       if (!response.ok) {
         throw new Error('Failed to fetch search results');
       }
@@ -299,8 +299,10 @@ export default function Catalog() {
       <div className="container mx-auto px-4 py-8 pt-24">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Demo Catalog</h1>
-          <p className="text-white/70">Find the perfect design for your project</p>
+          <div className="glass p-6 rounded-3xl">
+            <h1 className="text-3xl font-bold text-ink mb-2">Demo Catalog</h1>
+            <p className="text-ink/70">Find the perfect design for your project</p>
+          </div>
         </div>
 
         {/* Поиск и фильтры */}
@@ -308,29 +310,29 @@ export default function Catalog() {
           <div className="flex flex-col md:flex-row gap-4">
             {/* Поиск */}
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink/50" />
               <input
                 type="text"
                 placeholder="Search by name or vendor..."
                 value={filters.q}
                 onChange={(e) => handleSearchChange(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-primary/50"
+                className="w-full pl-10 pr-4 py-2 glass-subtle rounded-full text-ink placeholder-ink/50 focus-ring"
               />
             </div>
             
             {/* Кнопка фильтров */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`px-4 py-2 rounded-lg border transition-colors flex items-center gap-2 ${
+              className={`px-4 py-2 rounded-full transition-all duration-200 flex items-center gap-2 focus-ring ${
                 showFilters || filters.vendors.length > 0 || filters.categories.length > 0 || filters.subcategories.length > 0
-                  ? 'bg-primary/20 border-primary/50 text-primary'
-                  : 'bg-white/5 border-white/10 text-white hover:bg-white/10'
+                  ? 'glass-strong text-ink'
+                  : 'glass text-ink/70 hover:text-ink hover:glass-strong'
               }`}
             >
               <Filter className="w-4 h-4" />
               Filters
               {(filters.vendors.length + filters.categories.length + filters.subcategories.length) > 0 && (
-                <span className="bg-primary text-black text-xs px-2 py-1 rounded-full">
+                <span className="glass-strong text-ink text-xs px-2 py-1 rounded-full">
                   {filters.vendors.length + filters.categories.length + filters.subcategories.length}
                 </span>
               )}
@@ -339,35 +341,35 @@ export default function Catalog() {
 
           {/* Расширенные фильтры */}
           {showFilters && searchData && (
-            <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-4">
+            <div className="glass p-4 rounded-3xl space-y-4">
               {/* Сортировка */}
               <div>
-                <label className="block text-white/70 text-sm mb-2">Sort by</label>
+                <label className="block text-ink/70 text-sm mb-2">Sort by</label>
                 <select
                   value={filters.sortBy}
                   onChange={(e) => handleSortChange(e.target.value as SearchFilters['sortBy'])}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-primary/50"
+                  className="w-full px-3 py-2 glass-subtle rounded-full text-ink focus-ring"
                 >
-                  <option value="relevance" className="text-black">Relevance</option>
-                  <option value="createdAt" className="text-black">Date Created</option>
-                  <option value="viewCount" className="text-black">Most Popular</option>
-                  <option value="title" className="text-black">Title</option>
+                  <option value="relevance" className="text-ink">Relevance</option>
+                  <option value="createdAt" className="text-ink">Date Created</option>
+                  <option value="viewCount" className="text-ink">Most Popular</option>
+                  <option value="title" className="text-ink">Title</option>
                 </select>
               </div>
 
               {/* Вендоры */}
               {searchData.filters.vendors.length > 0 && (
                 <div>
-                  <label className="block text-white/70 text-sm mb-2">Vendors</label>
+                  <label className="block text-ink/70 text-sm mb-2">Vendors</label>
                   <div className="flex flex-wrap gap-2">
                     {searchData.filters.vendors.map(vendor => (
                       <button
                         key={vendor.id}
                         onClick={() => handleVendorFilter(vendor.id)}
-                        className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                        className={`px-3 py-1 rounded-full text-sm transition-all duration-200 focus-ring ${
                           filters.vendors.includes(vendor.id)
-                            ? 'bg-primary text-black'
-                            : 'bg-white/10 text-white hover:bg-white/20'
+                            ? 'glass-strong text-ink'
+                            : 'glass text-ink/70 hover:text-ink hover:glass-strong'
                         }`}
                       >
                         {vendor.name} ({vendor.count})
@@ -380,16 +382,16 @@ export default function Catalog() {
               {/* Категории */}
               {searchData.filters.categories.length > 0 && (
                 <div>
-                  <label className="block text-white/70 text-sm mb-2">Categories</label>
+                  <label className="block text-ink/70 text-sm mb-2">Categories</label>
                   <div className="flex flex-wrap gap-2">
                     {searchData.filters.categories.map(category => (
                       <button
                         key={category.name}
                         onClick={() => handleCategoryFilter(category.name)}
-                        className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                        className={`px-3 py-1 rounded-full text-sm transition-all duration-200 focus-ring ${
                           filters.categories.includes(category.name)
-                            ? 'bg-primary text-black'
-                            : 'bg-white/10 text-white hover:bg-white/20'
+                            ? 'glass-strong text-ink'
+                            : 'glass text-ink/70 hover:text-ink hover:glass-strong'
                         }`}
                       >
                         {category.name} ({category.count})
@@ -402,16 +404,16 @@ export default function Catalog() {
               {/* Подкатегории */}
               {searchData.filters.subcategories.length > 0 && (
                 <div>
-                  <label className="block text-white/70 text-sm mb-2">Subcategories</label>
+                  <label className="block text-ink/70 text-sm mb-2">Subcategories</label>
                   <div className="flex flex-wrap gap-2">
                     {searchData.filters.subcategories.map(subcategory => (
                       <button
                         key={subcategory.name}
                         onClick={() => handleSubcategoryFilter(subcategory.name)}
-                        className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                        className={`px-3 py-1 rounded-full text-sm transition-all duration-200 focus-ring ${
                           filters.subcategories.includes(subcategory.name)
-                            ? 'bg-primary text-black'
-                            : 'bg-white/10 text-white hover:bg-white/20'
+                            ? 'glass-strong text-ink'
+                            : 'glass text-ink/70 hover:text-ink hover:glass-strong'
                         }`}
                       >
                         {subcategory.name} ({subcategory.count})
@@ -425,7 +427,7 @@ export default function Catalog() {
               <div className="flex justify-end">
                 <button
                   onClick={clearFilters}
-                  className="px-4 py-2 text-white/70 hover:text-white transition-colors"
+                  className="px-4 py-2 text-ink/70 hover:text-ink transition-colors focus-ring rounded-lg"
                 >
                   Clear all filters
                 </button>
@@ -437,9 +439,9 @@ export default function Catalog() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               {loading ? (
-                <span className="text-white/70 text-sm">Searching...</span>
+                <span className="text-ink/70 text-sm">Searching...</span>
               ) : (
-                <span className="text-white/70 text-sm">
+                <span className="text-ink/70 text-sm">
                   Found: {searchData?.total || 0} demos
                 </span>
               )}
@@ -448,20 +450,20 @@ export default function Catalog() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-lg transition-colors ${
+                className={`p-2 rounded-full transition-all duration-200 focus-ring ${
                   viewMode === 'grid' 
-                    ? 'bg-primary/20 text-primary' 
-                    : 'text-white/50 hover:text-white'
+                    ? 'glass-strong text-ink' 
+                    : 'glass text-ink/50 hover:text-ink hover:glass-strong'
                 }`}
               >
                 <Grid className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 rounded-lg transition-colors ${
+                className={`p-2 rounded-full transition-all duration-200 focus-ring ${
                   viewMode === 'list' 
-                    ? 'bg-primary/20 text-primary' 
-                    : 'text-white/50 hover:text-white'
+                    ? 'glass-strong text-ink' 
+                    : 'glass text-ink/50 hover:text-ink hover:glass-strong'
                 }`}
               >
                 <List className="w-4 h-4" />
@@ -473,7 +475,7 @@ export default function Catalog() {
         {/* Результаты поиска */}
         {loading ? (
           <div className="flex justify-center items-center py-12">
-            <div className="text-white/70">Loading demos...</div>
+            <div className="text-ink/70">Loading demos...</div>
           </div>
         ) : searchData && searchData.data.length > 0 ? (
           <>
@@ -486,12 +488,12 @@ export default function Catalog() {
               {searchData.data.map((demo) => (
                 <div
                   key={demo.id}
-                  className={`bg-white/5 border border-white/10 rounded-lg overflow-hidden hover:border-primary/30 transition-colors ${
+                  className={`glass rounded-3xl overflow-hidden hover:glass-strong transition-all duration-200 focus-ring ${
                     viewMode === 'list' ? 'flex' : ''
                   }`}
                 >
                   {/* Изображение */}
-                  <div className={`bg-white/5 ${
+                  <div className={`bg-a1/10 ${
                     viewMode === 'list' ? 'w-48 h-32 flex-shrink-0' : 'h-48'
                   }`}>
                     {demo.screenshotUrl ? (
@@ -501,8 +503,8 @@ export default function Catalog() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                        <span className="text-white/50 text-sm">Preview</span>
+                      <div className="w-full h-full bg-a1/10 flex items-center justify-center">
+                        <span className="text-ink/50 text-sm">Preview</span>
                       </div>
                     )}
                   </div>
@@ -510,37 +512,37 @@ export default function Catalog() {
                   {/* Контент */}
                   <div className={`p-4 ${viewMode === 'list' ? 'flex-1' : ''}`}>
                     <div className="flex items-start justify-between mb-2">
-                      <h3 className="text-white font-semibold">{demo.title}</h3>
+                      <h3 className="text-ink font-semibold">{demo.title}</h3>
                       <div className="flex items-center gap-2">
-                        <span className="flex items-center gap-1 text-white/60 text-xs">
+                        <span className="flex items-center gap-1 text-ink/60 text-xs">
                           <Eye className="w-3 h-3" />
                           {demo.viewCount}
                         </span>
                         <span className={`px-2 py-1 text-xs rounded-full ${
                           demo.isAccessible 
-                            ? 'bg-green-500/20 text-green-400' 
-                            : 'bg-red-500/20 text-red-400'
+                            ? 'glass-subtle text-green-600' 
+                            : 'glass-subtle text-red-600'
                         }`}>
                           {demo.isAccessible ? 'Live' : 'Offline'}
                         </span>
                       </div>
                     </div>
                     
-                    <div className="text-white/60 text-sm mb-3">
+                    <div className="text-ink/60 text-sm mb-3">
                       <div>Vendor: {demo.vendor.name}</div>
                       <div>Category: {demo.category}</div>
                       {demo.subcategory && <div>Subcategory: {demo.subcategory}</div>}
                     </div>
                     
                     <div className="flex gap-2">
-                      <button className="flex-1 px-3 py-2 bg-primary text-black rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
+                      <button className="flex-1 px-3 py-2 glass-strong text-ink rounded-full text-sm font-medium hover:glass transition-all duration-200 focus-ring">
                         View
                       </button>
                       <a
                         href={demo.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-3 py-2 border border-white/20 text-white rounded-lg text-sm hover:bg-white/5 transition-colors flex items-center gap-1"
+                        className="px-3 py-2 glass text-ink rounded-full text-sm hover:glass-strong transition-all duration-200 focus-ring flex items-center gap-1"
                       >
                         <ExternalLink className="w-3 h-3" />
                         Open
@@ -558,7 +560,7 @@ export default function Catalog() {
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="px-3 py-2 text-white/50 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-2 text-ink/50 hover:text-ink transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-ring rounded-lg"
                   >
                     Previous
                   </button>
@@ -569,10 +571,10 @@ export default function Catalog() {
                       <button
                         key={page}
                         onClick={() => handlePageChange(page)}
-                        className={`px-3 py-2 rounded-lg transition-colors ${
+                        className={`px-3 py-2 rounded-full transition-all duration-200 focus-ring ${
                           currentPage === page
-                            ? 'bg-primary text-black'
-                            : 'text-white/50 hover:text-white'
+                            ? 'glass-strong text-ink'
+                            : 'glass text-ink/50 hover:text-ink hover:glass-strong'
                         }`}
                       >
                         {page}
@@ -583,7 +585,7 @@ export default function Catalog() {
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === searchData.totalPages}
-                    className="px-3 py-2 text-white/50 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-2 text-ink/50 hover:text-ink transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-ring rounded-lg"
                   >
                     Next
                   </button>
@@ -593,10 +595,10 @@ export default function Catalog() {
           </>
         ) : (
           <div className="text-center py-12">
-            <div className="text-white/70 mb-4">No demos found</div>
+            <div className="text-ink/70 mb-4">No demos found</div>
             <button
               onClick={clearFilters}
-              className="px-4 py-2 bg-primary text-black rounded-lg hover:bg-primary/90 transition-colors"
+              className="px-4 py-2 glass-strong text-ink rounded-full hover:glass transition-all duration-200 focus-ring"
             >
               Clear filters
             </button>

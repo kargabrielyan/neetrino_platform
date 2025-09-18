@@ -201,16 +201,16 @@ export default function Services() {
 
         {/* CTA Section */}
         <div className="text-center">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-3xl font-bold text-white mb-4">Ready to Start Your Project?</h2>
-            <p className="text-white/70 mb-6 max-w-2xl mx-auto">
+          <div className="glass p-8 rounded-3xl">
+            <h2 className="text-3xl font-bold text-ink mb-4">Ready to Start Your Project?</h2>
+            <p className="text-ink/70 mb-6 max-w-2xl mx-auto">
               Let's discuss your requirements and create something amazing together
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-8 py-3 bg-primary text-black rounded-xl font-semibold hover:bg-primary/90 transition-colors">
+              <button className="px-8 py-3 glass-strong text-ink rounded-full font-semibold hover:glass transition-all duration-200 focus-ring">
                 Get Started
               </button>
-              <button className="px-8 py-3 border border-white/20 text-white rounded-xl hover:bg-white/5 transition-colors">
+              <button className="px-8 py-3 glass text-ink rounded-full hover:glass-strong transition-all duration-200 focus-ring">
                 View Portfolio
               </button>
             </div>
