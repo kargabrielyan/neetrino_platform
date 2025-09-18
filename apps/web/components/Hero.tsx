@@ -83,6 +83,7 @@ export default function Hero() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => window.location.href = '/contact'}
               className="glass-strong px-6 py-3 rounded-full flex items-center gap-2 group focus-ring"
             >
               <span className="font-medium">Get Started</span>
@@ -92,6 +93,7 @@ export default function Hero() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => window.location.href = '/services'}
               className="glass px-6 py-3 rounded-full flex items-center gap-2 group focus-ring"
             >
               <Play className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />

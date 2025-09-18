@@ -3,6 +3,7 @@
 import { ReactNode } from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import ThemeProvider from './ThemeProvider';
 
 interface LayoutProps {
   children: ReactNode;
@@ -20,18 +21,20 @@ export default function Layout({
   className = '' 
 }: LayoutProps) {
   return (
-    <main className={`min-h-screen ${className}`}>
-      {/* Навигация */}
-      <Navbar />
-      
-      {/* Основной контент с отступом для header */}
-      <div className="relative z-10 pt-24">
-        {children}
-      </div>
-      
-      {/* Футер (опционально) */}
-      {showFooter && <Footer />}
-    </main>
+    <ThemeProvider>
+      <main className={`min-h-screen ${className}`}>
+        {/* Навигация */}
+        <Navbar />
+        
+        {/* Основной контент с отступом для header */}
+        <div className="relative z-10 pt-24">
+          {children}
+        </div>
+        
+        {/* Футер (опционально) */}
+        {showFooter && <Footer />}
+      </main>
+    </ThemeProvider>
   );
 }
 

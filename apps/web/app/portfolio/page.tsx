@@ -201,7 +201,10 @@ export default function Portfolio() {
             <p className="text-ink/70 mb-6">
               Let's discuss your project and create something amazing together
             </p>
-            <button className="px-6 py-3 glass-strong text-ink rounded-full font-semibold hover:glass transition-all duration-200 focus-ring">
+            <button 
+              onClick={() => window.location.href = '/contact'}
+              className="px-6 py-3 glass-strong text-ink rounded-full font-semibold hover:glass transition-all duration-200 focus-ring"
+            >
               Discuss Project
             </button>
           </div>

@@ -118,7 +118,10 @@ export default function Blog() {
                 {/* Время чтения и ссылка */}
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-ink/50">{post.readTime} read</span>
-                  <button className="flex items-center gap-1 text-a1 hover:text-a1/80 transition-colors text-sm font-medium focus-ring rounded-lg p-1">
+                  <button 
+                    onClick={() => alert('Blog post will open here')}
+                    className="flex items-center gap-1 text-a1 hover:text-a1/80 transition-colors text-sm font-medium focus-ring rounded-lg p-1"
+                  >
                     Read More
                     <ArrowRight className="w-4 h-4" />
                   </button>
@@ -162,9 +165,12 @@ export default function Blog() {
                 placeholder="Your email"
                 className="flex-1 px-4 py-2 glass-subtle rounded-full text-ink placeholder-ink/50 focus-ring"
               />
-              <button className="px-6 py-2 glass-strong text-ink rounded-full font-semibold hover:glass transition-all duration-200 focus-ring">
-                Subscribe
-              </button>
+            <button 
+              onClick={() => alert('Thank you for subscribing to our blog!')}
+              className="px-6 py-2 glass-strong text-ink rounded-full font-semibold hover:glass transition-all duration-200 focus-ring"
+            >
+              Subscribe
+            </button>
             </div>
           </div>
         </div>

@@ -1,54 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Sun, Moon } from 'lucide-react';
+import { useTheme } from '../lib/use-theme';
 
 export default function ThemeToggle() {
-  const [isDark, setIsDark] = useState(true);
+  const { isDark, toggleTheme, isLoaded } = useTheme();
 
-  useEffect(() => {
-    // Check for saved theme preference or default to dark
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    if (savedTheme) {
-      setIsDark(savedTheme === 'dark');
-    } else {
-      setIsDark(prefersDark);
-    }
-  }, []);
-
-  // Listen for storage changes (when theme is changed in another tab)
-  useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'theme') {
-        setIsDark(e.newValue === 'dark');
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
-
-  useEffect(() => {
-    // Apply theme to document
-    const html = document.documentElement;
-    if (isDark) {
-      html.classList.add('dark');
-      html.classList.remove('light');
-    } else {
-      html.classList.add('light');
-      html.classList.remove('dark');
-    }
-    
-    // Save preference
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-  }, [isDark]);
-
-  const toggleTheme = () => {
-    setIsDark(!isDark);
-  };
+  // Don't render until theme is loaded to prevent flash
+  if (!isLoaded) {
+    return (
+      <div className="glass-subtle p-2 rounded-full text-ink/70">
+        <div className="w-5 h-5" />
+      </div>
+    );
+  }
 
   return (
     <motion.button

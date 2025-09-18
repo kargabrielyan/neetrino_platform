@@ -154,6 +154,7 @@ export default function Pricing() {
               </ul>
 
               <button
+                onClick={() => window.location.href = '/contact'}
                 className={`w-full py-3 rounded-full font-semibold transition-all duration-300 focus-ring ${
                   plan.popular
                     ? 'glass-subtle text-ink hover:bg-white/10'

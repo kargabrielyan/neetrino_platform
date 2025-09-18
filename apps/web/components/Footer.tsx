@@ -172,7 +172,10 @@ export default function Footer({}: FooterProps) {
                   placeholder="Enter your email"
                   className="w-full px-4 py-3 glass rounded-full text-ink placeholder-ink/50 focus-ring"
                 />
-                <button className="w-full glass-strong px-4 py-3 rounded-full text-ink font-medium hover:bg-white/10 transition-colors focus-ring">
+                <button 
+                  onClick={() => alert('Thank you for subscribing!')}
+                  className="w-full glass-strong px-4 py-3 rounded-full text-ink font-medium hover:bg-white/10 transition-colors focus-ring"
+                >
                   Subscribe
                 </button>
               </div>

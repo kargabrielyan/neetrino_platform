@@ -535,7 +535,10 @@ export default function Catalog() {
                     </div>
                     
                     <div className="flex gap-2">
-                      <button className="flex-1 px-3 py-2 glass-strong text-ink rounded-full text-sm font-medium hover:glass transition-all duration-200 focus-ring group flex items-center justify-center gap-1">
+                      <button 
+                        onClick={() => window.open(demo.url, '_blank')}
+                        className="flex-1 px-3 py-2 glass-strong text-ink rounded-full text-sm font-medium hover:glass transition-all duration-200 focus-ring group flex items-center justify-center gap-1"
+                      >
                         <Eye className="w-3 h-3" />
                         View
                       </button>

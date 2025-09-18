@@ -151,7 +151,10 @@ export default function About() {
             <p className="text-ink/70 mb-6">
               Contact us to discuss your project
             </p>
-            <button className="glass-strong px-6 py-3 rounded-full text-ink font-semibold hover:bg-white/10 transition-colors">
+            <button 
+              onClick={() => window.location.href = '/contact'}
+              className="glass-strong px-6 py-3 rounded-full text-ink font-semibold hover:bg-white/10 transition-colors"
+            >
               Contact Us
             </button>
           </div>
