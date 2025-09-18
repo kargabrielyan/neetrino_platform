@@ -52,13 +52,13 @@ export default function Hero() {
           animate={isMounted ? "visible" : "hidden"}
           className="text-center max-w-6xl mx-auto"
         >
-          {/* Бейдж */}
+          {/* Бейдж с градиентным текстом */}
           <motion.div
             variants={itemVariants}
             className="inline-flex items-center gap-2 px-4 py-2 glass rounded-full border border-primary/30 mb-8"
           >
             <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-            <span className="text-sm font-medium text-primary">
+            <span className="text-sm font-bold bg-gradient-to-r from-blue-400 via-purple-500 via-pink-500 to-orange-400 bg-clip-text text-transparent">
               AI-POWERED SOLUTIONS
             </span>
           </motion.div>
@@ -66,7 +66,7 @@ export default function Hero() {
           {/* Главный заголовок */}
           <motion.h1
             variants={itemVariants}
-            className="heading-xl text-rainbow mb-6"
+            className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-500 via-pink-500 to-orange-400 bg-clip-text text-transparent leading-tight"
           >
             Future Technologies with Artificial Intelligence
           </motion.h1>

@@ -96,6 +96,73 @@ export default function Admin() {
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
+  // Fallback данные для демо
+  const fallbackDemos: Demo[] = [
+    {
+      id: '1',
+      title: 'E-commerce Platform',
+      description: 'Modern e-commerce platform with advanced features',
+      url: 'https://example-store.com',
+      status: 'active',
+      category: 'E-commerce',
+      subcategory: 'Online Store',
+      imageUrl: 'https://api.placeholder.com/400/300',
+      screenshotUrl: 'https://api.placeholder.com/800/600',
+      viewCount: 150,
+      isAccessible: true,
+      vendor: {
+        id: '1',
+        name: 'Shopify',
+        website: 'https://shopify.com',
+        logoUrl: 'https://cdn.shopify.com/s/files/1/0070/7032/files/shopify-logo.png',
+      },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: '2',
+      title: 'Portfolio Website',
+      description: 'Creative portfolio website with modern design',
+      url: 'https://example-portfolio.com',
+      status: 'draft',
+      category: 'Portfolio',
+      subcategory: 'Creative',
+      imageUrl: 'https://api.placeholder.com/400/300',
+      screenshotUrl: 'https://api.placeholder.com/800/600',
+      viewCount: 89,
+      isAccessible: true,
+      vendor: {
+        id: '2',
+        name: 'Webflow',
+        website: 'https://webflow.com',
+        logoUrl: 'https://uploads-ssl.webflow.com/5d3e265ac8bcb6bc2f86b3c6/5d5595354c65721b5a0b8e0c_webflow-logo.png',
+      },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: '3',
+      title: 'Blog Platform',
+      description: 'Content management system for bloggers',
+      url: 'https://example-blog.com',
+      status: 'active',
+      category: 'Blog',
+      subcategory: 'CMS',
+      imageUrl: 'https://api.placeholder.com/400/300',
+      screenshotUrl: 'https://api.placeholder.com/800/600',
+      viewCount: 234,
+      isAccessible: true,
+      vendor: {
+        id: '3',
+        name: 'WordPress',
+        website: 'https://wordpress.org',
+        logoUrl: 'https://s.w.org/images/wmark.png',
+      },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  ];
+
   // Функции для загрузки данных
   const fetchDemos = useCallback(async () => {
     try {
@@ -108,9 +175,44 @@ export default function Admin() {
       if (response.ok) {
         const data = await response.json();
         setDemos(data.data || []);
+      } else {
+        // Fallback к тестовым данным
+        let filteredDemos = fallbackDemos;
+        
+        if (searchQuery.trim()) {
+          const searchTerm = searchQuery.toLowerCase();
+          filteredDemos = filteredDemos.filter(demo => 
+            demo.title.toLowerCase().includes(searchTerm) ||
+            demo.description.toLowerCase().includes(searchTerm) ||
+            demo.vendor.name.toLowerCase().includes(searchTerm)
+          );
+        }
+        
+        if (statusFilter) {
+          filteredDemos = filteredDemos.filter(demo => demo.status === statusFilter);
+        }
+        
+        setDemos(filteredDemos);
       }
     } catch (error) {
       console.error('Error fetching demos:', error);
+      // Fallback к тестовым данным при ошибке
+      let filteredDemos = fallbackDemos;
+      
+      if (searchQuery.trim()) {
+        const searchTerm = searchQuery.toLowerCase();
+        filteredDemos = filteredDemos.filter(demo => 
+          demo.title.toLowerCase().includes(searchTerm) ||
+          demo.description.toLowerCase().includes(searchTerm) ||
+          demo.vendor.name.toLowerCase().includes(searchTerm)
+        );
+      }
+      
+      if (statusFilter) {
+        filteredDemos = filteredDemos.filter(demo => demo.status === statusFilter);
+      }
+      
+      setDemos(filteredDemos);
     } finally {
       setLoading(false);
     }
@@ -134,6 +236,40 @@ export default function Admin() {
     }
   }, [statusFilter]);
 
+  // Fallback данные для вендоров
+  const fallbackVendors: Vendor[] = [
+    {
+      id: '1',
+      name: 'Shopify',
+      website: 'https://shopify.com',
+      description: 'E-commerce platform for online stores',
+      logoUrl: 'https://cdn.shopify.com/s/files/1/0070/7032/files/shopify-logo.png',
+      demoCount: 1,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: '2',
+      name: 'Webflow',
+      website: 'https://webflow.com',
+      description: 'Visual web design platform',
+      logoUrl: 'https://uploads-ssl.webflow.com/5d3e265ac8bcb6bc2f86b3c6/5d5595354c65721b5a0b8e0c_webflow-logo.png',
+      demoCount: 1,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: '3',
+      name: 'WordPress',
+      website: 'https://wordpress.org',
+      description: 'Open source content management system',
+      logoUrl: 'https://s.w.org/images/wmark.png',
+      demoCount: 1,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  ];
+
   const fetchVendors = useCallback(async () => {
     try {
       setLoading(true);
@@ -141,23 +277,49 @@ export default function Admin() {
       if (response.ok) {
         const data = await response.json();
         setVendors(data.data || []);
+      } else {
+        // Fallback к тестовым данным
+        setVendors(fallbackVendors);
       }
     } catch (error) {
       console.error('Error fetching vendors:', error);
+      // Fallback к тестовым данным при ошибке
+      setVendors(fallbackVendors);
     } finally {
       setLoading(false);
     }
   }, []);
 
+  // Fallback данные для статистики
+  const fallbackStatistics: Statistics = {
+    total: 0,
+    byStatus: {
+      new: 0,
+      in_progress: 0,
+      discussion: 0,
+      in_work: 0,
+      ready: 0,
+      cancelled: 0,
+      completed: 0,
+    },
+    recent: 0,
+    averageBudget: 0,
+  };
+
   const fetchStatistics = useCallback(async () => {
     try {
-      const response = await fetch('http://localhost:3001/orders/statistics');
+      const response = await fetch('http://localhost:3002/orders/statistics');
       if (response.ok) {
         const data = await response.json();
         setStatistics(data);
+      } else {
+        // Fallback к тестовым данным
+        setStatistics(fallbackStatistics);
       }
     } catch (error) {
       console.error('Error fetching statistics:', error);
+      // Fallback к тестовым данным при ошибке
+      setStatistics(fallbackStatistics);
     }
   }, []);
 

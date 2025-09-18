@@ -86,7 +86,7 @@ export default function ServicesGrid() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="heading-lg text-white mb-4">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-purple-500 via-pink-500 to-orange-400 bg-clip-text text-transparent">
             Our Innovative Services
           </h2>
           <p className="text-xl text-white/70 max-w-3xl mx-auto">

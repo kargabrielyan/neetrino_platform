@@ -86,7 +86,7 @@ export default function Catalog() {
       params.append('page', page.toString());
       params.append('limit', '20');
 
-      const response = await fetch(`http://localhost:3001/search?${params.toString()}`);
+      const response = await fetch(`http://localhost:3002/search?${params.toString()}`);
       if (!response.ok) {
         throw new Error('Failed to fetch search results');
       }
