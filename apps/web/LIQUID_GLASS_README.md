@@ -100,7 +100,7 @@ import ThemeToggle from './components/ThemeToggle';
 ### Focus States
 ```css
 .focus-ring {
-  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-a1/60 focus-visible:ring-offset-2;
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-a1 focus-visible:ring-opacity-60 focus-visible:ring-offset-2;
 }
 ```
 

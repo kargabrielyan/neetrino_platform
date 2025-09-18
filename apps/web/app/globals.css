@@ -217,7 +217,7 @@
   
   /* Focus states */
   .focus-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-a1/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-a1 focus-visible:ring-opacity-60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent;
   }
   
   /* Reduced motion support */
