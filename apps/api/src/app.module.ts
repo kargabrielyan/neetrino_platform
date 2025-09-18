@@ -12,6 +12,7 @@ import { OrdersModule } from './modules/orders/orders.module';
 import { CheckingModule } from './modules/checking/checking.module';
 import { ImportModule } from './modules/import/import.module';
 import { DevModule } from './modules/dev/dev.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { DevModule } from './modules/dev/dev.module';
       CheckingModule,
       ImportModule,
       DevModule,
+      AdminModule,
     ] : []),
   ],
   controllers: [AppController],
