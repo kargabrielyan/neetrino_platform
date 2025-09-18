@@ -1,7 +1,7 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 // Проверяем, доступна ли база данных
-const isDatabaseAvailable = process.env.DB_AVAILABLE !== 'false';
+const isDatabaseAvailable = process.env.DB_AVAILABLE === 'true';
 
 export const databaseConfig: TypeOrmModuleOptions = {
   type: 'postgres',
