@@ -66,7 +66,7 @@ export default function Hero() {
           {/* Главный заголовок */}
           <motion.h1
             variants={itemVariants}
-            className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-[#00d1ff] via-[#228cfb] via-[#9968e6] via-[#e54397] via-[#ff3f47] to-[#ff7b15] bg-clip-text text-transparent leading-tight"
+            className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight bg-[linear-gradient(90deg,_#007AFF,_#AF52DE,_#FF2D55,_#FF9500)] bg-clip-text text-transparent inline-block font-['SF_Pro_Display','SF_Pro_Icons','Helvetica_Neue',Helvetica,Arial,sans-serif]"
           >
             Future Technologies with Artificial Intelligence
           </motion.h1>
