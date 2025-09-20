@@ -89,8 +89,6 @@ export default function Admin() {
   const [statistics, setStatistics] = useState<Statistics | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [adminUser, setAdminUser] = useState<any>(null);
 
   const tabs = [
     { id: 'demos', label: 'Demos', icon: Database },
@@ -327,30 +325,9 @@ export default function Admin() {
     }
   }, []);
 
-  // Проверяем аутентификацию при загрузке
-  useEffect(() => {
-    const token = localStorage.getItem('adminToken');
-    const user = localStorage.getItem('adminUser');
-    
-    if (token && user) {
-      try {
-        const userData = JSON.parse(user);
-        setAdminUser(userData);
-        setIsAuthenticated(true);
-      } catch (error) {
-        localStorage.removeItem('adminToken');
-        localStorage.removeItem('adminUser');
-        router.push('/admin/login');
-      }
-    } else {
-      router.push('/admin/login');
-    }
-  }, [router]);
 
   // Загружаем данные при изменении активной вкладки
   useEffect(() => {
-    if (!isAuthenticated) return;
-    
     switch (activeTab) {
       case 'demos':
         fetchDemos();
@@ -365,26 +342,9 @@ export default function Admin() {
         fetchStatistics();
         break;
     }
-  }, [activeTab, fetchDemos, fetchOrders, fetchVendors, fetchStatistics, isAuthenticated]);
+  }, [activeTab, fetchDemos, fetchOrders, fetchVendors, fetchStatistics]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('adminToken');
-    localStorage.removeItem('adminUser');
-    router.push('/admin/login');
-  };
 
-  if (!isAuthenticated) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-8 pt-24">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-a1 mx-auto"></div>
-            <p className="text-ink/70 mt-4">Checking authentication...</p>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
 
   return (
     <Layout>
@@ -396,18 +356,7 @@ export default function Admin() {
               <div>
                 <h1 className="text-3xl font-bold text-ink mb-2">Admin Panel</h1>
                 <p className="text-ink/70">Manage demos, vendors, and settings</p>
-                {adminUser && (
-                  <p className="text-sm text-ink/60 mt-1">
-                    Welcome, <span className="font-medium text-ink">{adminUser.name}</span>
-                  </p>
-                )}
               </div>
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 glass-subtle text-ink rounded-lg hover:glass-strong transition-colors focus-ring"
-              >
-                Logout
-              </button>
             </div>
           </div>
         </div>
