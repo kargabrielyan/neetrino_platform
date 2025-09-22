@@ -13,7 +13,8 @@ import {
   CheckCircle,
   AlertCircle,
   BarChart3,
-  Calendar
+  Calendar,
+  Settings
 } from 'lucide-react';
 
 interface DashboardStats {
@@ -50,43 +51,72 @@ export default function WordPressDashboard() {
 
   const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
   const [loading, setLoading] = useState(true);
+  const [apiStatus, setApiStatus] = useState<'connected' | 'fallback' | 'error'>('fallback');
 
   useEffect(() => {
-    // Fetch dashboard data
+    // Fetch dashboard data with better error handling
     const fetchDashboardData = async () => {
       try {
-        // Fetch statistics
-        const statsResponse = await fetch('http://localhost:3002/orders/statistics');
-        if (statsResponse.ok) {
-          const statsData = await statsResponse.json();
-          setStats({
-            totalDemos: 150, // Mock data
-            totalOrders: statsData.total || 0,
-            totalVendors: 25, // Mock data
-            totalRevenue: statsData.averageBudget * statsData.total || 0,
-            recentOrders: statsData.recent || 0,
-            pendingOrders: statsData.byStatus?.new || 0,
-            completedOrders: statsData.byStatus?.completed || 0,
-            averageOrderValue: statsData.averageBudget || 0
+        // Try to fetch statistics with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+        try {
+          const statsResponse = await fetch('http://localhost:3002/orders/statistics', {
+            signal: controller.signal
           });
+          clearTimeout(timeoutId);
+          
+          if (statsResponse.ok) {
+            const statsData = await statsResponse.json();
+            setStats({
+              totalDemos: 150, // Mock data
+              totalOrders: statsData.total || 0,
+              totalVendors: 25, // Mock data
+              totalRevenue: statsData.averageBudget * statsData.total || 0,
+              recentOrders: statsData.recent || 0,
+              pendingOrders: statsData.byStatus?.new || 0,
+              completedOrders: statsData.byStatus?.completed || 0,
+              averageOrderValue: statsData.averageBudget || 0
+            });
+            setApiStatus('connected');
+          } else {
+            throw new Error('Stats API not available');
+          }
+        } catch (fetchError) {
+          clearTimeout(timeoutId);
+          throw new Error('API connection failed');
         }
 
-        // Fetch recent orders
-        const ordersResponse = await fetch('http://localhost:3002/orders');
-        if (ordersResponse.ok) {
-          const ordersData = await ordersResponse.json();
-          setRecentOrders(ordersData.slice(0, 5).map((order: any) => ({
-            id: order.id,
-            customerName: order.customerName,
-            demoTitle: order.demo?.title || 'Unknown Demo',
-            status: order.status,
-            amount: order.budget || 0,
-            date: new Date(order.createdAt).toLocaleDateString()
-          })));
+        // Try to fetch recent orders
+        try {
+          const ordersController = new AbortController();
+          const ordersTimeoutId = setTimeout(() => ordersController.abort(), 5000);
+          
+          const ordersResponse = await fetch('http://localhost:3002/orders', {
+            signal: ordersController.signal
+          });
+          clearTimeout(ordersTimeoutId);
+          
+          if (ordersResponse.ok) {
+            const ordersData = await ordersResponse.json();
+            setRecentOrders(ordersData.slice(0, 5).map((order: any) => ({
+              id: order.id,
+              customerName: order.customerName,
+              demoTitle: order.demo?.title || 'Unknown Demo',
+              status: order.status,
+              amount: order.budget || 0,
+              date: new Date(order.createdAt).toLocaleDateString()
+            })));
+          }
+        } catch (ordersError) {
+          console.log('Orders API not available, using fallback data');
         }
+
       } catch (error) {
-        console.error('Error fetching dashboard data:', error);
-        // Set fallback data
+        console.log('Using fallback dashboard data - API not available');
+        setApiStatus('fallback');
+        // Set fallback data immediately
         setStats({
           totalDemos: 150,
           totalOrders: 45,
@@ -113,6 +143,14 @@ export default function WordPressDashboard() {
             status: 'in_progress',
             amount: 1800,
             date: '2024-01-14'
+          },
+          {
+            id: '3',
+            customerName: 'Mike Johnson',
+            demoTitle: 'Portfolio Site',
+            status: 'completed',
+            amount: 3200,
+            date: '2024-01-13'
           }
         ]);
       } finally {
@@ -153,8 +191,32 @@ export default function WordPressDashboard() {
     <div className="space-y-6">
       {/* Welcome Section */}
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome to Neetrino Admin</h1>
-        <p className="text-gray-600">Here's what's happening with your platform today.</p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome to Neetrino Admin</h1>
+            <p className="text-gray-600">Here's what's happening with your platform today.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            {apiStatus === 'connected' && (
+              <div className="flex items-center gap-2 text-green-600">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="text-sm">API Connected</span>
+              </div>
+            )}
+            {apiStatus === 'fallback' && (
+              <div className="flex items-center gap-2 text-yellow-600">
+                <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
+                <span className="text-sm">Demo Data</span>
+              </div>
+            )}
+            {apiStatus === 'error' && (
+              <div className="flex items-center gap-2 text-red-600">
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                <span className="text-sm">API Error</span>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Stats Grid */}
