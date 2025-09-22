@@ -190,7 +190,7 @@ export default function WordPressDashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-6 rounded-2xl shadow-lg border border-gray-200/50 dark:border-gray-700/50">
         <div className="flex justify-between items-start">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Welcome to Neetrino Admin</h1>
@@ -220,9 +220,9 @@ export default function WordPressDashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {/* Total Demos */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-6 rounded-2xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 hover:shadow-xl transition-all duration-300">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Demos</p>
@@ -240,66 +240,66 @@ export default function WordPressDashboard() {
         </div>
 
         {/* Total Orders */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-6 rounded-2xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 hover:shadow-xl transition-all duration-300">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Total Orders</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.totalOrders}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Orders</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.totalOrders}</p>
             </div>
-            <div className="p-3 bg-green-100 rounded-full">
-              <ShoppingCart className="w-6 h-6 text-green-600" />
+            <div className="p-3 bg-green-100/80 dark:bg-green-900/30 rounded-full backdrop-blur-sm">
+              <ShoppingCart className="w-6 h-6 text-green-600 dark:text-green-400" />
             </div>
           </div>
           <div className="mt-4 flex items-center text-sm">
             <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-            <span className="text-green-600">+8%</span>
-            <span className="text-gray-500 ml-1">from last month</span>
+            <span className="text-green-600 dark:text-green-400">+8%</span>
+            <span className="text-gray-500 dark:text-gray-400 ml-1">from last month</span>
           </div>
         </div>
 
         {/* Total Revenue */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-6 rounded-2xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 hover:shadow-xl transition-all duration-300">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-900">${stats.totalRevenue.toLocaleString()}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Revenue</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">${stats.totalRevenue.toLocaleString()}</p>
             </div>
-            <div className="p-3 bg-yellow-100 rounded-full">
-              <DollarSign className="w-6 h-6 text-yellow-600" />
+            <div className="p-3 bg-yellow-100/80 dark:bg-yellow-900/30 rounded-full backdrop-blur-sm">
+              <DollarSign className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
             </div>
           </div>
           <div className="mt-4 flex items-center text-sm">
             <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-            <span className="text-green-600">+15%</span>
-            <span className="text-gray-500 ml-1">from last month</span>
+            <span className="text-green-600 dark:text-green-400">+15%</span>
+            <span className="text-gray-500 dark:text-gray-400 ml-1">from last month</span>
           </div>
         </div>
 
         {/* Average Order Value */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-6 rounded-2xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 hover:shadow-xl transition-all duration-300">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Avg Order Value</p>
-              <p className="text-2xl font-bold text-gray-900">${stats.averageOrderValue.toLocaleString()}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Avg Order Value</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">${stats.averageOrderValue.toLocaleString()}</p>
             </div>
-            <div className="p-3 bg-purple-100 rounded-full">
-              <BarChart3 className="w-6 h-6 text-purple-600" />
+            <div className="p-3 bg-purple-100/80 dark:bg-purple-900/30 rounded-full backdrop-blur-sm">
+              <BarChart3 className="w-6 h-6 text-purple-600 dark:text-purple-400" />
             </div>
           </div>
           <div className="mt-4 flex items-center text-sm">
             <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
-            <span className="text-red-600">-2%</span>
-            <span className="text-gray-500 ml-1">from last month</span>
+            <span className="text-red-600 dark:text-red-400">-2%</span>
+            <span className="text-gray-500 dark:text-gray-400 ml-1">from last month</span>
           </div>
         </div>
       </div>
 
       {/* Recent Orders and Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         {/* Recent Orders */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Recent Orders</h2>
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
+          <div className="p-6 border-b border-gray-200/50 dark:border-gray-700/50">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Recent Orders</h2>
           </div>
           <div className="p-6">
             <div className="space-y-4">
@@ -310,19 +310,19 @@ export default function WordPressDashboard() {
                       {getStatusIcon(order.status)}
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-900">{order.customerName}</p>
-                      <p className="text-sm text-gray-500">{order.demoTitle}</p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{order.customerName}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{order.demoTitle}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-gray-900">${order.amount.toLocaleString()}</p>
-                    <p className="text-sm text-gray-500">{order.date}</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">${order.amount.toLocaleString()}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{order.date}</p>
                   </div>
                 </div>
               ))}
             </div>
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+            <div className="mt-4 pt-4 border-t border-gray-200/50 dark:border-gray-700/50">
+              <button className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors">
                 View all orders →
               </button>
             </div>
@@ -330,27 +330,27 @@ export default function WordPressDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
+          <div className="p-6 border-b border-gray-200/50 dark:border-gray-700/50">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Quick Actions</h2>
           </div>
           <div className="p-6">
             <div className="grid grid-cols-2 gap-4">
-              <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                <Database className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-                <p className="text-sm font-medium text-gray-900">Add Demo</p>
+              <button className="p-4 border border-gray-200/50 dark:border-gray-700/50 rounded-xl hover:bg-white/50 dark:hover:bg-gray-700/50 transition-all duration-300 backdrop-blur-sm hover:shadow-md">
+                <Database className="w-6 h-6 text-blue-600 dark:text-blue-400 mx-auto mb-2" />
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Add Demo</p>
               </button>
-              <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                <Users className="w-6 h-6 text-green-600 mx-auto mb-2" />
-                <p className="text-sm font-medium text-gray-900">Add Vendor</p>
+              <button className="p-4 border border-gray-200/50 dark:border-gray-700/50 rounded-xl hover:bg-white/50 dark:hover:bg-gray-700/50 transition-all duration-300 backdrop-blur-sm hover:shadow-md">
+                <Users className="w-6 h-6 text-green-600 dark:text-green-400 mx-auto mb-2" />
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Add Vendor</p>
               </button>
-              <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                <Eye className="w-6 h-6 text-purple-600 mx-auto mb-2" />
-                <p className="text-sm font-medium text-gray-900">View Analytics</p>
+              <button className="p-4 border border-gray-200/50 dark:border-gray-700/50 rounded-xl hover:bg-white/50 dark:hover:bg-gray-700/50 transition-all duration-300 backdrop-blur-sm hover:shadow-md">
+                <Eye className="w-6 h-6 text-purple-600 dark:text-purple-400 mx-auto mb-2" />
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">View Analytics</p>
               </button>
-              <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                <Settings className="w-6 h-6 text-gray-600 mx-auto mb-2" />
-                <p className="text-sm font-medium text-gray-900">Settings</p>
+              <button className="p-4 border border-gray-200/50 dark:border-gray-700/50 rounded-xl hover:bg-white/50 dark:hover:bg-gray-700/50 transition-all duration-300 backdrop-blur-sm hover:shadow-md">
+                <Settings className="w-6 h-6 text-gray-600 dark:text-gray-400 mx-auto mb-2" />
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Settings</p>
               </button>
             </div>
           </div>

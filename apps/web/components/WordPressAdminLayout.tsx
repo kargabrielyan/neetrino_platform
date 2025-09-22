@@ -126,40 +126,40 @@ export default function WordPressAdminLayout({ children, currentPage = 'dashboar
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 dark:from-gray-900 dark:via-blue-900/20 dark:to-purple-900/10">
       {/* Top Bar */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="backdrop-blur-md bg-white/80 dark:bg-gray-800/80 border-b border-gray-200/50 dark:border-gray-700/50 px-4 py-3 flex items-center justify-between shadow-sm">
+        <div className="flex items-center gap-2 md:gap-4">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 rounded-md hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-md hover:bg-gray-100/50 dark:hover:bg-gray-700/50 transition-colors backdrop-blur-sm"
           >
             {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
           
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
               <span className="text-white font-bold text-sm">N</span>
             </div>
-            <h1 className="text-xl font-semibold text-gray-800">Neetrino Admin</h1>
+            <h1 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-gray-200 hidden sm:block">Neetrino Admin</h1>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          {/* Search */}
-          <div className="relative">
+        <div className="flex items-center gap-2 md:gap-4">
+          {/* Search - Hidden on mobile */}
+          <div className="relative hidden md:block">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
             <input
               type="text"
               placeholder="Search..."
-              className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="pl-10 pr-4 py-2 border border-gray-300/50 dark:border-gray-600/50 bg-white/50 dark:bg-gray-700/50 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent backdrop-blur-sm"
             />
           </div>
 
           {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="p-2 rounded-md hover:bg-gray-100/50 dark:hover:bg-gray-700/50 transition-colors backdrop-blur-sm"
           >
             {theme === 'light' ? (
               <Moon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
@@ -169,7 +169,7 @@ export default function WordPressAdminLayout({ children, currentPage = 'dashboar
           </button>
 
           {/* Notifications */}
-          <button className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative">
+          <button className="p-2 rounded-md hover:bg-gray-100/50 dark:hover:bg-gray-700/50 transition-colors relative backdrop-blur-sm">
             <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
             <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
           </button>
@@ -216,9 +216,21 @@ export default function WordPressAdminLayout({ children, currentPage = 'dashboar
         </div>
       </div>
 
-      <div className="flex">
+      <div className="flex relative">
+        {/* Mobile Overlay */}
+        {sidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+        
         {/* Sidebar */}
-        <div className={`${sidebarOpen ? 'w-64' : 'w-16'} bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 min-h-screen`}>
+        <div className={`${
+          sidebarOpen ? 'w-64' : 'w-16'
+        } ${
+          sidebarOpen ? 'fixed md:relative' : 'fixed md:relative'
+        } bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-r border-gray-200/50 dark:border-gray-700/50 transition-all duration-300 min-h-screen z-50 shadow-xl md:shadow-none`}>
           <nav className="p-4">
             <ul className="space-y-1">
               {menuItems.map((item) => (
@@ -227,10 +239,10 @@ export default function WordPressAdminLayout({ children, currentPage = 'dashboar
                     onClick={() => handleMenuClick(item.href)}
                     onMouseEnter={() => handleMouseEnter(item.id)}
                     onMouseLeave={handleMouseLeave}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 backdrop-blur-sm ${
                       currentPage === item.id
-                        ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-r-2 border-blue-700 dark:border-blue-400'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        ? 'bg-blue-500/20 dark:bg-blue-400/20 text-blue-700 dark:text-blue-300 border-r-2 border-blue-500 dark:border-blue-400 shadow-lg shadow-blue-500/20'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:shadow-md hover:shadow-gray-500/10'
                     }`}
                   >
                     <item.icon className="w-5 h-5 flex-shrink-0" />
@@ -240,8 +252,8 @@ export default function WordPressAdminLayout({ children, currentPage = 'dashboar
                   {/* Submenu with hover delay */}
                   {item.children.length > 0 && (
                     <div 
-                      className={`absolute left-full top-0 ml-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-2 min-w-48 z-50 transition-all duration-200 ${
-                        hoveredMenu === item.id ? 'opacity-100 visible' : 'opacity-0 invisible'
+                      className={`absolute left-full top-0 ml-2 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50 rounded-xl shadow-2xl py-2 min-w-48 z-50 transition-all duration-300 ${
+                        hoveredMenu === item.id ? 'opacity-100 visible scale-100' : 'opacity-0 invisible scale-95'
                       }`}
                       onMouseEnter={() => handleMouseEnter(item.id)}
                       onMouseLeave={handleMouseLeave}
@@ -250,7 +262,7 @@ export default function WordPressAdminLayout({ children, currentPage = 'dashboar
                         <button
                           key={child.id}
                           onClick={() => handleMenuClick(child.href)}
-                          className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-white/50 dark:hover:bg-gray-700/50 transition-all duration-200 rounded-lg mx-2"
                         >
                           {child.label}
                         </button>
@@ -264,8 +276,10 @@ export default function WordPressAdminLayout({ children, currentPage = 'dashboar
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 p-6">
-          {children}
+        <div className="flex-1 p-4 md:p-6 min-h-screen">
+          <div className="max-w-7xl mx-auto">
+            {children}
+          </div>
         </div>
       </div>
     </div>
