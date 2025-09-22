@@ -177,36 +177,8 @@ export default function Admin() {
   const fetchDemos = useCallback(async () => {
     try {
       setLoading(true);
-      const params = new URLSearchParams();
-      if (searchQuery) params.append('q', searchQuery);
-      if (statusFilter) params.append('status', statusFilter);
       
-      const response = await fetch(`http://localhost:3001/demos?${params.toString()}`);
-      if (response.ok) {
-        const data = await response.json();
-        setDemos(data.data || []);
-      } else {
-        // Fallback к тестовым данным
-        let filteredDemos = fallbackDemos;
-        
-        if (searchQuery.trim()) {
-          const searchTerm = searchQuery.toLowerCase();
-          filteredDemos = filteredDemos.filter(demo => 
-            demo.title.toLowerCase().includes(searchTerm) ||
-            demo.description.toLowerCase().includes(searchTerm) ||
-            demo.vendor.name.toLowerCase().includes(searchTerm)
-          );
-        }
-        
-        if (statusFilter) {
-          filteredDemos = filteredDemos.filter(demo => demo.status === statusFilter);
-        }
-        
-        setDemos(filteredDemos);
-      }
-    } catch (error) {
-      console.error('Error fetching demos:', error);
-      // Fallback к тестовым данным при ошибке
+      // Сначала устанавливаем fallback данные
       let filteredDemos = fallbackDemos;
       
       if (searchQuery.trim()) {
@@ -223,6 +195,36 @@ export default function Admin() {
       }
       
       setDemos(filteredDemos);
+      
+      // Пытаемся загрузить данные с API (необязательно)
+      try {
+        const params = new URLSearchParams();
+        if (searchQuery) params.append('q', searchQuery);
+        if (statusFilter) params.append('status', statusFilter);
+        
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+        
+        const response = await fetch(`http://localhost:3001/demos?${params.toString()}`, {
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.data && data.data.length > 0) {
+            setDemos(data.data);
+          }
+        }
+      } catch (apiError) {
+        // API недоступен, используем fallback данные (уже установлены)
+        console.log('API недоступен, используются демо данные');
+      }
+      
+    } catch (error) {
+      console.error('Error in fetchDemos:', error);
+      // Fallback данные уже установлены выше
     } finally {
       setLoading(false);
     }
@@ -231,16 +233,38 @@ export default function Admin() {
   const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
-      const params = new URLSearchParams();
-      if (statusFilter) params.append('status', statusFilter);
       
-      const response = await fetch(`http://localhost:3001/orders?${params.toString()}`);
-      if (response.ok) {
-        const data = await response.json();
-        setOrders(data.data || []);
+      // Устанавливаем пустой массив заказов (fallback)
+      setOrders([]);
+      
+      // Пытаемся загрузить данные с API (необязательно)
+      try {
+        const params = new URLSearchParams();
+        if (statusFilter) params.append('status', statusFilter);
+        
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+        
+        const response = await fetch(`http://localhost:3001/orders?${params.toString()}`, {
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.data && data.data.length > 0) {
+            setOrders(data.data);
+          }
+        }
+      } catch (apiError) {
+        // API недоступен, используем пустой массив (уже установлен)
+        console.log('API недоступен, заказы не загружены');
       }
+      
     } catch (error) {
-      console.error('Error fetching orders:', error);
+      console.error('Error in fetchOrders:', error);
+      // Пустой массив уже установлен выше
     } finally {
       setLoading(false);
     }
@@ -283,18 +307,35 @@ export default function Admin() {
   const fetchVendors = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3001/vendors');
-      if (response.ok) {
-        const data = await response.json();
-        setVendors(data.data || []);
-      } else {
-        // Fallback к тестовым данным
-        setVendors(fallbackVendors);
-      }
-    } catch (error) {
-      console.error('Error fetching vendors:', error);
-      // Fallback к тестовым данным при ошибке
+      
+      // Сначала устанавливаем fallback данные
       setVendors(fallbackVendors);
+      
+      // Пытаемся загрузить данные с API (необязательно)
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+        
+        const response = await fetch('http://localhost:3001/vendors', {
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.data && data.data.length > 0) {
+            setVendors(data.data);
+          }
+        }
+      } catch (apiError) {
+        // API недоступен, используем fallback данные (уже установлены)
+        console.log('API недоступен, используются демо вендоры');
+      }
+      
+    } catch (error) {
+      console.error('Error in fetchVendors:', error);
+      // Fallback данные уже установлены выше
     } finally {
       setLoading(false);
     }
@@ -318,18 +359,34 @@ export default function Admin() {
 
   const fetchStatistics = useCallback(async () => {
     try {
-      const response = await fetch('http://localhost:3002/orders/statistics');
-      if (response.ok) {
-        const data = await response.json();
-        setStatistics(data);
-      } else {
-        // Fallback к тестовым данным
-        setStatistics(fallbackStatistics);
-      }
-    } catch (error) {
-      console.error('Error fetching statistics:', error);
-      // Fallback к тестовым данным при ошибке
+      // Сначала устанавливаем fallback данные
       setStatistics(fallbackStatistics);
+      
+      // Пытаемся загрузить данные с API (необязательно)
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+        
+        const response = await fetch('http://localhost:3002/orders/statistics', {
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data) {
+            setStatistics(data);
+          }
+        }
+      } catch (apiError) {
+        // API недоступен, используем fallback данные (уже установлены)
+        console.log('API недоступен, используется демо статистика');
+      }
+      
+    } catch (error) {
+      console.error('Error in fetchStatistics:', error);
+      // Fallback данные уже установлены выше
     }
   }, []);
 
