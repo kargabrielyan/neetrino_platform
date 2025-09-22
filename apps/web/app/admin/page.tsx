@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import Layout from '../../components/Layout';
+import { useRouter, useSearchParams } from 'next/navigation';
+import WordPressAdminLayout from '../../components/WordPressAdminLayout';
+import WordPressDashboard from '../../components/WordPressDashboard';
 import { 
   Users, 
   Database, 
@@ -81,7 +82,8 @@ interface Statistics {
 
 export default function Admin() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('demos');
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'dashboard');
   const [loading, setLoading] = useState(false);
   const [demos, setDemos] = useState<Demo[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -346,88 +348,77 @@ export default function Admin() {
 
 
 
-  return (
-    <Layout>
-      <div className="container mx-auto px-4 py-8 pt-24">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="glass p-6 rounded-3xl">
-            <div className="flex justify-between items-start">
-              <div>
-                <h1 className="text-3xl font-bold text-ink mb-2">Admin Panel</h1>
-                <p className="text-ink/70">Manage demos, vendors, and settings</p>
-              </div>
-            </div>
-          </div>
-        </div>
+  // Show Dashboard if no specific tab is selected
+  if (activeTab === 'dashboard' || !activeTab) {
+    return (
+      <WordPressAdminLayout currentPage="dashboard">
+        <WordPressDashboard />
+      </WordPressAdminLayout>
+    );
+  }
 
-        {/* Вкладки */}
-        <div className="mb-8">
-          <div className="flex flex-wrap gap-2">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors focus-ring ${
-                  activeTab === tab.id
-                    ? 'glass-strong text-ink'
-                    : 'glass text-ink/70 hover:text-ink hover:glass-strong'
-                }`}
-              >
-                <tab.icon className="w-4 h-4" />
-                {tab.label}
-              </button>
-            ))}
-          </div>
+  return (
+    <WordPressAdminLayout currentPage={activeTab}>
+      <div className="space-y-6">
+        {/* Page Header */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            {tabs.find(tab => tab.id === activeTab)?.label || 'Admin Panel'}
+          </h1>
+          <p className="text-gray-600">Manage your platform content and settings</p>
         </div>
 
         {/* Контент вкладок */}
         {activeTab === 'demos' && (
-          <div>
+          <div className="space-y-6">
             {/* Header and Actions */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-              <h2 className="text-xl font-semibold text-ink">Demo Management</h2>
-              <div className="flex gap-2">
-                <button className="flex items-center gap-2 px-4 py-2 glass-strong text-ink rounded-lg font-medium hover:glass transition-colors focus-ring">
-                  <Plus className="w-4 h-4" />
-                  Add Demo
-                </button>
-                <button className="px-4 py-2 glass text-ink rounded-lg hover:glass-strong transition-colors focus-ring">
-                  Import
-                </button>
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <h2 className="text-xl font-semibold text-gray-900">Demo Management</h2>
+                <div className="flex gap-2">
+                  <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <Plus className="w-4 h-4" />
+                    Add Demo
+                  </button>
+                  <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    Import
+                  </button>
+                </div>
               </div>
             </div>
 
             {/* Фильтры */}
-            <div className="flex flex-col md:flex-row gap-4 mb-6">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink/50" />
-                <input
-                  type="text"
-                  placeholder="Search demos..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 glass-subtle rounded-lg text-ink placeholder-ink/50 focus:outline-none focus:ring-2 focus:ring-a1/50 focus-ring"
-                />
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search demos..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                <select 
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">All Statuses</option>
+                  <option value="active">Active</option>
+                  <option value="draft">Drafts</option>
+                  <option value="deleted">Deleted</option>
+                </select>
               </div>
-              <select 
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-2 glass-subtle rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-a1/50 focus-ring"
-              >
-                <option value="">All Statuses</option>
-                <option value="active">Active</option>
-                <option value="draft">Drafts</option>
-                <option value="deleted">Deleted</option>
-              </select>
             </div>
 
             {/* Таблица демо */}
-            <div className="glass rounded-lg overflow-hidden">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
               {loading ? (
                 <div className="p-8 text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-a1 mx-auto"></div>
-                  <p className="text-ink/70 mt-4">Loading demos...</p>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                  <p className="text-gray-600 mt-4">Loading demos...</p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
@@ -791,15 +782,15 @@ export default function Admin() {
         )}
 
         {activeTab === 'settings' && (
-          <div>
-            <h2 className="text-xl font-semibold text-ink mb-6">Settings</h2>
-            <div className="glass rounded-lg p-8 text-center">
-              <Settings className="w-12 h-12 text-ink/30 mx-auto mb-4" />
-              <p className="text-ink/70">Settings section in development</p>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">Settings</h2>
+            <div className="text-center py-12">
+              <Settings className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600">Settings section in development</p>
             </div>
           </div>
         )}
       </div>
-    </Layout>
+    </WordPressAdminLayout>
   );
 }
