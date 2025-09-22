@@ -126,40 +126,47 @@ export default function WordPressAdminLayout({ children, currentPage = 'dashboar
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 dark:from-gray-900 dark:via-blue-900/20 dark:to-purple-900/10">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-900/50 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-400/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-400/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+      </div>
+      
       {/* Top Bar */}
-      <div className="backdrop-blur-md bg-white/80 dark:bg-gray-800/80 border-b border-gray-200/50 dark:border-gray-700/50 px-4 py-3 flex items-center justify-between shadow-sm">
+      <div className="relative backdrop-blur-2xl bg-white/70 dark:bg-gray-800/70 border-b border-white/20 dark:border-gray-700/30 px-4 py-3 flex items-center justify-between shadow-2xl shadow-blue-500/10 dark:shadow-blue-400/5">
         <div className="flex items-center gap-2 md:gap-4">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 rounded-md hover:bg-gray-100/50 dark:hover:bg-gray-700/50 transition-colors backdrop-blur-sm"
+            className="p-3 rounded-xl hover:bg-white/30 dark:hover:bg-gray-700/30 transition-all duration-300 backdrop-blur-md border border-white/20 dark:border-gray-600/20 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-105"
           >
-            {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {sidebarOpen ? <X className="w-5 h-5 text-gray-700 dark:text-gray-300" /> : <Menu className="w-5 h-5 text-gray-700 dark:text-gray-300" />}
           </button>
           
           <div className="flex items-center gap-2 md:gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-sm">N</span>
+            <div className="w-10 h-10 bg-blue-500/80 rounded-2xl flex items-center justify-center shadow-2xl shadow-blue-500/30 backdrop-blur-sm border border-white/20">
+              <span className="text-white font-bold text-sm drop-shadow-lg">N</span>
             </div>
-            <h1 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-gray-200 hidden sm:block">Neetrino Admin</h1>
+            <h1 className="text-lg md:text-xl font-bold text-gray-800 dark:text-gray-200 hidden sm:block">Neetrino Admin</h1>
           </div>
         </div>
 
         <div className="flex items-center gap-2 md:gap-4">
           {/* Search - Hidden on mobile */}
           <div className="relative hidden md:block">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-400" />
             <input
               type="text"
               placeholder="Search..."
-              className="pl-10 pr-4 py-2 border border-gray-300/50 dark:border-gray-600/50 bg-white/50 dark:bg-gray-700/50 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent backdrop-blur-sm"
+              className="pl-12 pr-6 py-3 border border-white/30 dark:border-gray-600/30 bg-white/40 dark:bg-gray-700/40 text-gray-900 dark:text-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 backdrop-blur-xl shadow-lg shadow-blue-500/10 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/20"
             />
           </div>
 
           {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-md hover:bg-gray-100/50 dark:hover:bg-gray-700/50 transition-colors backdrop-blur-sm"
+            className="p-3 rounded-xl hover:bg-white/30 dark:hover:bg-gray-700/30 transition-all duration-300 backdrop-blur-md border border-white/20 dark:border-gray-600/20 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-105"
           >
             {theme === 'light' ? (
               <Moon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
@@ -169,9 +176,9 @@ export default function WordPressAdminLayout({ children, currentPage = 'dashboar
           </button>
 
           {/* Notifications */}
-          <button className="p-2 rounded-md hover:bg-gray-100/50 dark:hover:bg-gray-700/50 transition-colors relative backdrop-blur-sm">
+          <button className="p-3 rounded-xl hover:bg-white/30 dark:hover:bg-gray-700/30 transition-all duration-300 relative backdrop-blur-md border border-white/20 dark:border-gray-600/20 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-105">
             <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500/80 rounded-full shadow-lg shadow-red-500/50 animate-pulse"></span>
           </button>
 
           {/* User Menu */}
@@ -230,7 +237,7 @@ export default function WordPressAdminLayout({ children, currentPage = 'dashboar
           sidebarOpen ? 'w-64' : 'w-16'
         } ${
           sidebarOpen ? 'fixed md:relative' : 'fixed md:relative'
-        } bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-r border-gray-200/50 dark:border-gray-700/50 transition-all duration-300 min-h-screen z-50 shadow-xl md:shadow-none`}>
+        } bg-white/80 dark:bg-gray-800/80 backdrop-blur-3xl border-r border-white/20 dark:border-gray-700/30 transition-all duration-500 min-h-screen z-50 shadow-2xl shadow-blue-500/20 md:shadow-xl md:shadow-blue-500/10`}>
           <nav className="p-4">
             <ul className="space-y-1">
               {menuItems.map((item) => (
@@ -239,10 +246,10 @@ export default function WordPressAdminLayout({ children, currentPage = 'dashboar
                     onClick={() => handleMenuClick(item.href)}
                     onMouseEnter={() => handleMouseEnter(item.id)}
                     onMouseLeave={handleMouseLeave}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 backdrop-blur-sm ${
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-all duration-500 backdrop-blur-md border border-transparent ${
                       currentPage === item.id
-                        ? 'bg-blue-500/20 dark:bg-blue-400/20 text-blue-700 dark:text-blue-300 border-r-2 border-blue-500 dark:border-blue-400 shadow-lg shadow-blue-500/20'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:shadow-md hover:shadow-gray-500/10'
+                        ? 'bg-blue-500/30 dark:bg-blue-400/30 text-blue-800 dark:text-blue-200 border-r-4 border-blue-500 shadow-2xl shadow-blue-500/30 hover:shadow-3xl hover:shadow-blue-500/40'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-white/40 dark:hover:bg-gray-700/40 hover:shadow-xl hover:shadow-blue-500/20 hover:border-white/30 dark:hover:border-gray-600/30'
                     }`}
                   >
                     <item.icon className="w-5 h-5 flex-shrink-0" />
@@ -252,8 +259,8 @@ export default function WordPressAdminLayout({ children, currentPage = 'dashboar
                   {/* Submenu with hover delay */}
                   {item.children.length > 0 && (
                     <div 
-                      className={`absolute left-full top-0 ml-2 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50 rounded-xl shadow-2xl py-2 min-w-48 z-50 transition-all duration-300 ${
-                        hoveredMenu === item.id ? 'opacity-100 visible scale-100' : 'opacity-0 invisible scale-95'
+                      className={`absolute left-full top-0 ml-3 bg-white/90 dark:bg-gray-800/90 backdrop-blur-2xl border border-white/30 dark:border-gray-700/30 rounded-2xl shadow-2xl shadow-blue-500/20 py-3 min-w-52 z-50 transition-all duration-500 ${
+                        hoveredMenu === item.id ? 'opacity-100 visible scale-100 translate-x-0' : 'opacity-0 invisible scale-95 -translate-x-2'
                       }`}
                       onMouseEnter={() => handleMouseEnter(item.id)}
                       onMouseLeave={handleMouseLeave}
@@ -262,7 +269,7 @@ export default function WordPressAdminLayout({ children, currentPage = 'dashboar
                         <button
                           key={child.id}
                           onClick={() => handleMenuClick(child.href)}
-                          className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-white/50 dark:hover:bg-gray-700/50 transition-all duration-200 rounded-lg mx-2"
+                          className="w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-white/60 dark:hover:bg-gray-700/60 transition-all duration-300 rounded-xl mx-2 hover:shadow-lg hover:shadow-blue-500/10"
                         >
                           {child.label}
                         </button>
@@ -276,9 +283,12 @@ export default function WordPressAdminLayout({ children, currentPage = 'dashboar
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 p-4 md:p-6 min-h-screen">
-          <div className="max-w-7xl mx-auto">
-            {children}
+        <div className="flex-1 p-4 md:p-6 min-h-screen relative">
+          <div className="max-w-7xl mx-auto relative">
+            <div className="absolute inset-0 bg-white/20 dark:bg-gray-800/20 rounded-3xl backdrop-blur-sm"></div>
+            <div className="relative z-10">
+              {children}
+            </div>
           </div>
         </div>
       </div>

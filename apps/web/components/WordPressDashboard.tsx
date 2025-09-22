@@ -188,13 +188,18 @@ export default function WordPressDashboard() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Welcome Section */}
-      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-6 rounded-2xl shadow-lg border border-gray-200/50 dark:border-gray-700/50">
-        <div className="flex justify-between items-start">
+      <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl p-8 rounded-3xl shadow-2xl shadow-blue-500/10 border border-white/30 dark:border-gray-700/30 relative overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-20 -right-20 w-40 h-40 bg-blue-400/20 rounded-full blur-2xl animate-pulse"></div>
+          <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-purple-400/20 rounded-full blur-2xl animate-pulse delay-1000"></div>
+        </div>
+        <div className="flex justify-between items-start relative z-10">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Welcome to Neetrino Admin</h1>
-            <p className="text-gray-600 dark:text-gray-400">Here's what's happening with your platform today.</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-3">Welcome to Neetrino Admin</h1>
+            <p className="text-gray-600 dark:text-gray-400 text-lg">Here's what's happening with your platform today.</p>
           </div>
           <div className="flex items-center gap-2">
             {apiStatus === 'connected' && (
@@ -220,86 +225,93 @@ export default function WordPressDashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
         {/* Total Demos */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-6 rounded-2xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 hover:shadow-xl transition-all duration-300">
-          <div className="flex items-center justify-between">
+        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl p-8 rounded-3xl shadow-2xl shadow-blue-500/10 border border-white/30 dark:border-gray-700/30 hover:shadow-3xl hover:shadow-blue-500/20 transition-all duration-500 hover:scale-105 relative overflow-hidden group">
+          {/* Animated background */}
+          <div className="absolute inset-0 bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="flex items-center justify-between relative z-10">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Demos</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.totalDemos}</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{stats.totalDemos}</p>
             </div>
-            <div className="p-3 bg-blue-100 rounded-full">
-              <Database className="w-6 h-6 text-blue-600" />
+            <div className="p-4 bg-blue-500/20 rounded-2xl backdrop-blur-sm border border-white/20">
+              <Database className="w-7 h-7 text-blue-600 dark:text-blue-400" />
             </div>
           </div>
-          <div className="mt-4 flex items-center text-sm">
-            <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-            <span className="text-green-600">+12%</span>
-            <span className="text-gray-500 ml-1">from last month</span>
+          <div className="mt-6 flex items-center text-sm relative z-10">
+            <TrendingUp className="w-4 h-4 text-green-500 mr-2" />
+            <span className="text-green-600 dark:text-green-400 font-medium">+12%</span>
+            <span className="text-gray-500 dark:text-gray-400 ml-2">from last month</span>
           </div>
         </div>
 
         {/* Total Orders */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-6 rounded-2xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 hover:shadow-xl transition-all duration-300">
-          <div className="flex items-center justify-between">
+        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl p-8 rounded-3xl shadow-2xl shadow-green-500/10 border border-white/30 dark:border-gray-700/30 hover:shadow-3xl hover:shadow-green-500/20 transition-all duration-500 hover:scale-105 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="flex items-center justify-between relative z-10">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Orders</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.totalOrders}</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{stats.totalOrders}</p>
             </div>
-            <div className="p-3 bg-green-100/80 dark:bg-green-900/30 rounded-full backdrop-blur-sm">
-              <ShoppingCart className="w-6 h-6 text-green-600 dark:text-green-400" />
+            <div className="p-4 bg-green-500/20 rounded-2xl backdrop-blur-sm border border-white/20">
+              <ShoppingCart className="w-7 h-7 text-green-600 dark:text-green-400" />
             </div>
           </div>
-          <div className="mt-4 flex items-center text-sm">
-            <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-            <span className="text-green-600 dark:text-green-400">+8%</span>
-            <span className="text-gray-500 dark:text-gray-400 ml-1">from last month</span>
+          <div className="mt-6 flex items-center text-sm relative z-10">
+            <TrendingUp className="w-4 h-4 text-green-500 mr-2" />
+            <span className="text-green-600 dark:text-green-400 font-medium">+8%</span>
+            <span className="text-gray-500 dark:text-gray-400 ml-2">from last month</span>
           </div>
         </div>
 
         {/* Total Revenue */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-6 rounded-2xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 hover:shadow-xl transition-all duration-300">
-          <div className="flex items-center justify-between">
+        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl p-8 rounded-3xl shadow-2xl shadow-yellow-500/10 border border-white/30 dark:border-gray-700/30 hover:shadow-3xl hover:shadow-yellow-500/20 transition-all duration-500 hover:scale-105 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-yellow-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="flex items-center justify-between relative z-10">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">${stats.totalRevenue.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">${stats.totalRevenue.toLocaleString()}</p>
             </div>
-            <div className="p-3 bg-yellow-100/80 dark:bg-yellow-900/30 rounded-full backdrop-blur-sm">
-              <DollarSign className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+            <div className="p-4 bg-yellow-500/20 rounded-2xl backdrop-blur-sm border border-white/20">
+              <DollarSign className="w-7 h-7 text-yellow-600 dark:text-yellow-400" />
             </div>
           </div>
-          <div className="mt-4 flex items-center text-sm">
-            <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-            <span className="text-green-600 dark:text-green-400">+15%</span>
-            <span className="text-gray-500 dark:text-gray-400 ml-1">from last month</span>
+          <div className="mt-6 flex items-center text-sm relative z-10">
+            <TrendingUp className="w-4 h-4 text-green-500 mr-2" />
+            <span className="text-green-600 dark:text-green-400 font-medium">+15%</span>
+            <span className="text-gray-500 dark:text-gray-400 ml-2">from last month</span>
           </div>
         </div>
 
         {/* Average Order Value */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-6 rounded-2xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 hover:shadow-xl transition-all duration-300">
-          <div className="flex items-center justify-between">
+        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl p-8 rounded-3xl shadow-2xl shadow-purple-500/10 border border-white/30 dark:border-gray-700/30 hover:shadow-3xl hover:shadow-purple-500/20 transition-all duration-500 hover:scale-105 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="flex items-center justify-between relative z-10">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Avg Order Value</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">${stats.averageOrderValue.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">${stats.averageOrderValue.toLocaleString()}</p>
             </div>
-            <div className="p-3 bg-purple-100/80 dark:bg-purple-900/30 rounded-full backdrop-blur-sm">
-              <BarChart3 className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+            <div className="p-4 bg-purple-500/20 rounded-2xl backdrop-blur-sm border border-white/20">
+              <BarChart3 className="w-7 h-7 text-purple-600 dark:text-purple-400" />
             </div>
           </div>
-          <div className="mt-4 flex items-center text-sm">
-            <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
-            <span className="text-red-600 dark:text-red-400">-2%</span>
-            <span className="text-gray-500 dark:text-gray-400 ml-1">from last month</span>
+          <div className="mt-6 flex items-center text-sm relative z-10">
+            <TrendingDown className="w-4 h-4 text-red-500 mr-2" />
+            <span className="text-red-600 dark:text-red-400 font-medium">-2%</span>
+            <span className="text-gray-500 dark:text-gray-400 ml-2">from last month</span>
           </div>
         </div>
       </div>
 
       {/* Recent Orders and Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
         {/* Recent Orders */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
-          <div className="p-6 border-b border-gray-200/50 dark:border-gray-700/50">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Recent Orders</h2>
+        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl rounded-3xl shadow-2xl shadow-blue-500/10 border border-white/30 dark:border-gray-700/30 overflow-hidden relative group">
+          {/* Animated background */}
+          <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="p-8 border-b border-white/20 dark:border-gray-700/20 relative z-10">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Recent Orders</h2>
           </div>
           <div className="p-6">
             <div className="space-y-4">
