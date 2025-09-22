@@ -84,6 +84,12 @@ export default function Admin() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'dashboard');
+
+  // Обновляем activeTab при изменении URL параметров
+  useEffect(() => {
+    const tab = searchParams.get('tab') || 'dashboard';
+    setActiveTab(tab);
+  }, [searchParams]);
   const [loading, setLoading] = useState(false);
   const [demos, setDemos] = useState<Demo[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -361,26 +367,26 @@ export default function Admin() {
     <WordPressAdminLayout currentPage={activeTab}>
       <div className="space-y-6">
         {/* Page Header */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl p-8 rounded-3xl shadow-2xl shadow-blue-500/10 border border-white/30 dark:border-gray-700/30">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-3">
             {tabs.find(tab => tab.id === activeTab)?.label || 'Admin Panel'}
           </h1>
-          <p className="text-gray-600">Manage your platform content and settings</p>
+          <p className="text-gray-600 dark:text-gray-400 text-lg">Manage your platform content and settings</p>
         </div>
 
         {/* Контент вкладок */}
         {activeTab === 'demos' && (
           <div className="space-y-6">
             {/* Header and Actions */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl p-8 rounded-3xl shadow-2xl shadow-blue-500/10 border border-white/30 dark:border-gray-700/30">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <h2 className="text-xl font-semibold text-gray-900">Demo Management</h2>
-                <div className="flex gap-2">
-                  <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <Plus className="w-4 h-4" />
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Demo Management</h2>
+                <div className="flex gap-3">
+                  <button className="flex items-center gap-2 px-6 py-3 bg-blue-500/80 text-white rounded-2xl font-semibold hover:bg-blue-600/80 transition-all duration-300 backdrop-blur-sm border border-white/20 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-105">
+                    <Plus className="w-5 h-5" />
                     Add Demo
                   </button>
-                  <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <button className="px-6 py-3 border border-white/30 dark:border-gray-600/30 text-gray-700 dark:text-gray-300 rounded-2xl hover:bg-white/40 dark:hover:bg-gray-700/40 transition-all duration-300 backdrop-blur-sm hover:shadow-lg hover:shadow-blue-500/10 hover:scale-105">
                     Import
                   </button>
                 </div>
@@ -388,22 +394,22 @@ export default function Admin() {
             </div>
 
             {/* Фильтры */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl p-8 rounded-3xl shadow-2xl shadow-blue-500/10 border border-white/30 dark:border-gray-700/30">
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-400" />
                   <input
                     type="text"
                     placeholder="Search demos..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-12 pr-6 py-4 border border-white/30 dark:border-gray-600/30 bg-white/40 dark:bg-gray-700/40 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 backdrop-blur-xl shadow-lg shadow-blue-500/10 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/20"
                   />
                 </div>
                 <select 
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="px-6 py-4 border border-white/30 dark:border-gray-600/30 bg-white/40 dark:bg-gray-700/40 text-gray-900 dark:text-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 backdrop-blur-xl shadow-lg shadow-blue-500/10 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/20"
                 >
                   <option value="">All Statuses</option>
                   <option value="active">Active</option>
@@ -414,62 +420,62 @@ export default function Admin() {
             </div>
 
             {/* Таблица демо */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl rounded-3xl shadow-2xl shadow-blue-500/10 border border-white/30 dark:border-gray-700/30 overflow-hidden">
               {loading ? (
-                <div className="p-8 text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                  <p className="text-gray-600 mt-4">Loading demos...</p>
+                <div className="p-12 text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                  <p className="text-gray-600 dark:text-gray-400 mt-6 text-lg">Loading demos...</p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="glass-subtle">
+                    <thead className="bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm">
                       <tr>
-                        <th className="px-4 py-3 text-left text-ink/70 font-medium">Title</th>
-                        <th className="px-4 py-3 text-left text-ink/70 font-medium">Vendor</th>
-                        <th className="px-4 py-3 text-left text-ink/70 font-medium">Status</th>
-                        <th className="px-4 py-3 text-left text-ink/70 font-medium">Views</th>
-                        <th className="px-4 py-3 text-left text-ink/70 font-medium">Created</th>
-                        <th className="px-4 py-3 text-left text-ink/70 font-medium">Actions</th>
+                        <th className="px-6 py-4 text-left text-gray-700 dark:text-gray-300 font-semibold">Title</th>
+                        <th className="px-6 py-4 text-left text-gray-700 dark:text-gray-300 font-semibold">Vendor</th>
+                        <th className="px-6 py-4 text-left text-gray-700 dark:text-gray-300 font-semibold">Status</th>
+                        <th className="px-6 py-4 text-left text-gray-700 dark:text-gray-300 font-semibold">Views</th>
+                        <th className="px-6 py-4 text-left text-gray-700 dark:text-gray-300 font-semibold">Created</th>
+                        <th className="px-6 py-4 text-left text-gray-700 dark:text-gray-300 font-semibold">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {demos.length > 0 ? (
                         demos.map((demo) => (
-                          <tr key={demo.id} className="border-t border-ink/10">
-                            <td className="px-4 py-3 text-ink">{demo.title}</td>
-                            <td className="px-4 py-3 text-ink/80">{demo.vendor?.name || 'Unknown'}</td>
-                            <td className="px-4 py-3">
-                              <span className={`px-2 py-1 text-xs rounded-full ${
+                          <tr key={demo.id} className="border-t border-white/20 dark:border-gray-700/20 hover:bg-white/30 dark:hover:bg-gray-700/30 transition-all duration-300">
+                            <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium">{demo.title}</td>
+                            <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{demo.vendor?.name || 'Unknown'}</td>
+                            <td className="px-6 py-4">
+                              <span className={`px-3 py-1 text-sm rounded-full font-medium ${
                                 demo.status === 'active' 
-                                  ? 'bg-green-500/20 text-green-600' 
+                                  ? 'bg-green-500/20 text-green-700 dark:text-green-400' 
                                   : demo.status === 'draft'
-                                  ? 'bg-yellow-500/20 text-yellow-600'
-                                  : 'bg-red-500/20 text-red-600'
+                                  ? 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-400'
+                                  : 'bg-red-500/20 text-red-700 dark:text-red-400'
                               }`}>
                                 {demo.status}
                               </span>
                             </td>
-                            <td className="px-4 py-3 text-ink/80">{demo.viewCount || 0}</td>
-                            <td className="px-4 py-3 text-ink/80">
+                            <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{demo.viewCount || 0}</td>
+                            <td className="px-6 py-4 text-gray-700 dark:text-gray-300">
                               {new Date(demo.createdAt).toLocaleDateString()}
                             </td>
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-2">
-                                <button className="p-1 text-ink/50 hover:text-ink transition-colors focus-ring rounded" title="View">
-                                  <Eye className="w-4 h-4" />
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-3">
+                                <button className="p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 hover:bg-white/50 dark:hover:bg-gray-700/50 rounded-xl hover:shadow-lg hover:shadow-blue-500/10" title="View">
+                                  <Eye className="w-5 h-5" />
                                 </button>
-                                <button className="p-1 text-ink/50 hover:text-ink transition-colors focus-ring rounded" title="Edit">
-                                  <Edit className="w-4 h-4" />
+                                <button className="p-2 text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-all duration-300 hover:bg-white/50 dark:hover:bg-gray-700/50 rounded-xl hover:shadow-lg hover:shadow-green-500/10" title="Edit">
+                                  <Edit className="w-5 h-5" />
                                 </button>
                                 <a
                                   href={demo.url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="p-1 text-ink/50 hover:text-ink transition-colors focus-ring rounded"
+                                  className="p-2 text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-all duration-300 hover:bg-white/50 dark:hover:bg-gray-700/50 rounded-xl hover:shadow-lg hover:shadow-purple-500/10"
                                   title="Open Demo"
                                 >
-                                  <ExternalLink className="w-4 h-4" />
+                                  <ExternalLink className="w-5 h-5" />
                                 </a>
                               </div>
                             </td>
@@ -477,7 +483,7 @@ export default function Admin() {
                         ))
                       ) : (
                         <tr>
-                          <td colSpan={6} className="px-4 py-8 text-center text-ink/70">
+                          <td colSpan={6} className="px-6 py-12 text-center text-gray-600 dark:text-gray-400 text-lg">
                             No demos found
                           </td>
                         </tr>
