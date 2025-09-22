@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAdminTheme } from '../lib/use-admin-theme';
 import { 
   LayoutDashboard,
   Database,
@@ -19,7 +20,9 @@ import {
   ShoppingCart,
   Tag,
   Image,
-  MessageSquare
+  MessageSquare,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 interface WordPressAdminLayoutProps {
@@ -30,6 +33,9 @@ interface WordPressAdminLayoutProps {
 export default function WordPressAdminLayout({ children, currentPage = 'dashboard' }: WordPressAdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
+  const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
+  const { theme, toggleTheme } = useAdminTheme();
   const router = useRouter();
 
   const menuItems = [
@@ -102,10 +108,27 @@ export default function WordPressAdminLayout({ children, currentPage = 'dashboar
     router.push(href);
   };
 
+  const handleMouseEnter = (menuId: string) => {
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout);
+    }
+    const timeout = setTimeout(() => {
+      setHoveredMenu(menuId);
+    }, 300); // 300ms delay
+    setHoverTimeout(timeout);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout);
+    }
+    setHoveredMenu(null);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Top Bar */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -125,17 +148,29 @@ export default function WordPressAdminLayout({ children, currentPage = 'dashboar
         <div className="flex items-center gap-4">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
             <input
               type="text"
               placeholder="Search..."
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          >
+            {theme === 'light' ? (
+              <Moon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+            ) : (
+              <Sun className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+            )}
+          </button>
+
           {/* Notifications */}
-          <button className="p-2 rounded-md hover:bg-gray-100 transition-colors relative">
-            <Bell className="w-5 h-5 text-gray-600" />
+          <button className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative">
+            <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
             <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
           </button>
 
@@ -183,37 +218,44 @@ export default function WordPressAdminLayout({ children, currentPage = 'dashboar
 
       <div className="flex">
         {/* Sidebar */}
-        <div className={`${sidebarOpen ? 'w-64' : 'w-16'} bg-white border-r border-gray-200 transition-all duration-300 min-h-screen`}>
+        <div className={`${sidebarOpen ? 'w-64' : 'w-16'} bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 min-h-screen`}>
           <nav className="p-4">
             <ul className="space-y-1">
               {menuItems.map((item) => (
-                <li key={item.id}>
+                <li key={item.id} className="relative">
                   <button
                     onClick={() => handleMenuClick(item.href)}
+                    onMouseEnter={() => handleMouseEnter(item.id)}
+                    onMouseLeave={handleMouseLeave}
                     className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                       currentPage === item.id
-                        ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
-                        : 'text-gray-700 hover:bg-gray-100'
+                        ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-r-2 border-blue-700 dark:border-blue-400'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
                     <item.icon className="w-5 h-5 flex-shrink-0" />
                     {sidebarOpen && <span>{item.label}</span>}
                   </button>
                   
-                  {/* Submenu */}
-                  {sidebarOpen && item.children.length > 0 && (
-                    <ul className="ml-8 mt-1 space-y-1">
+                  {/* Submenu with hover delay */}
+                  {item.children.length > 0 && (
+                    <div 
+                      className={`absolute left-full top-0 ml-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-2 min-w-48 z-50 transition-all duration-200 ${
+                        hoveredMenu === item.id ? 'opacity-100 visible' : 'opacity-0 invisible'
+                      }`}
+                      onMouseEnter={() => handleMouseEnter(item.id)}
+                      onMouseLeave={handleMouseLeave}
+                    >
                       {item.children.map((child) => (
-                        <li key={child.id}>
-                          <button
-                            onClick={() => handleMenuClick(child.href)}
-                            className="w-full text-left px-3 py-1 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
-                          >
-                            {child.label}
-                          </button>
-                        </li>
+                        <button
+                          key={child.id}
+                          onClick={() => handleMenuClick(child.href)}
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                        >
+                          {child.label}
+                        </button>
                       ))}
-                    </ul>
+                    </div>
                   )}
                 </li>
               ))}

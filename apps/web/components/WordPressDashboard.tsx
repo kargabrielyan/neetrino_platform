@@ -190,11 +190,11 @@ export default function WordPressDashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome to Neetrino Admin</h1>
-            <p className="text-gray-600">Here's what's happening with your platform today.</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Welcome to Neetrino Admin</h1>
+            <p className="text-gray-600 dark:text-gray-400">Here's what's happening with your platform today.</p>
           </div>
           <div className="flex items-center gap-2">
             {apiStatus === 'connected' && (
@@ -222,11 +222,11 @@ export default function WordPressDashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Demos */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Total Demos</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.totalDemos}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Demos</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.totalDemos}</p>
             </div>
             <div className="p-3 bg-blue-100 rounded-full">
               <Database className="w-6 h-6 text-blue-600" />

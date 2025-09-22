@@ -74,10 +74,9 @@ export default function AdminLogin() {
               </div>
               <h2 className="text-3xl font-bold text-ink">Admin Login</h2>
               <p className="text-ink/70 mt-2">Sign in to access the admin panel</p>
-              <div className="mt-4 p-3 glass-subtle rounded-2xl border border-a3/30">
-                <p className="text-sm text-a3">
-                  <strong>ВНИМАНИЕ:</strong> Логин отключен для тестовой разработки. 
-                  Перейдите напрямую в <a href="/admin" className="text-a1 underline">админ панель</a>.
+              <div className="mt-4 p-4 glass-subtle rounded-2xl border border-a3/30">
+                <p className="text-sm text-a3 text-center">
+                  <strong>DEMO РЕЖИМ:</strong> Нажмите кнопку ниже чтобы войти в админ-панель
                 </p>
               </div>
             </div>
@@ -162,14 +161,14 @@ export default function AdminLogin() {
               </p>
             </div>
             
-            <div className="glass p-4 rounded-2xl border border-a2/30">
-              <p className="text-sm text-ink/60 mb-3">Для разработчиков:</p>
+            <div className="glass p-6 rounded-2xl border border-a2/30">
+              <p className="text-sm text-ink/60 mb-4 text-center">Нажмите здесь для входа:</p>
               <button
                 onClick={handleDeveloperLogin}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2 glass-strong text-ink rounded-lg font-medium hover:glass transition-colors focus-ring"
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 glass-strong text-ink rounded-lg font-semibold hover:glass transition-all duration-300 focus-ring transform hover:scale-105"
               >
-                <User className="w-4 h-4" />
-                Войти как разработчик
+                <User className="w-5 h-5" />
+                Войти в админ-панель
               </button>
             </div>
           </div>
