@@ -74,11 +74,17 @@ export default function AdminLogin() {
               </div>
               <h2 className="text-3xl font-bold text-ink">Admin Login</h2>
               <p className="text-ink/70 mt-2">Sign in to access the admin panel</p>
+              <div className="mt-4 p-3 glass-subtle rounded-2xl border border-a3/30">
+                <p className="text-sm text-a3">
+                  <strong>ВНИМАНИЕ:</strong> Логин отключен для тестовой разработки. 
+                  Перейдите напрямую в <a href="/admin" className="text-a1 underline">админ панель</a>.
+                </p>
+              </div>
             </div>
           </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
-            <div className="glass p-8 rounded-3xl">
+            <div className="glass p-8 rounded-3xl opacity-50">
               {error && (
                 <div className="mb-4 p-3 glass-subtle rounded-2xl border border-a3/30">
                   <p className="text-sm text-a3">{error}</p>
@@ -97,9 +103,10 @@ export default function AdminLogin() {
                       name="username"
                       type="text"
                       required
+                      disabled
                       value={formData.username}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-3 glass-subtle rounded-lg text-ink placeholder-ink/50 focus:outline-none focus:ring-2 focus:ring-a1/50 focus-ring"
+                      className="w-full pl-10 pr-4 py-3 glass-subtle rounded-lg text-ink placeholder-ink/50 focus:outline-none focus:ring-2 focus:ring-a1/50 focus-ring disabled:opacity-50"
                       placeholder="Enter your username"
                     />
                   </div>
@@ -116,15 +123,17 @@ export default function AdminLogin() {
                       name="password"
                       type={showPassword ? 'text' : 'password'}
                       required
+                      disabled
                       value={formData.password}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-12 py-3 glass-subtle rounded-lg text-ink placeholder-ink/50 focus:outline-none focus:ring-2 focus:ring-a1/50 focus-ring"
+                      className="w-full pl-10 pr-12 py-3 glass-subtle rounded-lg text-ink placeholder-ink/50 focus:outline-none focus:ring-2 focus:ring-a1/50 focus-ring disabled:opacity-50"
                       placeholder="Enter your password"
                     />
                     <button
                       type="button"
+                      disabled
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-ink/50 hover:text-ink transition-colors focus-ring rounded"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-ink/50 hover:text-ink transition-colors focus-ring rounded disabled:opacity-50"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -134,20 +143,11 @@ export default function AdminLogin() {
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={true}
                 className="w-full mt-6 flex items-center justify-center gap-2 px-6 py-3 glass-strong text-ink rounded-lg font-semibold hover:glass transition-colors focus-ring disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-ink"></div>
-                    Signing in...
-                  </>
-                ) : (
-                  <>
-                    <Lock className="w-4 h-4" />
-                    Sign In
-                  </>
-                )}
+                <Lock className="w-4 h-4" />
+                Sign In (Disabled)
               </button>
             </div>
           </form>
@@ -156,6 +156,9 @@ export default function AdminLogin() {
             <div className="glass p-4 rounded-2xl">
               <p className="text-sm text-ink/60">
                 Demo credentials: <span className="font-medium text-ink">admin</span> / <span className="font-medium text-ink">admin123</span>
+              </p>
+              <p className="text-xs text-ink/50 mt-2">
+                (Отключено для тестовой разработки)
               </p>
             </div>
             
@@ -175,3 +178,5 @@ export default function AdminLogin() {
     </Layout>
   );
 }
+
+
