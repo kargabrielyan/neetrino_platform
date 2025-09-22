@@ -237,39 +237,62 @@ export default function WordPressAdminLayout({ children, currentPage = 'dashboar
           sidebarOpen ? 'w-64' : 'w-16'
         } ${
           sidebarOpen ? 'fixed md:relative' : 'fixed md:relative'
-        } bg-white/80 dark:bg-gray-800/80 backdrop-blur-3xl border-r border-white/20 dark:border-gray-700/30 transition-all duration-500 min-h-screen z-50 shadow-2xl shadow-blue-500/20 md:shadow-xl md:shadow-blue-500/10`}>
-          <nav className="p-4">
-            <ul className="space-y-1">
+        } bg-white/70 dark:bg-gray-800/70 backdrop-blur-3xl border-r border-white/30 dark:border-gray-700/30 transition-all duration-500 min-h-screen z-50 shadow-2xl shadow-blue-500/20 md:shadow-xl md:shadow-blue-500/10 relative overflow-hidden`}>
+          {/* Animated background elements for sidebar */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-blue-400/10 rounded-full blur-2xl animate-pulse"></div>
+            <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-purple-400/10 rounded-full blur-2xl animate-pulse delay-1000"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-cyan-400/5 rounded-full blur-2xl animate-pulse delay-500"></div>
+          </div>
+          
+          <nav className="p-6 relative z-10">
+            <ul className="space-y-2">
               {menuItems.map((item) => (
                 <li key={item.id} className="relative">
                   <button
                     onClick={() => handleMenuClick(item.href)}
                     onMouseEnter={() => handleMouseEnter(item.id)}
                     onMouseLeave={handleMouseLeave}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-all duration-500 backdrop-blur-md border border-transparent ${
+                    className={`w-full flex items-center gap-4 px-6 py-4 rounded-3xl text-sm font-semibold transition-all duration-500 backdrop-blur-md border border-transparent relative overflow-hidden group ${
                       currentPage === item.id
-                        ? 'bg-blue-500/30 dark:bg-blue-400/30 text-blue-800 dark:text-blue-200 border-r-4 border-blue-500 shadow-2xl shadow-blue-500/30 hover:shadow-3xl hover:shadow-blue-500/40'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-white/40 dark:hover:bg-gray-700/40 hover:shadow-xl hover:shadow-blue-500/20 hover:border-white/30 dark:hover:border-gray-600/30'
+                        ? 'bg-blue-500/40 dark:bg-blue-400/40 text-blue-800 dark:text-blue-200 border-r-4 border-blue-500 shadow-2xl shadow-blue-500/40 hover:shadow-3xl hover:shadow-blue-500/50 hover:scale-105'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:shadow-xl hover:shadow-blue-500/30 hover:border-white/40 dark:hover:border-gray-600/40 hover:scale-105'
                     }`}
                   >
-                    <item.icon className="w-5 h-5 flex-shrink-0" />
-                    {sidebarOpen && <span>{item.label}</span>}
+                    {/* Animated background for active item */}
+                    {currentPage === item.id && (
+                      <div className="absolute inset-0 bg-blue-500/20 dark:bg-blue-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    )}
+                    
+                    <div className="relative z-10 flex items-center gap-4">
+                      <div className={`p-3 rounded-2xl backdrop-blur-sm border border-white/20 ${
+                        currentPage === item.id 
+                          ? 'bg-blue-500/30 dark:bg-blue-400/30' 
+                          : 'bg-white/30 dark:bg-gray-700/30'
+                      }`}>
+                        <item.icon className="w-6 h-6 flex-shrink-0" />
+                      </div>
+                      {sidebarOpen && <span className="font-semibold">{item.label}</span>}
+                    </div>
                   </button>
                   
-                  {/* Submenu with hover delay */}
+                  {/* Submenu with enhanced hover delay */}
                   {item.children.length > 0 && (
                     <div 
-                      className={`absolute left-full top-0 ml-3 bg-white/90 dark:bg-gray-800/90 backdrop-blur-2xl border border-white/30 dark:border-gray-700/30 rounded-2xl shadow-2xl shadow-blue-500/20 py-3 min-w-52 z-50 transition-all duration-500 ${
+                      className={`absolute left-full top-0 ml-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-3xl border border-white/40 dark:border-gray-700/40 rounded-3xl shadow-2xl shadow-blue-500/30 py-4 min-w-56 z-50 transition-all duration-500 relative overflow-hidden ${
                         hoveredMenu === item.id ? 'opacity-100 visible scale-100 translate-x-0' : 'opacity-0 invisible scale-95 -translate-x-2'
                       }`}
                       onMouseEnter={() => handleMouseEnter(item.id)}
                       onMouseLeave={handleMouseLeave}
                     >
+                      {/* Animated background for submenu */}
+                      <div className="absolute inset-0 bg-blue-500/5 dark:bg-blue-400/5 opacity-0 hover:opacity-100 transition-opacity duration-500"></div>
+                      
                       {item.children.map((child) => (
                         <button
                           key={child.id}
                           onClick={() => handleMenuClick(child.href)}
-                          className="w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-white/60 dark:hover:bg-gray-700/60 transition-all duration-300 rounded-xl mx-2 hover:shadow-lg hover:shadow-blue-500/10"
+                          className="w-full text-left px-6 py-4 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-white/60 dark:hover:bg-gray-700/60 transition-all duration-300 rounded-2xl mx-3 hover:shadow-lg hover:shadow-blue-500/20 relative z-10 hover:scale-105"
                         >
                           {child.label}
                         </button>
