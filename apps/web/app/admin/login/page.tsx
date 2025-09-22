@@ -50,6 +50,19 @@ export default function AdminLogin() {
     });
   };
 
+  const handleDeveloperLogin = () => {
+    // Быстрый вход как разработчик без проверки логина/пароля
+    localStorage.setItem('adminToken', 'dev-admin-token');
+    localStorage.setItem('adminUser', JSON.stringify({
+      id: 'dev',
+      username: 'developer',
+      role: 'admin',
+      name: 'Developer'
+    }));
+    
+    router.push('/admin');
+  };
+
   return (
     <Layout showFooter={false}>
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -139,11 +152,22 @@ export default function AdminLogin() {
             </div>
           </form>
 
-          <div className="text-center">
+          <div className="text-center space-y-4">
             <div className="glass p-4 rounded-2xl">
               <p className="text-sm text-ink/60">
                 Demo credentials: <span className="font-medium text-ink">admin</span> / <span className="font-medium text-ink">admin123</span>
               </p>
+            </div>
+            
+            <div className="glass p-4 rounded-2xl border border-a2/30">
+              <p className="text-sm text-ink/60 mb-3">Для разработчиков:</p>
+              <button
+                onClick={handleDeveloperLogin}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 glass-strong text-ink rounded-lg font-medium hover:glass transition-colors focus-ring"
+              >
+                <User className="w-4 h-4" />
+                Войти как разработчик
+              </button>
             </div>
           </div>
         </div>
