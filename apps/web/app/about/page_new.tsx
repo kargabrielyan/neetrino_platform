@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Head from 'next/head';
 import Layout from '../../components/Layout';
 import { 
@@ -18,186 +18,67 @@ import {
   Building,
   ArrowRight,
   Mail,
-  ExternalLink,
-  Shield,
-  Heart
+  ExternalLink
 } from 'lucide-react';
 
 export default function About() {
   const [activeMilestone, setActiveMilestone] = useState(0);
   const [isReducedMotion, setIsReducedMotion] = useState(false);
   const [timelineHeight, setTimelineHeight] = useState(2000);
-  const [containerDimensions, setContainerDimensions] = useState({ width: 1200, height: 2000 });
   const timelineRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
-  const resizeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Debounced resize handler
-  const handleResize = useCallback(() => {
-    if (resizeTimeoutRef.current) {
-      clearTimeout(resizeTimeoutRef.current);
-    }
-    
-    resizeTimeoutRef.current = setTimeout(() => {
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        setContainerDimensions({ width: rect.width, height: rect.height });
-      }
-      
-      if (timelineRef.current) {
-        const contentHeight = timelineRef.current.scrollHeight;
-        setTimelineHeight(Math.max(contentHeight + 240, 2000)); // Add padding for curve tails
-      }
-    }, 150);
-  }, []);
-
-  // Calculate timeline height and container dimensions
-  const calculateDimensions = useCallback(() => {
-    if (containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      setContainerDimensions({ width: rect.width, height: rect.height });
-    }
-    
+  // Calculate timeline height based on content
+  const calculateTimelineHeight = useCallback(() => {
     if (timelineRef.current) {
       const contentHeight = timelineRef.current.scrollHeight;
-      setTimelineHeight(Math.max(contentHeight + 240, 2000)); // Add padding for curve tails
+      setTimelineHeight(Math.max(contentHeight, 2000));
     }
   }, []);
 
-  // Check for reduced motion preference and calculate dimensions
+  // Check for reduced motion preference and calculate height
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     setIsReducedMotion(mediaQuery.matches);
     
-    calculateDimensions();
+    calculateTimelineHeight();
     
+    const handleResize = () => calculateTimelineHeight();
     window.addEventListener('resize', handleResize);
     
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      if (resizeTimeoutRef.current) {
-        clearTimeout(resizeTimeoutRef.current);
-      }
-    };
-  }, [calculateDimensions, handleResize]);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [calculateTimelineHeight]);
 
-  // Generate smooth S-curve path
-  const generateCurvePath = useCallback((width: number, height: number) => {
-    const padding = 120; // Top and bottom padding
-    const effectiveHeight = height - (padding * 2);
-    const centerX = width / 2;
-    
-    // Responsive amplitude based on screen size
-    let amplitude;
-    if (width >= 1024) {
-      amplitude = width * 0.20; // Desktop: 20% of width
-    } else if (width >= 768) {
-      amplitude = width * 0.16; // Tablet: 16% of width
-    } else {
-      amplitude = width * 0.12; // Mobile: 12% of width
-    }
-    
-    // Ensure minimum gap from edges
-    amplitude = Math.min(amplitude, (width / 2) - 64);
-    
-    // Create smooth S-curve with multiple control points
-    const points = [];
-    const numPoints = 8;
-    
-    for (let i = 0; i <= numPoints; i++) {
-      const t = i / numPoints;
-      const y = padding + (t * effectiveHeight);
-      
-      // S-curve formula with smooth transitions
-      const x = centerX + amplitude * Math.sin(t * Math.PI * 2.5) * Math.pow(1 - t, 0.8);
-      
-      points.push({ x, y });
-    }
-    
-    // Generate SVG path
-    let path = `M ${points[0].x} ${points[0].y}`;
-    
-    for (let i = 1; i < points.length; i++) {
-      const prev = points[i - 1];
-      const curr = points[i];
-      const next = points[i + 1];
-      
-      if (next) {
-        // Smooth curve with control points
-        const cp1x = prev.x + (curr.x - prev.x) * 0.5;
-        const cp1y = prev.y + (curr.y - prev.y) * 0.5;
-        const cp2x = curr.x - (next.x - curr.x) * 0.5;
-        const cp2y = curr.y - (next.y - curr.y) * 0.5;
-        
-        path += ` C ${cp1x} ${cp1y} ${cp2x} ${cp2y} ${curr.x} ${curr.y}`;
-      } else {
-        path += ` L ${curr.x} ${curr.y}`;
-      }
-    }
-    
-    return { path, points };
-  }, []);
-
-  // Get point on curve by percentage
-  const getPointOnCurve = useCallback((percentage: number, width: number, height: number) => {
-    const padding = 120;
-    const effectiveHeight = height - (padding * 2);
-    const centerX = width / 2;
-    
-    let amplitude;
-    if (width >= 1024) {
-      amplitude = width * 0.20;
-    } else if (width >= 768) {
-      amplitude = width * 0.16;
-    } else {
-      amplitude = width * 0.12;
-    }
-    
-    amplitude = Math.min(amplitude, (width / 2) - 64);
-    
+  // Calculate point on S-curve based on percentage
+  const getPointOnCurve = useCallback((percentage: number, containerWidth: number, containerHeight: number) => {
     const t = percentage / 100;
-    const y = padding + (t * effectiveHeight);
-    const x = centerX + amplitude * Math.sin(t * Math.PI * 2.5) * Math.pow(1 - t, 0.8);
+    const amplitude = Math.min(containerWidth * 0.15, 200); // Responsive amplitude
+    
+    // S-curve with smooth transitions
+    const x = containerWidth / 2 + amplitude * Math.sin(t * Math.PI * 2) * (1 - t * 0.3);
+    const y = t * containerHeight;
     
     return { x, y };
   }, []);
-
-  // Calculate normal vector for connector
-  const getNormalVector = useCallback((percentage: number, width: number, height: number) => {
-    const delta = 0.01; // Small delta for derivative calculation
-    const point1 = getPointOnCurve(Math.max(0, percentage - delta), width, height);
-    const point2 = getPointOnCurve(Math.min(100, percentage + delta), width, height);
-    
-    const dx = point2.x - point1.x;
-    const dy = point2.y - point1.y;
-    const length = Math.sqrt(dx * dx + dy * dy);
-    
-    if (length === 0) return { x: 1, y: 0 };
-    
-    // Normalize and rotate 90 degrees for normal
-    return { x: -dy / length, y: dx / length };
-  }, [getPointOnCurve]);
 
   // Intersection Observer for milestone activation
   useEffect(() => {
     if (isReducedMotion) return;
 
     const milestones = document.querySelectorAll('[data-milestone]');
-    if (milestones.length === 0) return;
-
+    
     observerRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const milestoneIndex = parseInt(entry.target.getAttribute('data-milestone') || '0');
-            setActiveMilestone(milestoneIndex);
+            const index = parseInt(entry.target.getAttribute('data-milestone') || '0');
+            setActiveMilestone(index);
           }
         });
       },
       {
-        threshold: 0.3,
-        rootMargin: '-30% 0px -30% 0px'
+        threshold: 0.5,
+        rootMargin: '-20% 0px -20% 0px'
       }
     );
 
@@ -315,132 +196,40 @@ export default function About() {
                 </p>
               </div>
 
-              <div ref={containerRef} className="relative max-w-6xl mx-auto">
-                {/* SVG Layer with Professional S-Curve */}
+              <div className="relative max-w-6xl mx-auto">
+                {/* SVG Layer with S-Curve */}
                 <div className="absolute inset-0 pointer-events-none z-0" style={{ height: `${timelineHeight}px` }}>
                   <svg 
                     className="w-full h-full" 
-                    viewBox={`0 0 ${containerDimensions.width} ${timelineHeight}`}
+                    viewBox={`0 0 1200 ${timelineHeight}`}
                     preserveAspectRatio="none"
                   >
                     <defs>
-                      {/* Single continuous gradient */}
-                      <linearGradient 
-                        id="timelineGradient" 
-                        x1="0%" 
-                        y1="0%" 
-                        x2="0%" 
-                        y2="100%" 
-                        gradientUnits="userSpaceOnUse"
-                      >
+                      <linearGradient id="timelineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                         <stop offset="0%" stopColor="#3B82F6" />
-                        <stop offset="16%" stopColor="#10B981" />
-                        <stop offset="32%" stopColor="#8B5CF6" />
-                        <stop offset="48%" stopColor="#F59E0B" />
-                        <stop offset="64%" stopColor="#EF4444" />
-                        <stop offset="80%" stopColor="#06B6D4" />
+                        <stop offset="14%" stopColor="#10B981" />
+                        <stop offset="28%" stopColor="#8B5CF6" />
+                        <stop offset="42%" stopColor="#F59E0B" />
+                        <stop offset="56%" stopColor="#EF4444" />
+                        <stop offset="70%" stopColor="#06B6D4" />
+                        <stop offset="84%" stopColor="#84CC16" />
                         <stop offset="100%" stopColor="#F97316" />
                       </linearGradient>
-                      
-                      {/* Glow filter for active nodes */}
-                      <filter id="nodeGlow" x="-50%" y="-50%" width="200%" height="200%">
-                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                        <feMerge> 
-                          <feMergeNode in="coloredBlur"/>
-                          <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                      </filter>
                     </defs>
                     
-                    {/* Main S-Curve Path - Generated dynamically */}
+                    {/* Main S-Curve Path */}
                     <path
-                      d={generateCurvePath(containerDimensions.width, timelineHeight).path}
+                      d={`M600,0 C600,${timelineHeight * 0.1} 200,${timelineHeight * 0.2} 600,${timelineHeight * 0.4} C1000,${timelineHeight * 0.6} 200,${timelineHeight * 0.8} 600,${timelineHeight * 0.9} C1000,${timelineHeight * 0.95} 600,${timelineHeight} 600,${timelineHeight}`}
                       stroke="url(#timelineGradient)"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
+                      strokeWidth="3"
                       fill="none"
                       className="opacity-100"
                       style={{
                         strokeDasharray: isReducedMotion ? 'none' : '2000',
                         strokeDashoffset: isReducedMotion ? '0' : '2000',
-                        animation: isReducedMotion ? 'none' : 'drawPath 1.5s ease-in-out forwards'
+                        animation: isReducedMotion ? 'none' : 'drawPath 1.2s ease-in-out forwards'
                       }}
                     />
-                    
-                    {/* Timeline Nodes and Connectors */}
-                    {milestones.map((milestone, index) => {
-                      const isActive = activeMilestone === index;
-                      const point = getPointOnCurve(milestone.positionPct, containerDimensions.width, timelineHeight);
-                      const normal = getNormalVector(milestone.positionPct, containerDimensions.width, timelineHeight);
-                      const isLeft = index % 2 === 0;
-                      
-                      // Connector length (20px)
-                      const connectorLength = 20;
-                      const connectorEnd = {
-                        x: point.x + normal.x * connectorLength * (isLeft ? -1 : 1),
-                        y: point.y + normal.y * connectorLength * (isLeft ? -1 : 1)
-                      };
-                      
-                      return (
-                        <g key={milestone.id}>
-                          {/* Connector line */}
-                          <line
-                            x1={point.x}
-                            y1={point.y}
-                            x2={connectorEnd.x}
-                            y2={connectorEnd.y}
-                            stroke={milestone.color === 'blue' ? '#3B82F6' :
-                                   milestone.color === 'green' ? '#10B981' :
-                                   milestone.color === 'purple' ? '#8B5CF6' :
-                                   milestone.color === 'yellow' ? '#F59E0B' :
-                                   milestone.color === 'red' ? '#EF4444' :
-                                   milestone.color === 'cyan' ? '#06B6D4' :
-                                   '#84CC16'}
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            opacity="0.8"
-                          />
-                          
-                          {/* Timeline node */}
-                          <circle
-                            cx={point.x}
-                            cy={point.y}
-                            r={isActive ? 14 : 10}
-                            fill={milestone.color === 'blue' ? '#3B82F6' :
-                                  milestone.color === 'green' ? '#10B981' :
-                                  milestone.color === 'purple' ? '#8B5CF6' :
-                                  milestone.color === 'yellow' ? '#F59E0B' :
-                                  milestone.color === 'red' ? '#EF4444' :
-                                  milestone.color === 'cyan' ? '#06B6D4' :
-                                  '#84CC16'}
-                            stroke="white"
-                            strokeWidth="3"
-                            filter={isActive ? 'url(#nodeGlow)' : 'none'}
-                            className="transition-all duration-300"
-                          />
-                          
-                          {/* Active node pulse */}
-                          {isActive && !isReducedMotion && (
-                            <circle
-                              cx={point.x}
-                              cy={point.y}
-                              r="20"
-                              fill="none"
-                              stroke={milestone.color === 'blue' ? '#3B82F6' :
-                                     milestone.color === 'green' ? '#10B981' :
-                                     milestone.color === 'purple' ? '#8B5CF6' :
-                                     milestone.color === 'yellow' ? '#F59E0B' :
-                                     milestone.color === 'red' ? '#EF4444' :
-                                     milestone.color === 'cyan' ? '#06B6D4' :
-                                     '#84CC16'}
-                              strokeWidth="2"
-                              opacity="0.6"
-                              className="animate-ping"
-                            />
-                          )}
-                        </g>
-                      );
-                    })}
                   </svg>
                 </div>
 
@@ -449,66 +238,96 @@ export default function About() {
                   {milestones.map((milestone, index) => {
                     const isLeft = index % 2 === 0;
                     const isActive = activeMilestone === index;
-                    const point = getPointOnCurve(milestone.positionPct, containerDimensions.width, timelineHeight);
-                    const normal = getNormalVector(milestone.positionPct, containerDimensions.width, timelineHeight);
-                    
-                    // Calculate card position based on curve point and normal
-                    const cardOffset = 80; // Distance from curve to card
-                    const cardX = point.x + normal.x * cardOffset * (isLeft ? -1 : 1);
-                    const cardY = point.y + normal.y * cardOffset * (isLeft ? -1 : 1);
+                    const topPosition = (milestone.positionPct / 100) * timelineHeight;
                     
                     return (
                       <div
                         key={milestone.id}
                         data-milestone={index}
-                        className="absolute"
+                        className="absolute left-1/2 transform -translate-x-1/2"
                         style={{ 
-                          left: `${cardX}px`,
-                          top: `${cardY}px`,
-                          transform: 'translate(-50%, -50%)'
+                          top: `${topPosition}px`,
+                          width: '100%'
                         }}
                       >
-                        {/* Content Card */}
-                        <div 
-                          className={`max-w-sm lg:max-w-md transition-all duration-500 ${
-                            isActive ? 'transform -translate-y-2 scale-105' : ''
-                          }`}
-                        >
-                          <div className={`bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 ${
-                            isActive ? 'shadow-2xl ring-2 ring-blue-200 dark:ring-blue-800' : ''
-                          }`}>
-                            <div className="flex items-center gap-3 mb-3">
-                              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                                milestone.color === 'blue' ? 'bg-blue-100 dark:bg-blue-900/30' :
-                                milestone.color === 'green' ? 'bg-green-100 dark:bg-green-900/30' :
-                                milestone.color === 'purple' ? 'bg-purple-100 dark:bg-purple-900/30' :
-                                milestone.color === 'yellow' ? 'bg-yellow-100 dark:bg-yellow-900/30' :
-                                milestone.color === 'red' ? 'bg-red-100 dark:bg-red-900/30' :
-                                milestone.color === 'cyan' ? 'bg-cyan-100 dark:bg-cyan-900/30' :
-                                'bg-lime-100 dark:bg-lime-900/30'
-                              }`}>
-                                <milestone.icon className={`w-5 h-5 ${
-                                  milestone.color === 'blue' ? 'text-blue-600 dark:text-blue-400' :
-                                  milestone.color === 'green' ? 'text-green-600 dark:text-green-400' :
-                                  milestone.color === 'purple' ? 'text-purple-600 dark:text-purple-400' :
-                                  milestone.color === 'yellow' ? 'text-yellow-600 dark:text-yellow-400' :
-                                  milestone.color === 'red' ? 'text-red-600 dark:text-red-400' :
-                                  milestone.color === 'cyan' ? 'text-cyan-600 dark:text-cyan-400' :
-                                  'text-lime-600 dark:text-lime-400'
-                                }`} />
-                              </div>
-                              <div>
-                                <div className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                                  {milestone.yearOrDate}
+                        <div className={`flex items-center ${isLeft ? 'flex-row' : 'flex-row-reverse'} gap-4 lg:gap-8`}>
+                          {/* Content Card */}
+                          <div 
+                            className={`flex-1 max-w-sm lg:max-w-md transition-all duration-500 ${
+                              isActive ? 'transform translate-y-1' : ''
+                            } ${isLeft ? 'lg:mr-24' : 'lg:ml-24'}`}
+                          >
+                            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700">
+                              <div className="flex items-center gap-3 mb-3">
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                                  milestone.color === 'blue' ? 'bg-blue-100 dark:bg-blue-900/30' :
+                                  milestone.color === 'green' ? 'bg-green-100 dark:bg-green-900/30' :
+                                  milestone.color === 'purple' ? 'bg-purple-100 dark:bg-purple-900/30' :
+                                  milestone.color === 'yellow' ? 'bg-yellow-100 dark:bg-yellow-900/30' :
+                                  milestone.color === 'red' ? 'bg-red-100 dark:bg-red-900/30' :
+                                  milestone.color === 'cyan' ? 'bg-cyan-100 dark:bg-cyan-900/30' :
+                                  'bg-lime-100 dark:bg-lime-900/30'
+                                }`}>
+                                  <milestone.icon className={`w-5 h-5 ${
+                                    milestone.color === 'blue' ? 'text-blue-600 dark:text-blue-400' :
+                                    milestone.color === 'green' ? 'text-green-600 dark:text-green-400' :
+                                    milestone.color === 'purple' ? 'text-purple-600 dark:text-purple-400' :
+                                    milestone.color === 'yellow' ? 'text-yellow-600 dark:text-yellow-400' :
+                                    milestone.color === 'red' ? 'text-red-600 dark:text-red-400' :
+                                    milestone.color === 'cyan' ? 'text-cyan-600 dark:text-cyan-400' :
+                                    'text-lime-600 dark:text-lime-400'
+                                  }`} />
                                 </div>
-                                <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-                                  {milestone.title}
-                                </h3>
+                                <div>
+                                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                                    {milestone.yearOrDate}
+                                  </div>
+                                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
+                                    {milestone.title}
+                                  </h3>
+                                </div>
                               </div>
+                              <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                                {milestone.description}
+                              </p>
                             </div>
-                            <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                              {milestone.description}
-                            </p>
+                          </div>
+
+                          {/* Connector Line */}
+                          <div className={`w-6 lg:w-8 h-0.5 ${
+                            milestone.color === 'blue' ? 'bg-blue-500' :
+                            milestone.color === 'green' ? 'bg-green-500' :
+                            milestone.color === 'purple' ? 'bg-purple-500' :
+                            milestone.color === 'yellow' ? 'bg-yellow-500' :
+                            milestone.color === 'red' ? 'bg-red-500' :
+                            milestone.color === 'cyan' ? 'bg-cyan-500' :
+                            'bg-lime-500'
+                          }`} />
+
+                          {/* Timeline Node */}
+                          <div className="relative z-20">
+                            <div className={`rounded-full border-4 border-white dark:border-gray-800 shadow-lg transition-all duration-300 ${
+                              isActive ? 'w-8 h-8 scale-110' : 'w-6 h-6'
+                            } ${
+                              milestone.color === 'blue' ? 'bg-blue-500' :
+                              milestone.color === 'green' ? 'bg-green-500' :
+                              milestone.color === 'purple' ? 'bg-purple-500' :
+                              milestone.color === 'yellow' ? 'bg-yellow-500' :
+                              milestone.color === 'red' ? 'bg-red-500' :
+                              milestone.color === 'cyan' ? 'bg-cyan-500' :
+                              'bg-lime-500'
+                            }`} />
+                            {isActive && !isReducedMotion && (
+                              <div className={`absolute inset-0 rounded-full animate-ping ${
+                                milestone.color === 'blue' ? 'bg-blue-400' :
+                                milestone.color === 'green' ? 'bg-green-400' :
+                                milestone.color === 'purple' ? 'bg-purple-400' :
+                                milestone.color === 'yellow' ? 'bg-yellow-400' :
+                                milestone.color === 'red' ? 'bg-red-400' :
+                                milestone.color === 'cyan' ? 'bg-cyan-400' :
+                                'bg-lime-400'
+                              }`} />
+                            )}
                           </div>
                         </div>
                       </div>

@@ -61,5 +61,46 @@
     "phone": "+374 44 343 000",
     "hours": "Mon-Fri: 09:00-18:00",
     "copyright": "© 2025 Neetrino. All rights reserved."
+  },
+  "portfolio": {
+    "hero": {
+      "title": "Our Portfolio",
+      "subtitle": "Explore our best projects and solutions we've created for our clients",
+      "stats": {
+        "projects": "Projects",
+        "clients": "Clients",
+        "technologies": "Technologies"
+      }
+    },
+    "filters": {
+      "all": "All Projects",
+      "web": "Web Development",
+      "mobile": "Mobile Apps",
+      "ai": "AI Solutions",
+      "ecommerce": "E-commerce",
+      "dashboards": "Dashboards",
+      "corporate": "Corporate",
+      "search_placeholder": "Search by name or description...",
+      "tech_filter": "Filter by technologies",
+      "reset": "Reset filters"
+    },
+    "project": {
+      "view_project": "View Project",
+      "case_study": "Case Study",
+      "technologies": "Technologies",
+      "category": "Category",
+      "year": "Year"
+    },
+    "cta": {
+      "title": "Interested in Collaboration?",
+      "subtitle": "Let's discuss your project and create something amazing together",
+      "button": "Discuss Project"
+    },
+    "pagination": {
+      "load_more": "Load More",
+      "showing": "Showing",
+      "of": "of",
+      "projects": "projects"
+    }
   }
 }
