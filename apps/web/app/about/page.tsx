@@ -82,8 +82,10 @@ export default function About() {
     };
   }, [calculateDimensions, handleResize]);
 
-  // Generate smooth S-curve path
+  // Generate smooth S-curve path with fallback
   const generateCurvePath = useCallback((width: number, height: number) => {
+    console.log('🎨 Generating curve path:', { width, height });
+    
     const padding = 120; // Top and bottom padding
     const effectiveHeight = height - (padding * 2);
     const centerX = width / 2;
@@ -101,6 +103,8 @@ export default function About() {
     // Ensure minimum gap from edges
     amplitude = Math.min(amplitude, (width / 2) - 64);
     
+    console.log('📐 Curve parameters:', { padding, effectiveHeight, centerX, amplitude });
+    
     // Create smooth S-curve with multiple control points
     const points = [];
     const numPoints = 8;
@@ -109,13 +113,15 @@ export default function About() {
       const t = i / numPoints;
       const y = padding + (t * effectiveHeight);
       
-      // S-curve formula with smooth transitions
+      // S-curve formula with smooth transitions - simplified for reliability
       const x = centerX + amplitude * Math.sin(t * Math.PI * 2.5) * Math.pow(1 - t, 0.8);
       
-      points.push({ x, y });
+      points.push({ x: Math.max(32, Math.min(width - 32, x)), y: Math.max(padding, Math.min(height - padding, y)) });
     }
     
-    // Generate SVG path
+    console.log('📍 Generated points:', points);
+    
+    // Generate SVG path with error handling
     let path = `M ${points[0].x} ${points[0].y}`;
     
     for (let i = 1; i < points.length; i++) {
@@ -135,6 +141,8 @@ export default function About() {
         path += ` L ${curr.x} ${curr.y}`;
       }
     }
+    
+    console.log('🛤️ Generated path:', path);
     
     return { path, points };
   }, []);
@@ -186,11 +194,14 @@ export default function About() {
     const milestones = document.querySelectorAll('[data-milestone]');
     if (milestones.length === 0) return;
 
+    console.log('👀 Setting up milestone observer for', milestones.length, 'milestones');
+
     observerRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const milestoneIndex = parseInt(entry.target.getAttribute('data-milestone') || '0');
+            console.log('🎯 Milestone activated:', milestoneIndex, entry.target);
             setActiveMilestone(milestoneIndex);
           }
         });
@@ -352,19 +363,30 @@ export default function About() {
                       </filter>
                     </defs>
                     
-                    {/* Main S-Curve Path - Generated dynamically */}
+                    {/* Main S-Curve Path - Generated dynamically with fallback */}
                     <path
                       d={generateCurvePath(containerDimensions.width, timelineHeight).path}
                       stroke="url(#timelineGradient)"
                       strokeWidth="2.5"
                       strokeLinecap="round"
                       fill="none"
-                      className="opacity-100"
+                      className={`opacity-100 ${!isReducedMotion ? 'timeline-path' : ''}`}
                       style={{
                         strokeDasharray: isReducedMotion ? 'none' : '2000',
                         strokeDashoffset: isReducedMotion ? '0' : '2000',
-                        animation: isReducedMotion ? 'none' : 'drawPath 1.5s ease-in-out forwards'
+                        animation: isReducedMotion ? 'none' : 'drawPath 2s ease-in-out forwards'
                       }}
+                    />
+                    
+                    {/* Fallback straight line if curve fails */}
+                    <path
+                      d={`M ${containerDimensions.width / 2} 120 L ${containerDimensions.width / 2} ${timelineHeight - 120}`}
+                      stroke="url(#timelineGradient)"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      fill="none"
+                      className="opacity-30"
+                      style={{ display: 'none' }}
                     />
                     
                     {/* Timeline Nodes and Connectors */}
@@ -419,25 +441,7 @@ export default function About() {
                             className="transition-all duration-300"
                           />
                           
-                          {/* Active node pulse */}
-                          {isActive && !isReducedMotion && (
-                            <circle
-                              cx={point.x}
-                              cy={point.y}
-                              r="20"
-                              fill="none"
-                              stroke={milestone.color === 'blue' ? '#3B82F6' :
-                                     milestone.color === 'green' ? '#10B981' :
-                                     milestone.color === 'purple' ? '#8B5CF6' :
-                                     milestone.color === 'yellow' ? '#F59E0B' :
-                                     milestone.color === 'red' ? '#EF4444' :
-                                     milestone.color === 'cyan' ? '#06B6D4' :
-                                     '#84CC16'}
-                              strokeWidth="2"
-                              opacity="0.6"
-                              className="animate-ping"
-                            />
-                          )}
+                          {/* Active node pulse - removed to prevent flying circles */}
                         </g>
                       );
                     })}
@@ -634,10 +638,22 @@ export default function About() {
         @keyframes drawPath {
           from {
             stroke-dashoffset: 2000;
+            opacity: 0.3;
+          }
+          50% {
+            opacity: 0.8;
           }
           to {
             stroke-dashoffset: 0;
+            opacity: 1;
           }
+        }
+        
+        /* Ensure timeline path is always visible */
+        .timeline-path {
+          stroke-dasharray: 2000;
+          stroke-dashoffset: 2000;
+          animation: drawPath 2s ease-in-out forwards;
         }
         
         @media (prefers-reduced-motion: reduce) {
@@ -648,6 +664,11 @@ export default function About() {
           }
           
           path {
+            stroke-dashoffset: 0 !important;
+            animation: none !important;
+          }
+          
+          .timeline-path {
             stroke-dashoffset: 0 !important;
             animation: none !important;
           }

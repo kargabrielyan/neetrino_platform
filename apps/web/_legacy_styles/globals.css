@@ -73,10 +73,14 @@
   }
   
   html {
-    scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+  }
+  
+  /* Smooth scroll behavior - only when data attribute is present */
+  html[data-scroll-behavior="smooth"] {
+    scroll-behavior: smooth;
   }
   
   body {
