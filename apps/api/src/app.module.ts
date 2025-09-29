@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { HttpModule } from '@nestjs/axios';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { databaseConfig } from './config/database.config';
@@ -19,6 +20,10 @@ import { AdminModule } from './modules/admin/admin.module';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
+    }),
+    HttpModule.register({
+      timeout: 30000,
+      maxRedirects: 5,
     }),
     // Подключаем TypeORM только если база данных доступна
     ...(process.env.DB_AVAILABLE === 'true' ? [TypeOrmModule.forRoot(databaseConfig)] : []),

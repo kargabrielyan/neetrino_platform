@@ -28,6 +28,8 @@
     "node": ">=24.0.0"
   },
   "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
     "lucide-react": "^0.544.0"
   }
 }

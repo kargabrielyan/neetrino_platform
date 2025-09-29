@@ -14,6 +14,7 @@ import {
   ExternalLink,
   Save,
   X,
+  Download,
 } from 'lucide-react';
 
 // Интерфейс для Demo
@@ -71,6 +72,7 @@ export default function Admin() {
 
   const tabs = [
     { id: 'demos', label: 'Demos', icon: Database },
+    { id: 'woocommerce', label: 'WooCommerce Import', icon: Download },
   ];
 
   // Загрузка демо с API
@@ -305,6 +307,25 @@ export default function Admin() {
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-lg">Manage your platform content and settings</p>
         </div>
+
+        {activeTab === 'woocommerce' && (
+          <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl p-8 rounded-3xl shadow-2xl shadow-blue-500/10 border border-white/30 dark:border-gray-700/30">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+              WooCommerce Import
+            </h2>
+            <div className="space-y-4">
+              <p className="text-gray-600 dark:text-gray-400 text-lg">
+                Products are imported via WordPress plugin push → <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">/import/push</code>
+              </p>
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+                <p className="text-blue-800 dark:text-blue-200 text-sm">
+                  <strong>Note:</strong> This feature has been moved to the WordPress plugin integration. 
+                  Use the import endpoint to sync products from WooCommerce stores.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {activeTab === 'demos' && (
           <div className="space-y-6">

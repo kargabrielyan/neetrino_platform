@@ -4,10 +4,11 @@ const { demoData } = require('../../../../../lib/demo-data.js');
 // GET - получить конкретное демо
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const demo = demoData.getById(params.id);
+    const { id } = await params;
+    const demo = demoData.getById(id);
     
     if (!demo) {
       return NextResponse.json(
@@ -32,12 +33,13 @@ export async function GET(
 // PUT - обновить демо
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     
-    const updatedDemo = demoData.update(params.id, {
+    const updatedDemo = demoData.update(id, {
       title: body.title,
       description: body.description,
       url: body.url,
@@ -71,12 +73,13 @@ export async function PUT(
 // DELETE - удалить демо
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    console.log('🗑️ API: Начинаем удаление демо с ID:', params.id);
+    const { id } = await params;
+    console.log('🗑️ API: Начинаем удаление демо с ID:', id);
     
-    const success = demoData.delete(params.id);
+    const success = demoData.delete(id);
     console.log('🗑️ API: Результат удаления:', success);
     
     if (!success) {

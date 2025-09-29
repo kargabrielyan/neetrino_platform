@@ -1,13 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ImportRun } from './entities/import-run.entity';
 import { Demo } from '../demos/demo.entity';
 import { Vendor } from '../vendors/vendor.entity';
 import { ImportDiffDto, ImportDiffItemDto, ConfirmImportDto } from './dto/import-diff.dto';
+import { WooCommerceService } from './services/woocommerce.service';
+import { 
+  WooCommerceImportConfigDto, 
+  WooCommerceImportResultDto, 
+  WooCommerceSyncResultDto 
+} from './dto/woocommerce.dto';
 
 @Injectable()
 export class ImportService {
+  private readonly logger = new Logger(ImportService.name);
+
   constructor(
     @InjectRepository(ImportRun)
     private importRunRepository: Repository<ImportRun>,
@@ -15,6 +23,7 @@ export class ImportService {
     private demoRepository: Repository<Demo>,
     @InjectRepository(Vendor)
     private vendorRepository: Repository<Vendor>,
+    private readonly wooCommerceService: WooCommerceService,
   ) {}
 
   async startImport(vendorId: string): Promise<ImportRun> {
@@ -59,49 +68,230 @@ export class ImportService {
     return importRun;
   }
 
-  async getDiff(vendorId: string): Promise<ImportDiffDto> {
-    const vendor = await this.vendorRepository.findOne({ where: { id: vendorId } });
+  /**
+   * Получает продукты из WooCommerce и сравнивает с существующими
+   */
+  async getWooCommerceDiff(config: WooCommerceImportConfigDto): Promise<WooCommerceImportResultDto> {
+    const vendor = await this.vendorRepository.findOne({ where: { id: config.vendorId } });
     if (!vendor) {
-      throw new NotFoundException(`Vendor with ID ${vendorId} not found`);
+      throw new NotFoundException(`Vendor with ID ${config.vendorId} not found`);
     }
 
-    // Здесь будет логика получения данных из внешнего источника
-    // Пока что возвращаем моковые данные
-    const mockUrls = [
-      'https://example1.com/demo1',
-      'https://example2.com/demo2',
-      'https://example3.com/demo3',
-    ];
+    this.logger.log(`Starting WooCommerce import for vendor: ${vendor.name}`);
 
-    const items: ImportDiffItemDto[] = [];
+    // Получаем все продукты из WooCommerce
+    const wooProducts = await this.wooCommerceService.getAllProducts(config);
+    const filteredProducts = this.wooCommerceService.filterProducts(wooProducts, config);
+
+    this.logger.log(`Found ${filteredProducts.length} products after filtering`);
+
+    const items = [];
     let totalNew = 0;
+    let totalExisting = 0;
+    let totalToUpdate = 0;
 
-    for (const url of mockUrls) {
-      const normalizedUrl = this.normalizeUrl(url);
-      
+    for (const product of filteredProducts) {
+      const importItem = this.wooCommerceService.transformProductToImportItem(product, config);
+      const normalizedUrl = this.normalizeUrl(importItem.url);
+
       // Проверяем, существует ли уже такой демо
       const existingDemo = await this.demoRepository.findOne({
         where: { normalizedUrl },
       });
 
       if (!existingDemo) {
+        importItem.status = 'new';
         totalNew++;
-        items.push({
-          vendorName: vendor.name,
-          title: `Demo from ${vendor.name}`,
-          url,
-          normalizedUrl,
-          selected: false,
-        });
+      } else {
+        // Проверяем, нужно ли обновить существующий демо
+        const needsUpdate = this.shouldUpdateDemo(existingDemo, product);
+        if (needsUpdate) {
+          importItem.status = 'update';
+          totalToUpdate++;
+        } else {
+          importItem.status = 'existing';
+          totalExisting++;
+        }
+      }
+
+      items.push(importItem);
+    }
+
+    this.logger.log(`Import analysis complete: ${totalNew} new, ${totalExisting} existing, ${totalToUpdate} to update`);
+
+    return {
+      totalFound: filteredProducts.length,
+      totalNew,
+      totalExisting,
+      totalToUpdate,
+      items,
+    };
+  }
+
+  /**
+   * Проверяет, нужно ли обновить существующий демо
+   */
+  private shouldUpdateDemo(existingDemo: Demo, wooProduct: any): boolean {
+    // Проверяем различные поля на изменения
+    const nameChanged = existingDemo.title !== wooProduct.name;
+    const descriptionChanged = existingDemo.description !== wooProduct.description;
+    const imageChanged = existingDemo.imageUrl !== (wooProduct.images?.[0]?.src || '');
+    
+    return nameChanged || descriptionChanged || imageChanged;
+  }
+
+  /**
+   * Синхронизирует выбранные продукты из WooCommerce
+   */
+  async syncWooCommerceProducts(
+    config: WooCommerceImportConfigDto,
+    selectedItems: Array<{ woocommerceId: number; status: string }>
+  ): Promise<WooCommerceSyncResultDto> {
+    const vendor = await this.vendorRepository.findOne({ where: { id: config.vendorId } });
+    if (!vendor) {
+      throw new NotFoundException(`Vendor with ID ${config.vendorId} not found`);
+    }
+
+    this.logger.log(`Starting WooCommerce sync for ${selectedItems.length} products`);
+
+    let imported = 0;
+    let updated = 0;
+    let errors = 0;
+    const errorDetails: string[] = [];
+
+    for (const item of selectedItems) {
+      try {
+        // Получаем полную информацию о продукте из WooCommerce
+        const wooProduct = await this.wooCommerceService.getProductById(config, item.woocommerceId);
+        const importItem = this.wooCommerceService.transformProductToImportItem(wooProduct, config);
+        const normalizedUrl = this.normalizeUrl(importItem.url);
+
+        if (item.status === 'new') {
+          // Создаем новый демо
+          const demo = this.demoRepository.create({
+            title: importItem.name,
+            description: wooProduct.description || wooProduct.short_description,
+            url: importItem.url,
+            normalizedUrl,
+            vendorId: config.vendorId,
+            status: 'active',
+            category: importItem.category,
+            imageUrl: importItem.imageUrl,
+            metadata: {
+              woocommerceId: wooProduct.id,
+              woocommerceSlug: wooProduct.slug,
+              price: importItem.price,
+              categories: wooProduct.categories,
+              tags: wooProduct.tags,
+              lastSyncAt: new Date(),
+            },
+          });
+
+          await this.demoRepository.save(demo);
+          imported++;
+          this.logger.log(`Imported new demo: ${importItem.name}`);
+
+        } else if (item.status === 'update') {
+          // Обновляем существующий демо
+          const existingDemo = await this.demoRepository.findOne({
+            where: { normalizedUrl },
+          });
+
+          if (existingDemo) {
+            existingDemo.title = importItem.name;
+            existingDemo.description = wooProduct.description || wooProduct.short_description;
+            existingDemo.imageUrl = importItem.imageUrl;
+            existingDemo.category = importItem.category;
+            existingDemo.metadata = {
+              ...existingDemo.metadata,
+              woocommerceId: wooProduct.id,
+              woocommerceSlug: wooProduct.slug,
+              price: importItem.price,
+              categories: wooProduct.categories,
+              tags: wooProduct.tags,
+              lastSyncAt: new Date(),
+            };
+
+            await this.demoRepository.save(existingDemo);
+            updated++;
+            this.logger.log(`Updated demo: ${importItem.name}`);
+          }
+
+        } else if (item.status === 'existing') {
+          // Просто обновляем метаданные
+          const existingDemo = await this.demoRepository.findOne({
+            where: { normalizedUrl },
+          });
+
+          if (existingDemo) {
+            existingDemo.metadata = {
+              ...existingDemo.metadata,
+              woocommerceId: wooProduct.id,
+              woocommerceSlug: wooProduct.slug,
+              price: importItem.price,
+              categories: wooProduct.categories,
+              tags: wooProduct.tags,
+              lastSyncAt: new Date(),
+            };
+
+            await this.demoRepository.save(existingDemo);
+            this.logger.log(`Updated metadata for demo: ${importItem.name}`);
+          }
+        }
+
+      } catch (error) {
+        errors++;
+        const errorMsg = `Failed to sync product ${item.woocommerceId}: ${error.message}`;
+        errorDetails.push(errorMsg);
+        this.logger.error(errorMsg, error);
       }
     }
 
+    // Обновляем счетчик демо у вендора
+    await this.updateVendorDemoCount(config.vendorId);
+
+    this.logger.log(`WooCommerce sync complete: ${imported} imported, ${updated} updated, ${errors} errors`);
+
     return {
-      items,
-      totalFound: mockUrls.length,
-      totalNew,
-      totalExisting: mockUrls.length - totalNew,
+      totalProcessed: selectedItems.length,
+      imported,
+      updated,
+      errors,
+      errorDetails,
     };
+  }
+
+  /**
+   * Тестирует подключение к WooCommerce
+   */
+  async testWooCommerceConnection(config: WooCommerceImportConfigDto): Promise<{ success: boolean; message: string }> {
+    try {
+      const isConnected = await this.wooCommerceService.testConnection(config);
+      
+      if (isConnected) {
+        return {
+          success: true,
+          message: 'Successfully connected to WooCommerce store',
+        };
+      } else {
+        return {
+          success: false,
+          message: 'Failed to connect to WooCommerce store. Please check your credentials.',
+        };
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: `Connection test failed: ${error.message}`,
+      };
+    }
+  }
+
+  /**
+   * Получает категории из WooCommerce
+   */
+  async getWooCommerceCategories(config: WooCommerceImportConfigDto): Promise<any[]> {
+    return await this.wooCommerceService.getCategories(config);
   }
 
   async confirmImport(confirmImportDto: ConfirmImportDto): Promise<{ imported: number; errors: string[] }> {

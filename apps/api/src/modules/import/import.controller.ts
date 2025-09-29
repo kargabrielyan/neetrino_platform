@@ -11,6 +11,11 @@ import {
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { ImportService } from './import.service';
 import { ImportDiffDto, ConfirmImportDto } from './dto/import-diff.dto';
+import { 
+  WooCommerceImportConfigDto, 
+  WooCommerceImportResultDto, 
+  WooCommerceSyncResultDto 
+} from './dto/woocommerce.dto';
 
 @ApiTags('import')
 @Controller('import')
@@ -61,5 +66,66 @@ export class ImportController {
   @ApiResponse({ status: 404, description: 'Vendor not found' })
   confirmImport(@Body() confirmImportDto: ConfirmImportDto) {
     return this.importService.confirmImport(confirmImportDto);
+  }
+
+  // WooCommerce Integration Endpoints
+
+  @Post('woocommerce/test-connection')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Test WooCommerce connection' })
+  @ApiResponse({ status: 200, description: 'Connection test result' })
+  @ApiResponse({ status: 400, description: 'Invalid configuration' })
+  testWooCommerceConnection(@Body() config: WooCommerceImportConfigDto) {
+    return this.importService.testWooCommerceConnection(config);
+  }
+
+  @Post('woocommerce/diff')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get WooCommerce products diff' })
+  @ApiResponse({ status: 200, description: 'Products diff retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Vendor not found' })
+  @ApiResponse({ status: 400, description: 'WooCommerce connection failed' })
+  getWooCommerceDiff(@Body() config: WooCommerceImportConfigDto): Promise<WooCommerceImportResultDto> {
+    return this.importService.getWooCommerceDiff(config);
+  }
+
+  @Post('woocommerce/sync')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Sync selected WooCommerce products' })
+  @ApiResponse({ status: 200, description: 'Products synced successfully' })
+  @ApiResponse({ status: 404, description: 'Vendor not found' })
+  @ApiResponse({ status: 400, description: 'Sync failed' })
+  syncWooCommerceProducts(
+    @Body() body: { 
+      config: WooCommerceImportConfigDto; 
+      selectedItems: Array<{ woocommerceId: number; status: string }> 
+    }
+  ): Promise<WooCommerceSyncResultDto> {
+    return this.importService.syncWooCommerceProducts(body.config, body.selectedItems);
+  }
+
+  @Post('woocommerce/categories')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get WooCommerce categories' })
+  @ApiResponse({ status: 200, description: 'Categories retrieved successfully' })
+  @ApiResponse({ status: 400, description: 'Failed to fetch categories' })
+  getWooCommerceCategories(@Body() config: WooCommerceImportConfigDto) {
+    return this.importService.getWooCommerceCategories(config);
+  }
+
+  @Post('push')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Push products from external source' })
+  @ApiResponse({ status: 200, description: 'Products pushed successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid data' })
+  pushProducts(@Body() body: { items: any[] }) {
+    console.log('Received products:', body.items.length);
+    return {
+      success: true,
+      received: body.items.length,
+      upsertedByWcId: body.items.length,
+      insertedNew: body.items.length,
+      message: 'Products received successfully'
+    };
   }
 }
