@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
-import { Demo } from '../demos/entities/demo.entity';
-import { Order } from '../orders/entities/order.entity';
-import { Vendor } from '../vendors/entities/vendor.entity';
+import { Demo } from '../demos/demo.entity';
+import { Order } from '../orders/order.entity';
+import { Vendor } from '../vendors/vendor.entity';
 
 @Module({
   imports: [

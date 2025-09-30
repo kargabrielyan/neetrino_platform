@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { demoData } from '../../../lib/demo-data';
+import { csvDemoData } from '../../../lib/csv-demo-loader';
 
 // GET - поиск демо с фильтрацией
 export async function GET(request: NextRequest) {
@@ -14,15 +15,21 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
 
-    // Используем общий модуль для поиска
-    const filteredDemos = demoData.search(q, {
+    // Используем CSV данные для поиска
+    const filteredDemos = await csvDemoData.search(q, {
       vendors: vendors.length > 0 ? vendors : undefined,
       categories: categories.length > 0 ? categories : undefined,
       subcategories: subcategories.length > 0 ? subcategories : undefined,
     });
 
+    // Фильтрация по цене - показываем только товары с ценами при сортировке по цене
+    let demosToSort = filteredDemos;
+    if (sortBy === 'price_asc' || sortBy === 'price_desc') {
+      demosToSort = filteredDemos.filter(demo => demo.regularPrice > 0);
+    }
+
     // Сортировка
-    filteredDemos.sort((a, b) => {
+    demosToSort.sort((a, b) => {
       let comparison = 0;
       switch (sortBy) {
         case 'title':
@@ -34,6 +41,14 @@ export async function GET(request: NextRequest) {
         case 'viewCount':
           comparison = a.viewCount - b.viewCount;
           break;
+        case 'price_asc':
+          // Сортировка по цене от низкой к высокой (ASC)
+          comparison = (a.salePrice || a.regularPrice) - (b.salePrice || b.regularPrice);
+          return comparison; // Не применяем sortOrder для price_asc
+        case 'price_desc':
+          // Сортировка по цене от высокой к низкой (DESC)
+          comparison = (b.salePrice || b.regularPrice) - (a.salePrice || a.regularPrice);
+          return comparison; // Не применяем sortOrder для price_desc
         case 'relevance':
         default:
           // Для релевантности используем viewCount как основной критерий
@@ -44,13 +59,13 @@ export async function GET(request: NextRequest) {
     });
 
     // Пагинация
-    const total = filteredDemos.length;
+    const total = demosToSort.length;
     const totalPages = Math.ceil(total / limit);
     const offset = (page - 1) * limit;
-    const paginatedDemos = filteredDemos.slice(offset, offset + limit);
+    const paginatedDemos = demosToSort.slice(offset, offset + limit);
 
-    // Получаем уникальные фильтры
-    const activeDemos = demoData.getActive();
+    // Получаем уникальные фильтры из CSV данных
+    const activeDemos = await csvDemoData.getActive();
     const uniqueVendors = [...new Set(activeDemos.map(d => d.vendor.id))]
       .map(id => {
         const vendor = activeDemos.find(d => d.vendor.id === id)?.vendor;

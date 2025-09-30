@@ -16,6 +16,8 @@ interface Demo {
   screenshotUrl: string;
   viewCount: number;
   isAccessible: boolean;
+  regularPrice: number;
+  salePrice?: number;
   vendor: {
     id: string;
     name: string;
@@ -30,7 +32,7 @@ interface SearchFilters {
   vendors: string[];
   categories: string[];
   subcategories: string[];
-  sortBy: 'relevance' | 'createdAt' | 'viewCount' | 'title';
+  sortBy: 'relevance' | 'createdAt' | 'viewCount' | 'title' | 'price_asc' | 'price_desc';
   sortOrder: 'ASC' | 'DESC';
 }
 
@@ -65,10 +67,18 @@ export default function Catalog() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const [isUsingFallback, setIsUsingFallback] = useState(false);
+  const [allDemos, setAllDemos] = useState<Demo[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   // Функция для выполнения поиска
-  const performSearch = useCallback(async (searchFilters: SearchFilters, page: number = 1) => {
-    setLoading(true);
+  const performSearch = useCallback(async (searchFilters: SearchFilters, page: number = 1, append: boolean = false) => {
+    if (append) {
+      setIsLoadingMore(true);
+    } else {
+      setLoading(true);
+    }
+    
     try {
       const params = new URLSearchParams();
       
@@ -106,8 +116,27 @@ export default function Catalog() {
         }
         
         const data: SearchResponse = await response.json();
-        setSearchData(data);
+        
+        if (append) {
+          // Добавляем новые демо к существующим, убирая дубликаты
+          setAllDemos(prev => {
+            const existingIds = new Set(prev.map(demo => demo.id));
+            const newDemos = data.data.filter(demo => !existingIds.has(demo.id));
+            return [...prev, ...newDemos];
+          });
+          setSearchData(prev => prev ? {
+            ...prev,
+            data: [...prev.data, ...data.data],
+            page: data.page
+          } : data);
+        } else {
+          // Заменяем все демо
+          setAllDemos(data.data);
+          setSearchData(data);
+        }
+        
         setCurrentPage(page);
+        setHasMore(data.page < data.totalPages);
         setIsUsingFallback(false);
         return; // Success, exit early
       } catch (fetchError) {
@@ -125,8 +154,25 @@ export default function Catalog() {
           
           if (nestResponse.ok) {
             const nestData: SearchResponse = await nestResponse.json();
-            setSearchData(nestData);
+            
+            if (append) {
+              setAllDemos(prev => {
+                const existingIds = new Set(prev.map(demo => demo.id));
+                const newDemos = nestData.data.filter(demo => !existingIds.has(demo.id));
+                return [...prev, ...newDemos];
+              });
+              setSearchData(prev => prev ? {
+                ...prev,
+                data: [...prev.data, ...nestData.data],
+                page: nestData.page
+              } : nestData);
+            } else {
+              setAllDemos(nestData.data);
+              setSearchData(nestData);
+            }
+            
             setCurrentPage(page);
+            setHasMore(nestData.page < nestData.totalPages);
             setIsUsingFallback(false);
             return;
           }
@@ -139,33 +185,57 @@ export default function Catalog() {
     } catch (error) {
       console.error('Search error:', error);
       // No fallback - show empty state
-      setSearchData({
-        data: [],
-        total: 0,
-        page: 1,
-        limit: 20,
-        totalPages: 0,
-        query: searchFilters.q || '',
-        suggestions: [],
-        filters: {
-          vendors: [],
-          categories: [],
-          subcategories: []
-        }
-      });
-      setCurrentPage(1);
-      setIsUsingFallback(false);
+      if (!append) {
+        setSearchData({
+          data: [],
+          total: 0,
+          page: 1,
+          limit: 20,
+          totalPages: 0,
+          query: searchFilters.q || '',
+          suggestions: [],
+          filters: {
+            vendors: [],
+            categories: [],
+            subcategories: []
+          }
+        });
+        setAllDemos([]);
+        setCurrentPage(1);
+        setHasMore(false);
+        setIsUsingFallback(false);
+      }
     } finally {
       setLoading(false);
+      setIsLoadingMore(false);
     }
   }, []);
 
   // Выполняем поиск при изменении фильтров
   useEffect(() => {
     if (isMounted) {
-      performSearch(filters, 1);
+      performSearch(filters, 1, false);
     }
   }, [filters, isMounted, performSearch]);
+
+  // Функция для загрузки следующих страниц
+  const loadMore = useCallback(() => {
+    if (!isLoadingMore && hasMore && searchData) {
+      performSearch(filters, currentPage + 1, true);
+    }
+  }, [isLoadingMore, hasMore, searchData, filters, currentPage, performSearch]);
+
+  // Обработчик прокрутки для бесконечной загрузки
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight * 0.8) {
+        loadMore();
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [loadMore]);
 
   // Обработчики для фильтров
   const handleSearchChange = (value: string) => {
@@ -204,7 +274,7 @@ export default function Catalog() {
   };
 
   const handlePageChange = (page: number) => {
-    performSearch(filters, page);
+    performSearch(filters, page, false);
   };
 
   const clearFilters = () => {
@@ -287,10 +357,12 @@ export default function Catalog() {
                   onChange={(e) => handleSortChange(e.target.value as SearchFilters['sortBy'])}
                   className="w-full px-3 py-2 glass-subtle rounded-full text-ink focus-ring"
                 >
-                  <option value="relevance" className="text-ink">Relevance</option>
-                  <option value="createdAt" className="text-ink">Date Created</option>
-                  <option value="viewCount" className="text-ink">Most Popular</option>
-                  <option value="title" className="text-ink">Title</option>
+                  <option value="relevance" className="text-ink">Default sorting</option>
+                  <option value="viewCount" className="text-ink">Sort by popularity</option>
+                  <option value="createdAt" className="text-ink">Sort by latest</option>
+                  <option value="price_asc" className="text-ink">Sort by price: low to high</option>
+                  <option value="price_desc" className="text-ink">Sort by price: high to low</option>
+                  <option value="title" className="text-ink">Sort by name</option>
                 </select>
               </div>
 
@@ -372,8 +444,8 @@ export default function Catalog() {
             </div>
           )}
 
-          {/* Статистика и переключатель вида */}
-          <div className="flex items-center justify-between">
+          {/* Статистика, сортировка и переключатель вида */}
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               {loading ? (
                 <span className="text-ink/70 text-sm">Searching...</span>
@@ -384,27 +456,47 @@ export default function Catalog() {
               )}
             </div>
             
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-full transition-all duration-200 focus-ring ${
-                  viewMode === 'grid' 
-                    ? 'glass-strong text-ink' 
-                    : 'glass text-ink/50 hover:text-ink hover:glass-strong'
-                }`}
-              >
-                <Grid className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-2 rounded-full transition-all duration-200 focus-ring ${
-                  viewMode === 'list' 
-                    ? 'glass-strong text-ink' 
-                    : 'glass text-ink/50 hover:text-ink hover:glass-strong'
-                }`}
-              >
-                <List className="w-4 h-4" />
-              </button>
+            <div className="flex items-center gap-4">
+              {/* Быстрая сортировка */}
+              <div className="flex items-center gap-2">
+                <label className="text-white text-sm whitespace-nowrap font-medium">Sort:</label>
+                <select
+                  value={filters.sortBy}
+                  onChange={(e) => handleSortChange(e.target.value as SearchFilters['sortBy'])}
+                  className="px-3 py-1 bg-white border border-gray-300 rounded-full text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="relevance" className="text-gray-900">Default</option>
+                  <option value="viewCount" className="text-gray-900">Popularity</option>
+                  <option value="createdAt" className="text-gray-900">Latest</option>
+                  <option value="price_asc" className="text-gray-900">Price: Low to High</option>
+                  <option value="price_desc" className="text-gray-900">Price: High to Low</option>
+                  <option value="title" className="text-gray-900">Name</option>
+                </select>
+              </div>
+              
+              {/* Переключатель вида */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 rounded-full transition-all duration-200 focus-ring ${
+                    viewMode === 'grid' 
+                      ? 'glass-strong text-ink' 
+                      : 'glass text-ink/50 hover:text-ink hover:glass-strong'
+                  }`}
+                >
+                  <Grid className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 rounded-full transition-all duration-200 focus-ring ${
+                    viewMode === 'list' 
+                      ? 'glass-strong text-ink' 
+                      : 'glass text-ink/50 hover:text-ink hover:glass-strong'
+                  }`}
+                >
+                  <List className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -414,123 +506,127 @@ export default function Catalog() {
           <div className="flex justify-center items-center py-12">
             <div className="text-ink/70">Loading demos...</div>
           </div>
-        ) : searchData && searchData.data.length > 0 ? (
+        ) : searchData && allDemos.length > 0 ? (
           <>
             {/* Сетка демо */}
             <div className={`grid gap-6 ${
               viewMode === 'grid' 
-                ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
+                ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' 
                 : 'grid-cols-1'
             }`}>
-              {searchData.data.map((demo) => (
+              {allDemos.map((demo, index) => (
                 <div
-                  key={demo.id}
-                  className={`glass rounded-3xl overflow-hidden hover:glass-strong transition-all duration-200 focus-ring ${
+                  key={`${demo.id}-${index}`}
+                  className={`glass rounded-2xl overflow-hidden hover:glass-strong transition-all duration-200 focus-ring ${
                     viewMode === 'list' ? 'flex' : ''
                   }`}
                 >
-                  {/* Изображение */}
-                  <div className={`bg-a1/10 ${
-                    viewMode === 'list' ? 'w-48 h-32 flex-shrink-0' : 'h-48'
+                  {/* Изображение с бейджем скидки */}
+                  <div className={`relative bg-a1/10 ${
+                    viewMode === 'list' ? 'w-48 h-32 flex-shrink-0' : 
+                    demo.category.toLowerCase().includes('app') || demo.title.toLowerCase().includes('app') ? 'w-[280px] h-[580px]' : 'h-48'
                   }`}>
+                    {demo.salePrice && demo.salePrice > 0 && (
+                      <div className="absolute top-3 left-3 bg-a1 text-white px-2 py-1 rounded-full text-xs font-medium z-10">
+                        -{Math.round((1 - demo.salePrice / demo.regularPrice) * 100)}%
+                      </div>
+                    )}
                     {demo.screenshotUrl ? (
                       <img
                         src={demo.screenshotUrl}
                         alt={demo.title}
                         className="w-full h-full object-cover"
+                        style={demo.category.toLowerCase().includes('app') || demo.title.toLowerCase().includes('app') ? 
+                          { width: '280px', height: '580px' } : {}}
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const placeholder = target.nextElementSibling as HTMLElement;
+                          if (placeholder) {
+                            placeholder.style.display = 'flex';
+                          }
+                        }}
                       />
-                    ) : (
-                      <div className="w-full h-full bg-a1/10 flex items-center justify-center">
-                        <span className="text-ink/50 text-sm">Preview</span>
+                    ) : null}
+                    <div className={`w-full h-full ${demo.screenshotUrl ? 'hidden' : 'flex'} bg-gradient-to-br from-a1/20 to-a1/5 flex-col items-center justify-center p-4`}>
+                      <div className="w-16 h-16 bg-a1/20 rounded-full flex items-center justify-center mb-3">
+                        <svg className="w-8 h-8 text-a1/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
                       </div>
-                    )}
+                      <span className="text-a1/70 text-sm font-medium text-center">No Preview</span>
+                      <span className="text-a1/50 text-xs text-center mt-1">Available</span>
+                    </div>
                   </div>
                   
                   {/* Контент */}
                   <div className={`p-4 ${viewMode === 'list' ? 'flex-1' : ''}`}>
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="text-ink font-semibold">{demo.title}</h3>
-                      <div className="flex items-center gap-2">
-                        <span className="flex items-center gap-1 text-ink/60 text-xs">
-                          <Eye className="w-3 h-3" />
-                          {demo.viewCount}
-                        </span>
-                        <span className={`px-2 py-1 text-xs rounded-full ${
-                          demo.isAccessible 
-                            ? 'glass-subtle text-green-600' 
-                            : 'glass-subtle text-red-600'
-                        }`}>
-                          {demo.isAccessible ? 'Live' : 'Offline'}
-                        </span>
+                    <div className="mb-2">
+                      <h3 className="text-ink font-semibold text-lg mb-1">{demo.title}</h3>
+                      <div className="text-ink/60 text-sm">
+                        SKU: {demo.id}
                       </div>
                     </div>
                     
-                    <div className="text-ink/60 text-sm mb-3">
-                      <div>Vendor: {demo.vendor.name}</div>
-                      <div>Category: {demo.category}</div>
-                      {demo.subcategory && <div>Subcategory: {demo.subcategory}</div>}
-                    </div>
+        {/* Цены - показываем только если есть цена */}
+        {demo.regularPrice > 0 && (
+          <div className="flex items-center justify-between mb-4">
+            {demo.salePrice && demo.salePrice > 0 ? (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-ink/50 line-through">
+                  {demo.regularPrice.toLocaleString()} ֏
+                </span>
+                <span className="text-lg font-bold text-a1">
+                  {demo.salePrice.toLocaleString()} ֏
+                </span>
+              </div>
+            ) : (
+              <span className="text-lg font-bold text-ink">
+                {demo.regularPrice.toLocaleString()} ֏
+              </span>
+            )}
+          </div>
+        )}
                     
+                    {/* Кнопки */}
                     <div className="flex gap-2">
-                      <button 
-                        onClick={() => window.open(demo.url, '_blank')}
-                        className="flex-1 px-3 py-2 glass-strong text-ink rounded-full text-sm font-medium hover:glass transition-all duration-200 focus-ring group flex items-center justify-center gap-1"
-                      >
-                        <Eye className="w-3 h-3" />
-                        View
-                      </button>
                       <a
                         href={demo.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-3 py-2 glass text-ink rounded-full text-sm hover:glass-strong transition-all duration-200 focus-ring flex items-center gap-1 group"
+                        className="flex-1 px-4 py-2 bg-a1 text-white rounded-lg text-sm font-medium hover:bg-a1/90 transition-all duration-200 focus-ring text-center"
                       >
-                        <ExternalLink className="w-3 h-3 group-hover:scale-110 transition-transform duration-200" />
-                        Open
+                        Watch
                       </a>
+                      <button
+                        onClick={() => navigator.clipboard.writeText(demo.id)}
+                        className="px-4 py-2 glass text-ink rounded-lg text-sm font-medium hover:glass-strong transition-all duration-200 focus-ring"
+                      >
+                        Copy ID
+                      </button>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Пагинация */}
-            {searchData.totalPages > 1 && (
+            {/* Кнопка загрузки еще */}
+            {hasMore && (
               <div className="mt-8 flex justify-center">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    className="px-3 py-2 text-ink/50 hover:text-ink transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-ring rounded-lg"
-                  >
-                    Previous
-                  </button>
-                  
-                  {Array.from({ length: Math.min(5, searchData.totalPages) }, (_, i) => {
-                    const page = i + 1;
-                    return (
-                      <button
-                        key={page}
-                        onClick={() => handlePageChange(page)}
-                        className={`px-3 py-2 rounded-full transition-all duration-200 focus-ring ${
-                          currentPage === page
-                            ? 'glass-strong text-ink'
-                            : 'glass text-ink/50 hover:text-ink hover:glass-strong'
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    );
-                  })}
-                  
-                  <button
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === searchData.totalPages}
-                    className="px-3 py-2 text-ink/50 hover:text-ink transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-ring rounded-lg"
-                  >
-                    Next
-                  </button>
-                </div>
+                <button
+                  onClick={loadMore}
+                  disabled={isLoadingMore}
+                  className="px-6 py-3 glass-strong text-ink rounded-full hover:glass transition-all duration-200 focus-ring disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  {isLoadingMore ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-ink/30 border-t-ink rounded-full animate-spin" />
+                      Loading more...
+                    </>
+                  ) : (
+                    'Load More Demos'
+                  )}
+                </button>
               </div>
             )}
           </>

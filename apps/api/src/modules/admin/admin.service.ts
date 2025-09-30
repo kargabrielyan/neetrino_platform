@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Demo } from '../demos/entities/demo.entity';
-import { Order } from '../orders/entities/order.entity';
-import { Vendor } from '../vendors/entities/vendor.entity';
+import { Demo } from '../demos/demo.entity';
+import { Order } from '../orders/order.entity';
+import { Vendor } from '../vendors/vendor.entity';
 
 @Injectable()
 export class AdminService {

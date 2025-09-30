@@ -113,7 +113,7 @@ export default function NavDroplet() {
         ref={navRef}
         onMouseLeave={() => setTarget(activeRect)}
         onKeyDown={handleKeyDown}
-        className="relative flex gap-1 p-2 rounded-full glass"
+        className="relative flex flex-wrap gap-1 p-2 rounded-full glass md:flex-nowrap"
         style={{ filter: "url(#goo)" }}
         tabIndex={0}
       >
@@ -161,7 +161,7 @@ export default function NavDroplet() {
                   });
                 }}
                 className={[
-                  "relative z-10 px-5 py-2.5 rounded-full text-sm md:text-base transition-colors duration-200 focus-ring",
+                  "relative z-10 px-3 py-2 md:px-5 md:py-2.5 rounded-full text-xs md:text-sm lg:text-base transition-colors duration-200 focus-ring",
                   // Active item doesn't change color on hover
                   isActive
                     ? "text-ink font-medium"

@@ -6,6 +6,8 @@ import { Demo } from '../demos/demo.entity';
 import { Vendor } from '../vendors/vendor.entity';
 import { ImportDiffDto, ImportDiffItemDto, ConfirmImportDto } from './dto/import-diff.dto';
 import { WooCommerceService } from './services/woocommerce.service';
+import { CsvParserService, CsvProduct } from './services/csv-parser.service';
+import { CsvImportResultDto, CsvImportConfigDto } from './dto/csv-import.dto';
 import { 
   WooCommerceImportConfigDto, 
   WooCommerceImportResultDto, 
@@ -24,6 +26,7 @@ export class ImportService {
     @InjectRepository(Vendor)
     private vendorRepository: Repository<Vendor>,
     private readonly wooCommerceService: WooCommerceService,
+    private readonly csvParserService: CsvParserService,
   ) {}
 
   async startImport(vendorId: string): Promise<ImportRun> {
@@ -341,5 +344,128 @@ export class ImportService {
     } catch {
       return url;
     }
+  }
+
+  /**
+   * Импортирует товары из CSV файла
+   */
+  async importFromCsv(fileBuffer: Buffer, config: CsvImportConfigDto): Promise<CsvImportResultDto> {
+    this.logger.log(`🚀 Начинаем импорт CSV файла для вендора ${config.vendorId}`);
+    
+    // Проверяем существование вендора
+    const vendor = await this.vendorRepository.findOne({ where: { id: config.vendorId } });
+    if (!vendor) {
+      throw new NotFoundException(`Вендор с ID ${config.vendorId} не найден`);
+    }
+
+    // Парсим CSV файл
+    const csvProducts = await this.csvParserService.parseCsvFile(fileBuffer);
+    this.logger.log(`📊 Распарсено ${csvProducts.length} товаров из CSV файла`);
+
+    let newProducts = 0;
+    let updatedProducts = 0;
+    let skippedProducts = 0;
+    let errors = 0;
+    const errorDetails: string[] = [];
+
+    // Обрабатываем каждый товар
+    for (const csvProduct of csvProducts) {
+      try {
+        // Пропускаем товары без URL если включена опция
+        if (config.skipInvalid && !csvProduct.demoUrl) {
+          skippedProducts++;
+          continue;
+        }
+
+        const normalizedUrl = this.csvParserService.normalizeUrl(csvProduct.demoUrl);
+        
+        // Ищем существующий демо
+        const existingDemo = await this.demoRepository.findOne({
+          where: { normalizedUrl }
+        });
+
+        if (existingDemo) {
+          // Обновляем существующий демо если включена опция
+          if (config.updateExisting) {
+            await this.updateDemoFromCsv(existingDemo, csvProduct);
+            updatedProducts++;
+            this.logger.log(`✅ Обновлен демо: ${csvProduct.title}`);
+          } else {
+            skippedProducts++;
+            this.logger.log(`⏭️ Пропущен существующий демо: ${csvProduct.title}`);
+          }
+        } else {
+          // Создаем новый демо
+          await this.createDemoFromCsv(csvProduct, vendor.id);
+          newProducts++;
+          this.logger.log(`➕ Создан новый демо: ${csvProduct.title}`);
+        }
+      } catch (error) {
+        errors++;
+        const errorMsg = `Ошибка при обработке товара "${csvProduct.title}": ${error.message}`;
+        errorDetails.push(errorMsg);
+        this.logger.error(`❌ ${errorMsg}`);
+      }
+    }
+
+    const result: CsvImportResultDto = {
+      totalProcessed: csvProducts.length,
+      newProducts,
+      updatedProducts,
+      skippedProducts,
+      errors,
+      message: `Импорт завершен: ${newProducts} новых, ${updatedProducts} обновленных, ${skippedProducts} пропущенных, ${errors} ошибок`,
+      errorDetails: errorDetails.length > 0 ? errorDetails : undefined
+    };
+
+    this.logger.log(`🎉 Импорт CSV завершен: ${result.message}`);
+    return result;
+  }
+
+  /**
+   * Создает новый демо из CSV товара
+   */
+  private async createDemoFromCsv(csvProduct: CsvProduct, vendorId: string): Promise<Demo> {
+    const demo = new Demo();
+    demo.title = csvProduct.title;
+    demo.description = csvProduct.description || '';
+    demo.url = csvProduct.demoUrl;
+    demo.normalizedUrl = this.csvParserService.normalizeUrl(csvProduct.demoUrl);
+    demo.category = csvProduct.category;
+    demo.subcategory = csvProduct.subcategory;
+    demo.imageUrl = csvProduct.imageUrl;
+    demo.status = 'active';
+    demo.vendorId = vendorId;
+    demo.isAccessible = true;
+    demo.viewCount = 0;
+    demo.metadata = {
+      sku: csvProduct.sku,
+      regularPrice: csvProduct.regularPrice,
+      salePrice: csvProduct.salePrice,
+      source: 'csv_import',
+      importedAt: new Date().toISOString()
+    };
+
+    return await this.demoRepository.save(demo);
+  }
+
+  /**
+   * Обновляет существующий демо из CSV товара
+   */
+  private async updateDemoFromCsv(existingDemo: Demo, csvProduct: CsvProduct): Promise<Demo> {
+    existingDemo.title = csvProduct.title;
+    existingDemo.description = csvProduct.description || existingDemo.description;
+    existingDemo.category = csvProduct.category;
+    existingDemo.subcategory = csvProduct.subcategory;
+    existingDemo.imageUrl = csvProduct.imageUrl || existingDemo.imageUrl;
+    existingDemo.metadata = {
+      ...existingDemo.metadata,
+      sku: csvProduct.sku,
+      regularPrice: csvProduct.regularPrice,
+      salePrice: csvProduct.salePrice,
+      lastUpdatedAt: new Date().toISOString()
+    };
+
+    return await this.demoRepository.save(existingDemo);
   }
 }
