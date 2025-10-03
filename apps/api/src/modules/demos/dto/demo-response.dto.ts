@@ -1,5 +1,4 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { DemoState } from '../demo.entity';
 
 export class DemoResponseDto {
   @ApiProperty({ 
@@ -34,10 +33,9 @@ export class DemoResponseDto {
 
   @ApiProperty({ 
     description: 'Demo state',
-    enum: DemoState,
-    example: DemoState.ACTIVE
+    example: 'active'
   })
-  state: DemoState;
+  state: string;
 
   @ApiPropertyOptional({ 
     description: 'Demo category',

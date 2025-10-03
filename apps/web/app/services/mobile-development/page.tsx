@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { useMounted } from '../../../lib/use-mounted';
 import Layout from '../../../components/Layout';
+import Navbar from '../../../components/Navbar';
 import { Smartphone, Code, Database, Cloud, Shield, ArrowLeft, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 

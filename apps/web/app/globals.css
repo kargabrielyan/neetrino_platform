@@ -118,7 +118,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
   
   html {
@@ -314,4 +314,17 @@
   50% {
     opacity: 0.5;
   }
+}
+
+/* Dropdown menu styles */
+.menu .menu-item { 
+  position: relative; 
+  isolation: isolate; 
+  border-radius: 12px; 
+}
+
+.menu .menu-item:focus-visible{
+  outline: 0;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.25);
+  border-radius: 12px;
 }

@@ -15,9 +15,9 @@ interface RateLimitConfig {
 
 @Injectable()
 export class RateLimitGuard implements CanActivate {
-  private requests = new Map<string, { count: number; resetTime: number }>();
+  public requests = new Map<string, { count: number; resetTime: number }>();
 
-  constructor(private config: RateLimitConfig) {}
+  constructor(public config: RateLimitConfig) {}
 
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest<Request>();
@@ -61,12 +61,12 @@ export class RateLimitGuard implements CanActivate {
     return true;
   }
 
-  private getKey(request: Request): string {
+  public getKey(request: Request): string {
     // Используем IP адрес как ключ
     return request.ip || 'unknown';
   }
 
-  private cleanup(): void {
+  public cleanup(): void {
     const now = Date.now();
     for (const [key, value] of this.requests.entries()) {
       if (now > value.resetTime) {
@@ -79,7 +79,7 @@ export class RateLimitGuard implements CanActivate {
 // Фабрика для создания guard с конфигурацией
 export function createRateLimitGuard(config: RateLimitConfig) {
   return class extends RateLimitGuard {
-    constructor() {
+    public constructor() {
       super(config);
     }
   };

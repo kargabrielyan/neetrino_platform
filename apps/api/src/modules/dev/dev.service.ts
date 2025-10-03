@@ -1,17 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Demo } from '../demos/demo.entity';
-import { Vendor } from '../vendors/vendor.entity';
+import { PrismaService } from '../../common/services/prisma.service';
 
 @Injectable()
 export class DevService {
-  constructor(
-    @InjectRepository(Demo)
-    private demoRepository: Repository<Demo>,
-    @InjectRepository(Vendor)
-    private vendorRepository: Repository<Vendor>,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async seedDatabase() {
     try {
@@ -39,12 +31,15 @@ export class DevService {
 
       const createdVendors = [];
       for (const vendorData of vendors) {
-        let vendor = await this.vendorRepository.findOne({ where: { name: vendorData.name } });
+        let vendor = await this.prisma.safeExecute(async () => {
+          return await this.prisma.vendor.findUnique({ where: { name: vendorData.name } });
+        });
         if (!vendor) {
-          vendor = this.vendorRepository.create(vendorData);
-          vendor = await this.vendorRepository.save(vendor);
+          vendor = await this.prisma.safeExecute(async () => {
+            return await this.prisma.vendor.create({ data: vendorData });
+          });
         }
-        createdVendors.push(vendor);
+        if (vendor) createdVendors.push(vendor);
       }
 
       // Создаем тестовые демо
@@ -123,12 +118,15 @@ export class DevService {
 
       const createdDemos = [];
       for (const demoData of demos) {
-        let demo = await this.demoRepository.findOne({ where: { normalizedUrl: demoData.normalizedUrl } });
+        let demo = await this.prisma.safeExecute(async () => {
+          return await this.prisma.demo.findUnique({ where: { normalizedUrl: demoData.normalizedUrl } });
+        });
         if (!demo) {
-          demo = this.demoRepository.create(demoData);
-          demo = await this.demoRepository.save(demo);
+          demo = await this.prisma.safeExecute(async () => {
+            return await this.prisma.demo.create({ data: demoData });
+          });
         }
-        createdDemos.push(demo);
+        if (demo) createdDemos.push(demo);
       }
 
       return {

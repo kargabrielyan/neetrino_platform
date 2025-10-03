@@ -1,0 +1,191 @@
+// Prisma schema for Neetrino Platform
+// Generated from TypeORM entities + NextAuth.js support
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// NextAuth.js models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          String    @default("USER") // USER, ADMIN
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// Vendor model
+model Vendor {
+  id          String   @id @default(uuid())
+  name        String   @unique @db.VarChar(255)
+  website     String?  @db.VarChar(500)
+  logoUrl     String?  @db.VarChar(500)
+  description String?
+  status      String   @default("active") @db.VarChar(100) // active, inactive, banned
+  metadata    Json?
+  demoCount   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  demos      Demo[]
+  importRuns ImportRun[]
+
+  @@map("vendors")
+}
+
+// Demo model
+model Demo {
+  id            String   @id @default(uuid())
+  title         String   @db.VarChar(255)
+  description   String?
+  url           String   @db.VarChar(500)
+  normalizedUrl String?  @db.VarChar(500)
+  status        String   @default("active") @db.VarChar(100) // active, draft, deleted
+  category      String?  @db.VarChar(100)
+  subcategory   String?  @db.VarChar(100)
+  imageUrl      String?  @db.VarChar(500)
+  screenshotUrl String?  @db.VarChar(500)
+  metadata      Json?
+  lastCheckedAt DateTime?
+  isAccessible  Boolean  @default(true)
+  viewCount     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  vendorId   String
+  vendor     Vendor     @relation(fields: [vendorId], references: [id])
+  orders     Order[]
+  checkRuns  CheckRun[]
+
+  @@map("demos")
+}
+
+// Order model
+model Order {
+  id           String     @id @default(uuid())
+  customerName String     @db.VarChar(255)
+  customerEmail String    @db.VarChar(255)
+  customerPhone String?   @db.VarChar(20)
+  demoId       String
+  requirements String?
+  budget       Decimal?   @db.Decimal(10, 2)
+  status       OrderStatus @default(NEW)
+  notes        String?
+  assignedTo   String?    @db.VarChar(255)
+  deadline     DateTime?
+  metadata     Json?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  // Relations
+  demo Demo @relation(fields: [demoId], references: [id])
+
+  @@map("orders")
+}
+
+// Order status enum
+enum OrderStatus {
+  NEW
+  IN_PROGRESS
+  DISCUSSION
+  IN_WORK
+  CANCELLED
+  COMPLETED
+}
+
+// CheckRun model
+model CheckRun {
+  id           String   @id @default(uuid())
+  demoId       String
+  startedAt    DateTime
+  finishedAt   DateTime?
+  status       String   @default("running") @db.VarChar(50) // running, completed, failed
+  isAccessible Boolean  @default(true)
+  responseTime Int?
+  statusCode   Int?
+  error        String?
+  note         String?
+  createdAt    DateTime @default(now())
+
+  // Relations
+  demo Demo @relation(fields: [demoId], references: [id])
+
+  @@map("check_runs")
+}
+
+// ImportRun model
+model ImportRun {
+  id           String   @id @default(uuid())
+  vendorId     String
+  startedAt    DateTime
+  finishedAt   DateTime?
+  status       String   @default("running") @db.VarChar(50) // running, completed, failed
+  totalFound   Int      @default(0)
+  totalNew     Int      @default(0)
+  totalIgnored Int      @default(0)
+  totalErrors  Int      @default(0)
+  log          String?
+  metadata     Json?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  vendor Vendor @relation(fields: [vendorId], references: [id])
+
+  @@map("import_runs")
+}

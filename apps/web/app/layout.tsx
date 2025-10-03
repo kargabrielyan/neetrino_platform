@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { inter } from './fonts'
 import './globals.css'
+import AuthSessionProvider from '@/components/providers/session-provider'
 
 export const metadata: Metadata = {
   title: 'Neetrino - AI-Powered Solutions',
@@ -49,7 +50,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className={`${inter.className}`} suppressHydrationWarning>
-        {children}
+        <AuthSessionProvider>
+          {children}
+        </AuthSessionProvider>
       </body>
     </html>
   )

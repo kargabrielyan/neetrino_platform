@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import WordPressAdminLayout from '../../components/WordPressAdminLayout';
 import WordPressDashboard from '../../components/WordPressDashboard';
@@ -40,7 +40,7 @@ interface Demo {
   updatedAt: string;
 }
 
-export default function Admin() {
+function AdminContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'dashboard');
@@ -629,5 +629,15 @@ export default function Admin() {
         </div>
       )}
     </WordPressAdminLayout>
+  );
+}
+
+export default function Admin() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-bg flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>}>
+      <AdminContent />
+    </Suspense>
   );
 }

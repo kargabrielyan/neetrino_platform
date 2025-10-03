@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { HttpModule } from '@nestjs/axios';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { databaseConfig } from './config/database.config';
+import { PrismaModule } from './common/prisma.module';
 import { HealthModule } from './modules/health/health.module';
 import { DemosModule } from './modules/demos/demos.module';
 import { VendorsModule } from './modules/vendors/vendors.module';
@@ -25,20 +24,18 @@ import { AdminModule } from './modules/admin/admin.module';
       timeout: 30000,
       maxRedirects: 5,
     }),
-    // Подключаем TypeORM только если база данных доступна
-    ...(process.env.DB_AVAILABLE === 'true' ? [TypeOrmModule.forRoot(databaseConfig)] : []),
+    // Подключаем Prisma глобально
+    PrismaModule,
     HealthModule,
-    // Подключаем модули только если база данных доступна
-    ...(process.env.DB_AVAILABLE === 'true' ? [
-      DemosModule,
-      VendorsModule,
-      SearchModule,
-      OrdersModule,
-      CheckingModule,
-      ImportModule,
-      DevModule,
-      AdminModule,
-    ] : []),
+    // Подключаем только основные модули (остальные временно отключены)
+    DemosModule,
+    // VendorsModule,
+    // SearchModule,
+    // OrdersModule,
+    // CheckingModule,
+    // ImportModule,
+    // DevModule,
+    // AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

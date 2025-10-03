@@ -186,7 +186,7 @@ async function importCsvFile() {
             subcategory: csvProduct.subcategory,
             imageUrl: csvProduct.imageUrl || existingDemo.imageUrl,
             metadata: {
-              ...existingDemo.metadata,
+              ...(existingDemo.metadata as Record<string, any> || {}),
               sku: csvProduct.sku,
               regularPrice: csvProduct.regularPrice,
               salePrice: csvProduct.salePrice,

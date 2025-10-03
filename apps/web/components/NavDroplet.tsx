@@ -1,46 +1,63 @@
 'use client';
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-type Item = { label: string; to: string };
+type Item = { 
+  label: string; 
+  to?: string; 
+  children?: { label: string; to: string }[];
+};
+
+type Rect = { x: number; y: number; w: number; h: number };
 
 const items: Item[] = [
   { label: "Home", to: "/" },
   { label: "Services", to: "/services" },
   { label: "About", to: "/about" },
-  { label: "Catalog", to: "/catalog" },
+  { 
+    label: "Catalog", 
+    children: [
+      { label: "Website", to: "/catalog/website" },
+      { label: "App", to: "/catalog/app" }
+    ]
+  },
   { label: "Portfolio", to: "/portfolio" },
   { label: "Contact", to: "/contact" },
 ];
 
-type Rect = { x: number; y: number; w: number; h: number };
 
 export default function NavDroplet() {
   const pathname = usePathname();
   const reduce = useReducedMotion();
   const navRef = useRef<HTMLUListElement>(null);
   const itemRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
+  const dropdownItemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const [target, setTarget] = useState<Rect | null>(null);
   const [activeRect, setActiveRect] = useState<Rect | null>(null);
+  const [dropdownTarget, setDropdownTarget] = useState<Rect | null>(null);
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
+  const [showDropdown, setShowDropdown] = useState<string | null>(null);
+  const [hideTimeout, setHideTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  const activeKey = useMemo(
-    () => items.find(i => i.to === pathname)?.to ?? items[0].to,
-    [pathname]
-  );
-
-  // Measure element position
-  const measure = (key: string): Rect | null => {
-    const el = itemRefs.current[key];
-    const nav = navRef.current;
-    if (!el || !nav) return null;
-    const a = el.getBoundingClientRect();
-    const b = nav.getBoundingClientRect();
-    return { x: a.left - b.left, y: a.top - b.top, w: a.width, h: a.height };
-  };
+  const activeKey = useMemo(() => {
+    // Сначала проверяем прямые ссылки
+    const directMatch = items.find(i => i.to === pathname);
+    if (directMatch?.to) return directMatch.to;
+    
+    // Затем проверяем дочерние элементы
+    for (const item of items) {
+      if (item.children) {
+        const childMatch = item.children.find(child => child.to === pathname);
+        if (childMatch?.to) return childMatch.to;
+      }
+    }
+    
+    // Возвращаем первую ссылку по умолчанию
+    return items.find(i => i.to)?.to ?? items[0].to;
+  }, [pathname]);
 
   // Set target to active item on load and resize
   useLayoutEffect(() => {
@@ -66,21 +83,68 @@ export default function NavDroplet() {
     };
   }, [activeKey]);
 
+  // Measure element position
+  const measure = (key: string): Rect | null => {
+    const el = itemRefs.current[key];
+    const nav = navRef.current;
+    if (!el || !nav) return null;
+    const a = el.getBoundingClientRect();
+    const b = nav.getBoundingClientRect();
+    return { x: a.left - b.left, y: a.top - b.top, w: a.width, h: a.height };
+  };
+
+  // Measure dropdown element position
+  const measureDropdown = (key: string): Rect | null => {
+    const el = dropdownItemRefs.current[key];
+    const nav = navRef.current;
+    if (!el || !nav) return null;
+    const a = el.getBoundingClientRect();
+    const b = nav.getBoundingClientRect();
+    return { x: a.left - b.left, y: a.top - b.top, w: a.width, h: a.height };
+  };
+
+  // Get all possible keys for measurement
+  const getAllKeys = () => {
+    const keys: string[] = [];
+    items.forEach(item => {
+      if (item.to) {
+        keys.push(item.to);
+      }
+      if (item.children) {
+        item.children.forEach(child => {
+          keys.push(child.to);
+        });
+      }
+    });
+    return keys;
+  };
+
+
+   // Cleanup timeout on unmount
+   useEffect(() => {
+     return () => {
+       if (hideTimeout) {
+         clearTimeout(hideTimeout);
+       }
+     };
+   }, [hideTimeout]);
+
   // Keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
       e.preventDefault();
-      const currentIndex = items.findIndex(item => item.to === activeKey);
+      const allKeys = getAllKeys();
+      const currentIndex = allKeys.findIndex(key => key === activeKey);
       let newIndex;
       
       if (e.key === 'ArrowLeft') {
-        newIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+        newIndex = currentIndex > 0 ? currentIndex - 1 : allKeys.length - 1;
       } else {
-        newIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+        newIndex = currentIndex < allKeys.length - 1 ? currentIndex + 1 : 0;
       }
       
-      const newItem = items[newIndex];
-      const r = measure(newItem.to);
+      const newKey = allKeys[newIndex];
+      const r = measure(newKey);
       if (r) {
         setTarget(r);
         setFocusedIndex(newIndex);
@@ -113,12 +177,12 @@ export default function NavDroplet() {
         ref={navRef}
         onMouseLeave={() => setTarget(activeRect)}
         onKeyDown={handleKeyDown}
-        className="relative flex flex-wrap gap-1 p-2 rounded-full glass md:flex-nowrap"
+        className="relative flex flex-wrap gap-1 p-2 rounded-full glass md:flex-nowrap items-center"
         style={{ filter: "url(#goo)" }}
         tabIndex={0}
       >
         {/* Water droplet */}
-        {target && (
+        {(target || dropdownTarget) && (
           <motion.div
             aria-hidden="true"
             className="absolute rounded-full pointer-events-none"
@@ -133,11 +197,11 @@ export default function NavDroplet() {
             }}
             initial={false}
             animate={{
-              x: target.x - 8,
-              y: target.y - 6,
-              width: target.w + 16,
-              height: target.h + 12,
-              borderRadius: target.h + 24,
+              x: (dropdownTarget || target)!.x - 8,
+              y: (dropdownTarget || target)!.y - 6,
+              width: (dropdownTarget || target)!.w + 16,
+              height: (dropdownTarget || target)!.h + 12,
+              borderRadius: (dropdownTarget || target)!.h + 24,
             }}
             transition={
               reduce
@@ -147,30 +211,152 @@ export default function NavDroplet() {
           />
         )}
 
-        {items.map((item) => {
-          const isActive = item.to === activeKey;
+        {items.map((item, index) => {
+          const isActive = item.to === activeKey || (item.children && item.children.some(child => child.to === activeKey));
+          const hasChildren = item.children && item.children.length > 0;
+          
           return (
-            <li key={item.to} className="relative">
-              <Link
-                ref={(el) => (itemRefs.current[item.to] = el)}
-                href={item.to}
-                onMouseEnter={() => {
-                  requestAnimationFrame(() => {
-                    const r = measure(item.to);
-                    if (r) setTarget(r);
-                  });
-                }}
-                className={[
-                  "relative z-10 px-3 py-2 md:px-5 md:py-2.5 rounded-full text-xs md:text-sm lg:text-base transition-colors duration-200 focus-ring",
-                  // Active item doesn't change color on hover
-                  isActive
-                    ? "text-ink font-medium"
-                    : "text-ink/70 hover:text-ink font-normal",
-                ].join(" ")}
-                aria-current={isActive ? "page" : undefined}
-              >
-                {item.label}
-              </Link>
+            <li key={item.to || item.label} className="relative flex items-center">
+              {hasChildren ? (
+                <div
+                  ref={(el) => {
+                    if (el) {
+                      itemRefs.current[item.label] = el as any;
+                    }
+                  }}
+                   onMouseEnter={() => {
+                     if (hideTimeout) {
+                       clearTimeout(hideTimeout);
+                       setHideTimeout(null);
+                     }
+                     setShowDropdown(item.label);
+                     requestAnimationFrame(() => {
+                       const r = measure(item.label);
+                       if (r) {
+                         setTarget(r);
+                       }
+                     });
+                   }}
+                   onMouseLeave={() => {
+                     const timeout = setTimeout(() => {
+                       setShowDropdown(null);
+                     }, 150);
+                     setHideTimeout(timeout);
+                   }}
+                  className={[
+                    "relative z-10 px-3 py-2 md:px-5 md:py-2.5 rounded-full text-xs md:text-sm lg:text-base transition-colors duration-200 focus-ring cursor-pointer inline-block",
+                    isActive
+                      ? "text-ink font-medium"
+                      : "text-ink/70 hover:text-ink font-normal",
+                  ].join(" ")}
+                >
+                  {item.label}
+                  
+                  {/* Dropdown menu */}
+                  <AnimatePresence>
+                    {showDropdown === item.label && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        transition={{ 
+                          duration: 0.2,
+                          ease: [0.2, 0.8, 0.2, 1]
+                        }}
+                        className="absolute top-full left-0 mt-0 w-[115px] z-50"
+                        style={{ 
+                          filter: "url(#goo)"
+                        }}
+                        onMouseEnter={() => {
+                          if (hideTimeout) {
+                            clearTimeout(hideTimeout);
+                            setHideTimeout(null);
+                          }
+                          setShowDropdown(item.label);
+                        }}
+                        onMouseLeave={() => {
+                          const timeout = setTimeout(() => {
+                            setShowDropdown(null);
+                          }, 150);
+                          setHideTimeout(timeout);
+                        }}
+                      >
+                        <ul className="menu inline-flex w-[110px] flex-col rounded-2xl bg-white/5 backdrop-blur-xl overflow-hidden p-1">
+                          {item.children?.map((child) => (
+                            <li key={child.to}>
+                              <button
+                                ref={(el) => {
+                                  if (el) {
+                                    dropdownItemRefs.current[child.to] = el;
+                                  }
+                                }}
+                                onClick={() => {
+                                  window.location.href = child.to;
+                                }}
+                                onMouseEnter={() => {
+                                  requestAnimationFrame(() => {
+                                    const r = measureDropdown(child.to);
+                                    if (r) {
+                                      setDropdownTarget(r);
+                                      setTarget(null);
+                                    }
+                                  });
+                                }}
+                                onMouseLeave={() => {
+                                  setDropdownTarget(null);
+                                  requestAnimationFrame(() => {
+                                    const r = measure(item.label);
+                                    if (r) setTarget(r);
+                                  });
+                                }}
+                                className={[
+                                  "menu-item isolate relative z-0 w-full rounded-xl px-4 py-2 text-left",
+                                  child.to === activeKey
+                                    ? "text-white font-normal"
+                                    : "text-white/70 font-normal"
+                                ].join(" ")}
+                                style={{
+                                  fontFamily: 'Inter, "Inter Fallback", sans-serif',
+                                  fontSize: '16px',
+                                  lineHeight: '24px',
+                                  fontWeight: 400
+                                }}
+                                aria-current={child.to === activeKey ? "page" : undefined}
+                              >
+                                {child.label}
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <Link
+                  ref={(el) => {
+                    if (el) {
+                      itemRefs.current[item.to!] = el;
+                    }
+                  }}
+                  href={item.to!}
+                  onMouseEnter={() => {
+                    requestAnimationFrame(() => {
+                      const r = measure(item.to!);
+                      if (r) setTarget(r);
+                    });
+                  }}
+                  className={[
+                    "relative z-10 px-3 py-2 md:px-5 md:py-2.5 rounded-full text-xs md:text-sm lg:text-base transition-colors duration-200 focus-ring inline-block",
+                    isActive
+                      ? "text-ink font-medium"
+                      : "text-ink/70 hover:text-ink font-normal",
+                  ].join(" ")}
+                  aria-current={isActive ? "page" : undefined}
+                >
+                  {item.label}
+                </Link>
+              )}
             </li>
           );
         })}

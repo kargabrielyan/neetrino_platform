@@ -1,31 +1,27 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CheckRun } from './entities/check-run.entity';
-import { Demo } from '../demos/demo.entity';
+import { PrismaService } from '../../common/services/prisma.service';
 
 @Injectable()
 export class CheckingService {
-  constructor(
-    @InjectRepository(CheckRun)
-    private checkRunRepository: Repository<CheckRun>,
-    @InjectRepository(Demo)
-    private demoRepository: Repository<Demo>,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
-  async checkDemoAccessibility(demoId: string): Promise<CheckRun> {
-    const demo = await this.demoRepository.findOne({ where: { id: demoId } });
+  async checkDemoAccessibility(demoId: string) {
+    const demo = await this.prisma.safeExecute(async () => {
+      return await this.prisma.demo.findUnique({ where: { id: demoId } });
+    });
     if (!demo) {
       throw new NotFoundException(`Demo with ID ${demoId} not found`);
     }
 
-    const checkRun = this.checkRunRepository.create({
-      demoId,
-      startedAt: new Date(),
-      status: 'running',
+    const savedCheckRun = await this.prisma.safeExecute(async () => {
+      return await this.prisma.checkRun.create({
+        data: {
+          demoId,
+          startedAt: new Date(),
+          status: 'running',
+        },
+      });
     });
-
-    const savedCheckRun = await this.checkRunRepository.save(checkRun);
 
     try {
       // Здесь будет реальная логика проверки доступности URL
