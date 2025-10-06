@@ -3,6 +3,7 @@
 import { ReactNode } from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import BarMenu from './BarMenu';
 import ThemeProvider from './ThemeProvider';
 
 interface LayoutProps {
@@ -26,13 +27,16 @@ export default function Layout({
         {/* Навигация */}
         <Navbar />
         
-        {/* Основной контент с отступом для header */}
-        <div className="relative z-10 pt-24">
+        {/* Основной контент с отступом для header и нижнего меню */}
+        <div className="relative z-10 pt-24 pb-20 lg:pb-0">
           {children}
         </div>
         
         {/* Футер (опционально) */}
         {showFooter && <Footer />}
+        
+        {/* Нижнее меню для мобильных и планшетов */}
+        <BarMenu />
       </main>
     </ThemeProvider>
   );

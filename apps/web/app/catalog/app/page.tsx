@@ -480,7 +480,7 @@ export default function AppCatalog() {
             {/* Сетка демо */}
             <div className={`grid gap-6 ${
               viewMode === 'grid' 
-                ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' 
+                ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4' 
                 : 'grid-cols-1'
             }`}>
               {allDemos.map((demo, index) => (
@@ -572,12 +572,12 @@ export default function AppCatalog() {
                         className="px-4 py-2 glass text-ink rounded-lg text-sm font-medium hover:glass-strong transition-all duration-200 focus-ring"
                       >
                         Copy ID
-                      </button>
+                </button>
                     </div>
-                  </div>
-                </div>
-              ))}
+              </div>
             </div>
+          ))}
+        </div>
 
             {/* Кнопка загрузки еще */}
             {hasMore && (
@@ -608,9 +608,9 @@ export default function AppCatalog() {
             >
               Clear filters
             </button>
-          </div>
-        )}
       </div>
+        )}
+    </div>
     </Layout>
   );
 }

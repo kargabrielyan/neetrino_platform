@@ -71,8 +71,8 @@ export default function Navbar() {
             </Link>
           </motion.div>
 
-          {/* Desktop navigation with water droplet */}
-          <div className="hidden md:block">
+          {/* Desktop navigation with water droplet - скрыто на мобильных и планшетах */}
+          <div className="hidden lg:block">
             <NavDroplet />
           </div>
 
@@ -81,7 +81,7 @@ export default function Navbar() {
             <ThemeToggle />
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden text-ink/70 hover:text-ink transition-colors rounded-full p-2 hover:bg-glass/50 focus-ring"
+              className="lg:hidden text-ink/70 hover:text-ink transition-colors rounded-full p-2 hover:bg-glass/50 focus-ring"
               aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={isMobileMenuOpen}
             >
@@ -90,7 +90,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile menu */}
+        {/* Mobile and tablet menu */}
         <motion.div
           initial={false}
           animate={{
@@ -98,7 +98,7 @@ export default function Navbar() {
             opacity: isMobileMenuOpen ? 1 : 0,
           }}
           transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
-          className="md:hidden overflow-hidden"
+          className="lg:hidden overflow-hidden"
         >
           <div className="py-4 space-y-2 px-4">
             <NavDroplet />
