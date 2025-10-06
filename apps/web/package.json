@@ -13,17 +13,22 @@
   "dependencies": {
     "@neetrino/ui": "file:../../packages/ui",
     "@radix-ui/react-slot": "^1.0.2",
+    "@auth/prisma-adapter": "^2.4.0",
+    "@prisma/client": "^5.22.0",
+    "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "framer-motion": "^10.16.0",
     "lucide-react": "^0.292.0",
     "next": "^15.5.3",
+    "next-auth": "^5.0.0-beta.25",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "tailwind-merge": "^2.0.0",
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20.0.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
