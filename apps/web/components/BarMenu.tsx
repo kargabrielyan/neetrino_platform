@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Grid, User, Menu } from 'lucide-react';
@@ -27,11 +27,31 @@ const menuItems = [
 export default function BarMenu() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
+
+  useEffect(() => {
+    const checkDevice = () => {
+      const userAgent = navigator.userAgent;
+      const isIPad = /iPad/.test(userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const isTabletDevice = /Android.*Tablet|iPad|Kindle|Silk|PlayBook|BB10/.test(userAgent);
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      const screenWidth = window.innerWidth;
+      
+      // Показываем BarMenu на мобильных, планшетах и iPad Pro
+      const shouldShow = isIPad || isTabletDevice || (isTouchDevice && screenWidth < 1200);
+      setIsTablet(shouldShow);
+    };
+
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+    return () => window.removeEventListener('resize', checkDevice);
+  }, []);
 
   return (
     <>
       {/* Bottom Bar Menu - для мобильных и планшетов */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
+      {isTablet && (
+        <div className="fixed bottom-0 left-0 right-0 z-50">
         <div className="glass border-t border-ink/20 shadow-lg">
           <div className="flex items-center justify-around px-4 py-3">
             {menuItems.map((item) => {
@@ -68,7 +88,8 @@ export default function BarMenu() {
             })}
           </div>
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Floating Action Button для дополнительных действий */}
       <div className="fixed bottom-20 right-4 z-40 md:hidden">

@@ -28,7 +28,7 @@ export default function Layout({
         <Navbar />
         
         {/* Основной контент с отступом для header и нижнего меню */}
-        <div className="relative z-10 pt-24 pb-20 lg:pb-0">
+        <div className="relative z-10 pt-24 pb-20">
           {children}
         </div>
         
