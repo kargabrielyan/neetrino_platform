@@ -2,16 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, User } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useMounted } from '../lib/use-mounted';
 import NavDroplet from './NavDroplet';
 import ThemeToggle from './ThemeToggle';
+import AuthSidebar from './AuthSidebar';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAuthSidebarOpen, setIsAuthSidebarOpen] = useState(false);
   const isMounted = useMounted();
   const pathname = usePathname();
 
@@ -76,9 +78,23 @@ export default function Navbar() {
             <NavDroplet />
           </div>
 
-          {/* Theme toggle and mobile menu button */}
+          {/* Right side buttons */}
           <div className="flex items-center gap-4">
+            {/* Sign In Button */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsAuthSidebarOpen(true)}
+              className="hidden md:flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-ink font-medium rounded-full transition-all duration-200 focus-ring"
+            >
+              <User className="w-4 h-4" />
+              Sign In
+            </motion.button>
+
+            {/* Theme toggle */}
             <ThemeToggle />
+            
+            {/* Mobile menu button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="lg:hidden text-ink/70 hover:text-ink transition-colors rounded-full p-2 hover:bg-glass/50 focus-ring"
@@ -102,9 +118,29 @@ export default function Navbar() {
         >
           <div className="py-4 space-y-2 px-4">
             <NavDroplet />
+            
+            {/* Mobile Sign In Button */}
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                setIsAuthSidebarOpen(true);
+              }}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/10 hover:bg-white/20 text-ink font-medium rounded-full transition-all duration-200 focus-ring"
+            >
+              <User className="w-4 h-4" />
+              Sign In
+            </motion.button>
           </div>
         </motion.div>
       </div>
+
+      {/* Auth Sidebar */}
+      <AuthSidebar 
+        isOpen={isAuthSidebarOpen} 
+        onClose={() => setIsAuthSidebarOpen(false)} 
+      />
     </motion.nav>
   );
 }

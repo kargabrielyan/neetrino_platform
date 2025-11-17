@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Play } from 'lucide-react';
 import { formatNumber } from '../lib/format';
 import { useMounted } from '../lib/use-mounted';
+import ProductSearch from './ProductSearch';
 
 const stats = [
   { value: 50, suffix: '+', label: 'AI Models' },
@@ -70,10 +71,18 @@ export default function Hero() {
           {/* Subtitle */}
           <motion.p
             variants={itemVariants}
-            className="mt-6 text-ink/70 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed"
+            className="mt-6 text-ink/70 text-lg md:text-xl max-w-2xl mx-auto mb-8 leading-relaxed"
           >
             We create future technologies using artificial intelligence and machine learning.
           </motion.p>
+
+          {/* Search Component */}
+          <motion.div
+            variants={itemVariants}
+            className="mb-12"
+          >
+            <ProductSearch />
+          </motion.div>
 
           {/* Buttons */}
           <motion.div

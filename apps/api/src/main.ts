@@ -14,8 +14,27 @@ async function bootstrap() {
   }));
 
   // CORS
+  const allowedOrigins = process.env.FRONTEND_URL 
+    ? process.env.FRONTEND_URL.split(',').map(url => url.trim())
+    : ['http://localhost:3000'];
+  
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: (origin, callback) => {
+      // Разрешаем запросы без origin (например, мобильные приложения или Postman)
+      if (!origin) return callback(null, true);
+      
+      // Проверяем разрешенные origins
+      if (allowedOrigins.some(allowed => origin.startsWith(allowed))) {
+        return callback(null, true);
+      }
+      
+      // Разрешаем локальные IP адреса (для разработки)
+      if (origin.match(/^http:\/\/192\.168\.\d+\.\d+:\d+$/)) {
+        return callback(null, true);
+      }
+      
+      callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
   });
 
@@ -31,10 +50,12 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document);
 
   const port = process.env.API_PORT || process.env.PORT || 3001;
-  await app.listen(port);
+  const host = process.env.API_HOST || '0.0.0.0';
+  await app.listen(port, host);
   
-  console.log(`🚀 API сервер запущен на http://localhost:${port}`);
-  console.log(`📚 Swagger документация: http://localhost:${port}/api/docs`);
+  const localIP = process.env.LOCAL_IP || 'localhost';
+  console.log(`🚀 API сервер запущен на http://${localIP}:${port}`);
+  console.log(`📚 Swagger документация: http://${localIP}:${port}/api/docs`);
 }
 
 bootstrap();

@@ -72,7 +72,6 @@ function AdminContent() {
 
   const tabs = [
     { id: 'demos', label: 'Demos', icon: Database },
-    { id: 'woocommerce', label: 'WooCommerce Import', icon: Download },
   ];
 
   // Загрузка демо с API
@@ -89,14 +88,61 @@ function AdminContent() {
       let response;
       
       try {
+        console.log('🔄 Trying NestJS API:', `${nestApiUrl}/demos?${params.toString()}`);
         response = await fetch(`${nestApiUrl}/demos?${params.toString()}`);
         console.log('✅ NestJS API response status:', response.status);
+        console.log('📋 NestJS API response headers:', Object.fromEntries(response.headers.entries()));
       } catch (nestError) {
         console.warn('⚠️ NestJS API unavailable, trying Next.js API:', nestError);
+        console.log('🔄 Trying Next.js API:', `/api/admin/demos?${params.toString()}`);
         response = await fetch(`/api/admin/demos?${params.toString()}`);
+        console.log('✅ Next.js API response status:', response.status);
+        console.log('📋 Next.js API response headers:', Object.fromEntries(response.headers.entries()));
       }
 
-      const result = await response.json();
+      // Проверяем статус ответа
+      if (!response.ok) {
+        console.error('❌ API response not OK:', response.status, response.statusText);
+        setDemos([]);
+        return;
+      }
+
+      // Проверяем, есть ли контент для парсинга
+      const contentType = response.headers.get('content-type');
+      console.log('📋 Response Content-Type:', contentType);
+      
+      // Если Content-Type не установлен, пробуем парсить как JSON
+      if (contentType && !contentType.includes('application/json') && !contentType.includes('text/plain')) {
+        console.error('❌ Response is not JSON:', contentType);
+        setDemos([]);
+        return;
+      }
+
+      // Получаем текст ответа для проверки
+      const responseText = await response.text();
+      if (!responseText.trim()) {
+        console.error('❌ Empty response from API');
+        setDemos([]);
+        return;
+      }
+
+      // Парсим JSON
+      let result;
+      try {
+        result = JSON.parse(responseText);
+        console.log('✅ Successfully parsed JSON response');
+      } catch (parseError) {
+        console.error('❌ Failed to parse JSON:', parseError);
+        console.error('Response text:', responseText);
+        
+        // Если это не JSON, но статус 200, возможно это HTML страница ошибки
+        if (responseText.includes('<html') || responseText.includes('<!DOCTYPE')) {
+          console.error('❌ Received HTML instead of JSON - possible server error page');
+        }
+        
+        setDemos([]);
+        return;
+      }
 
       if (result.data && Array.isArray(result.data)) {
         // Адаптируем ответ NestJS API
@@ -110,7 +156,43 @@ function AdminContent() {
 
     } catch (error) {
       console.error('Error in fetchDemos:', error);
-      setDemos([]);
+      // Fallback данные для демонстрации
+      setDemos([
+        {
+          id: '1',
+          title: 'E-commerce Store',
+          description: 'Modern online store with shopping cart',
+          url: 'https://example-store.com',
+          status: 'active',
+          category: 'E-commerce',
+          subcategory: 'Online Store',
+          imageUrl: '/no image.png',
+          vendor: {
+            name: 'TechCorp',
+            website: 'https://techcorp.com',
+            logoUrl: '/no image.png'
+          },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: '2',
+          title: 'Portfolio Website',
+          description: 'Creative portfolio for designers',
+          url: 'https://example-portfolio.com',
+          status: 'draft',
+          category: 'Portfolio',
+          subcategory: 'Creative',
+          imageUrl: '/no image.png',
+          vendor: {
+            name: 'DesignStudio',
+            website: 'https://designstudio.com',
+            logoUrl: '/no image.png'
+          },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ]);
     } finally {
       setLoading(false);
     }
@@ -308,24 +390,6 @@ function AdminContent() {
           <p className="text-gray-600 dark:text-gray-400 text-lg">Manage your platform content and settings</p>
         </div>
 
-        {activeTab === 'woocommerce' && (
-          <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl p-8 rounded-3xl shadow-2xl shadow-blue-500/10 border border-white/30 dark:border-gray-700/30">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-              WooCommerce Import
-            </h2>
-            <div className="space-y-4">
-              <p className="text-gray-600 dark:text-gray-400 text-lg">
-                Products are imported via WordPress plugin push → <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">/import/push</code>
-              </p>
-              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
-                <p className="text-blue-800 dark:text-blue-200 text-sm">
-                  <strong>Note:</strong> This feature has been moved to the WordPress plugin integration. 
-                  Use the import endpoint to sync products from WooCommerce stores.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
 
         {activeTab === 'demos' && (
           <div className="space-y-6">

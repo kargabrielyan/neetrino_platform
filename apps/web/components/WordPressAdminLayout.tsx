@@ -6,7 +6,6 @@ import { useAdminTheme } from '../lib/use-admin-theme';
 import { 
   LayoutDashboard,
   Database,
-  Download,
   X,
   Sun,
   Moon
@@ -40,13 +39,6 @@ export default function WordPressAdminLayout({ children, currentPage = 'dashboar
         { id: 'add-demo', label: 'Add New', href: '/admin?tab=demos&action=add' },
         { id: 'categories', label: 'Categories', href: '/admin?tab=demos&action=categories' }
       ]
-    },
-    {
-      id: 'woocommerce',
-      label: 'WooCommerce Import',
-      icon: Download,
-      href: '/admin?tab=woocommerce',
-      children: []
     }
   ];
 

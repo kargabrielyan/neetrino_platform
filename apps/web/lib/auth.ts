@@ -17,16 +17,50 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null;
         }
 
-        // Простая проверка для тестирования
-        if (credentials.email === 'test@example.com' && credentials.password === 'password') {
-          return {
-            id: '1',
+        // Тестовые аккаунты для восстановления
+        const testUsers = [
+          {
+            email: 'admin@neetrino.com',
+            password: 'admin123',
+            user: {
+              id: '1',
+              email: 'admin@neetrino.com',
+              name: 'Администратор',
+              role: 'ADMIN',
+            }
+          },
+          {
             email: 'test@example.com',
-            name: 'Test User',
-            role: 'user',
-          };
+            password: 'password123',
+            user: {
+              id: '2',
+              email: 'test@example.com',
+              name: 'Тестовый пользователь',
+              role: 'USER',
+            }
+          },
+          {
+            email: 'user@example.com',
+            password: 'user123',
+            user: {
+              id: '3',
+              email: 'user@example.com',
+              name: 'Обычный пользователь',
+              role: 'USER',
+            }
+          }
+        ];
+
+        const foundUser = testUsers.find(
+          u => u.email === credentials.email && u.password === credentials.password
+        );
+
+        if (foundUser) {
+          console.log('🔐 Успешный вход:', foundUser.user.email, 'Role:', foundUser.user.role);
+          return foundUser.user;
         }
 
+        console.log('❌ Неверные данные для входа:', credentials.email);
         return null;
       }
     }),
