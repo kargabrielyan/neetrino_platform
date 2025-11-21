@@ -47,11 +47,13 @@ export default function Hero() {
           initial="hidden"
           animate={isMounted ? "visible" : "hidden"}
           className="text-center max-w-7xl mx-auto"
+          style={{ willChange: 'transform, opacity' }}
         >
           {/* Badge with glass effect */}
           <motion.div
             variants={itemVariants}
             className="inline-flex items-center gap-2 px-4 py-2 glass-subtle rounded-full mb-8"
+            style={{ willChange: 'transform, opacity' }}
           >
             <div className="w-2 h-2 rounded-full bg-a1 animate-pulse"></div>
             <span className="text-sm font-semibold text-ink/80">
@@ -63,6 +65,7 @@ export default function Hero() {
           <motion.h1
             variants={itemVariants}
             className="text-center font-semibold leading-tight tracking-tight text-ink text-5xl md:text-7xl mb-6"
+            style={{ willChange: 'transform, opacity' }}
           >
             Future Technologies with Artificial<br/>
             Intelligence
@@ -72,6 +75,7 @@ export default function Hero() {
           <motion.p
             variants={itemVariants}
             className="mt-6 text-ink/70 text-lg md:text-xl max-w-2xl mx-auto mb-8 leading-relaxed"
+            style={{ willChange: 'transform, opacity' }}
           >
             We create future technologies using artificial intelligence and machine learning.
           </motion.p>
@@ -80,6 +84,7 @@ export default function Hero() {
           <motion.div
             variants={itemVariants}
             className="mb-12"
+            style={{ willChange: 'transform, opacity' }}
           >
             <ProductSearch />
           </motion.div>
@@ -88,6 +93,7 @@ export default function Hero() {
           <motion.div
             variants={itemVariants}
             className="mt-10 flex gap-4 justify-center mb-16"
+            style={{ willChange: 'transform, opacity' }}
           >
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -114,6 +120,7 @@ export default function Hero() {
           <motion.div
             variants={itemVariants}
             className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto"
+            style={{ willChange: 'transform, opacity' }}
           >
             {stats.map((stat, index) => (
               <motion.div

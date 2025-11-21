@@ -1,66 +1,58 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In, Like } from 'typeorm';
-import { Demo } from '../demos/demo.entity';
-import { Vendor } from '../vendors/vendor.entity';
+import { PrismaService } from '../../common/services/prisma.service';
 import { SearchQueryDto, SearchResponseDto, SearchResultDto } from './dto/search-query.dto';
 
 @Injectable()
 export class SearchService {
   constructor(
-    @InjectRepository(Demo)
-    private demoRepository: Repository<Demo>,
-    @InjectRepository(Vendor)
-    private vendorRepository: Repository<Vendor>,
+    private prisma: PrismaService,
   ) {}
 
   async search(query: SearchQueryDto): Promise<SearchResponseDto> {
-    const queryBuilder = this.demoRepository
-      .createQueryBuilder('demo')
-      .leftJoinAndSelect('demo.vendor', 'vendor')
-      .where('demo.status = :status', { status: 'active' })
-      .andWhere('demo.isAccessible = :accessible', { accessible: true });
+    // Строим условия для поиска
+    const where: any = {
+      status: 'active',
+      isAccessible: true
+    };
 
     // Поиск по тексту
     if (query.q && query.q.trim()) {
-      const searchTerm = `%${query.q.trim()}%`;
-      queryBuilder.andWhere(
-        '(demo.title ILIKE :search OR demo.description ILIKE :search OR vendor.name ILIKE :search)',
-        { search: searchTerm }
-      );
+      const searchTerm = query.q.trim();
+      where.OR = [
+        { title: { contains: searchTerm, mode: 'insensitive' } },
+        { description: { contains: searchTerm, mode: 'insensitive' } },
+        { category: { contains: searchTerm, mode: 'insensitive' } },
+        { subcategory: { contains: searchTerm, mode: 'insensitive' } },
+        { vendor: { name: { contains: searchTerm, mode: 'insensitive' } } }
+      ];
     }
 
-    // Фильтры
+    // Фильтр по вендорам
     if (query.vendors && query.vendors.length > 0) {
-      queryBuilder.andWhere('demo.vendorId IN (:...vendors)', { vendors: query.vendors });
+      where.vendorId = { in: query.vendors };
     }
 
+    // Фильтр по категориям
     if (query.categories && query.categories.length > 0) {
-      queryBuilder.andWhere('demo.category IN (:...categories)', { categories: query.categories });
+      where.category = { in: query.categories };
     }
 
+    // Фильтр по подкатегориям
     if (query.subcategories && query.subcategories.length > 0) {
-      queryBuilder.andWhere('demo.subcategory IN (:...subcategories)', { subcategories: query.subcategories });
+      where.subcategory = { in: query.subcategories };
     }
 
-    // Сортировка
-    if (query.sortBy === 'relevance' && query.q && query.q.trim()) {
-      // Для поиска по релевантности
-      const searchTerm = `%${query.q.trim()}%`;
-      queryBuilder.orderBy('CASE WHEN demo.title ILIKE :exactSearch THEN 1 ELSE 2 END', 'ASC');
-      queryBuilder.addOrderBy('demo.viewCount', 'DESC');
-      queryBuilder.setParameter('exactSearch', searchTerm);
+    // Определяем сортировку
+    let orderBy: any = {};
+    if (query.sortBy === 'title') {
+      orderBy = { title: query.sortOrder?.toLowerCase() || 'asc' };
+    } else if (query.sortBy === 'createdAt') {
+      orderBy = { createdAt: query.sortOrder?.toLowerCase() || 'desc' };
+    } else if (query.sortBy === 'viewCount') {
+      orderBy = { viewCount: query.sortOrder?.toLowerCase() || 'desc' };
     } else {
-      const sortField = query.sortBy || 'createdAt';
-      const sortOrder = query.sortOrder || 'DESC';
-      
-      // Проверяем, что поле сортировки существует
-      const allowedSortFields = ['createdAt', 'viewCount', 'title'];
-      if (allowedSortFields.includes(sortField)) {
-        queryBuilder.orderBy(`demo.${sortField}`, sortOrder);
-      } else {
-        queryBuilder.orderBy('demo.createdAt', 'DESC');
-      }
+      // По умолчанию по популярности
+      orderBy = { viewCount: 'desc' };
     }
 
     // Пагинация
@@ -68,31 +60,40 @@ export class SearchService {
     const limit = Math.min(100, Math.max(1, query.limit || 20));
     const skip = (page - 1) * limit;
 
-    const [demos, total] = await queryBuilder
-      .skip(skip)
-      .take(limit)
-      .getManyAndCount();
+    // Получаем общее количество
+    const total = await this.prisma.demo.count({ where });
+
+    // Получаем демо с пагинацией
+    const demos = await this.prisma.demo.findMany({
+      where,
+      include: {
+        vendor: true
+      },
+      orderBy,
+      skip,
+      take: limit
+    });
 
     // Преобразуем в DTO
     const data: SearchResultDto[] = demos.map(demo => ({
       id: demo.id,
       title: demo.title,
-      description: demo.description,
+      description: demo.description || '',
       url: demo.url,
-      category: demo.category,
-      subcategory: demo.subcategory,
-      imageUrl: demo.imageUrl,
-      screenshotUrl: demo.screenshotUrl,
-      viewCount: demo.viewCount,
+      category: demo.category || '',
+      subcategory: demo.subcategory || '',
+      imageUrl: demo.imageUrl || '',
+      screenshotUrl: demo.screenshotUrl || demo.imageUrl || '',
+      viewCount: demo.viewCount || 0,
       isAccessible: demo.isAccessible,
       vendor: {
         id: demo.vendor.id,
         name: demo.vendor.name,
-        website: demo.vendor.website,
-        logoUrl: demo.vendor.logoUrl,
+        website: demo.vendor.website || '',
+        logoUrl: demo.vendor.logoUrl || '',
       },
       relevanceScore: this.calculateRelevanceScore(demo, query.q),
-      createdAt: demo.createdAt,
+      createdAt: demo.createdAt.toISOString(),
     }));
 
     // Получаем фильтры
@@ -118,30 +119,34 @@ export class SearchService {
       return [];
     }
 
-    const searchTerm = `%${query.trim()}%`;
-
     try {
+      const searchTerm = query.trim();
+
       // Получаем предложения из названий демо
-      const demoSuggestions = await this.demoRepository
-        .createQueryBuilder('demo')
-        .select('DISTINCT demo.title')
-        .where('demo.title ILIKE :query', { query: searchTerm })
-        .andWhere('demo.status = :status', { status: 'active' })
-        .limit(5)
-        .getRawMany();
+      const demoSuggestions = await this.prisma.demo.findMany({
+        where: {
+          title: { contains: searchTerm, mode: 'insensitive' },
+          status: 'active'
+        },
+        select: { title: true },
+        distinct: ['title'],
+        take: 5
+      });
 
       // Получаем предложения из названий вендоров
-      const vendorSuggestions = await this.vendorRepository
-        .createQueryBuilder('vendor')
-        .select('DISTINCT vendor.name')
-        .where('vendor.name ILIKE :query', { query: searchTerm })
-        .andWhere('vendor.status = :status', { status: 'active' })
-        .limit(5)
-        .getRawMany();
+      const vendorSuggestions = await this.prisma.vendor.findMany({
+        where: {
+          name: { contains: searchTerm, mode: 'insensitive' },
+          status: 'active'
+        },
+        select: { name: true },
+        distinct: ['name'],
+        take: 5
+      });
 
       const suggestions = [
-        ...demoSuggestions.map(item => item.demo_title).filter(Boolean),
-        ...vendorSuggestions.map(item => item.vendor_name).filter(Boolean),
+        ...demoSuggestions.map(item => item.title).filter(Boolean),
+        ...vendorSuggestions.map(item => item.name).filter(Boolean),
       ];
 
       return [...new Set(suggestions)].slice(0, 10);
@@ -158,55 +163,66 @@ export class SearchService {
   }> {
     try {
       // Получаем доступных вендоров
-      const vendors = await this.vendorRepository
-        .createQueryBuilder('vendor')
-        .leftJoin('vendor.demos', 'demo')
-        .select(['vendor.id', 'vendor.name'])
-        .addSelect('COUNT(demo.id)', 'count')
-        .where('vendor.status = :status', { status: 'active' })
-        .andWhere('demo.status = :demoStatus', { demoStatus: 'active' })
-        .groupBy('vendor.id, vendor.name')
-        .orderBy('vendor.name', 'ASC')
-        .getRawMany();
+      const vendors = await this.prisma.vendor.findMany({
+        where: {
+          status: 'active',
+          demos: {
+            some: { status: 'active', isAccessible: true }
+          }
+        },
+        include: {
+          _count: {
+            select: {
+              demos: {
+                where: { status: 'active', isAccessible: true }
+              }
+            }
+          }
+        }
+      });
 
       // Получаем доступные категории
-      const categories = await this.demoRepository
-        .createQueryBuilder('demo')
-        .select('demo.category')
-        .addSelect('COUNT(*)', 'count')
-        .where('demo.status = :status', { status: 'active' })
-        .andWhere('demo.category IS NOT NULL')
-        .andWhere('demo.category != :empty', { empty: '' })
-        .groupBy('demo.category')
-        .orderBy('demo.category', 'ASC')
-        .getRawMany();
+      const categories = await this.prisma.demo.groupBy({
+        by: ['category'],
+        where: {
+          status: 'active',
+          isAccessible: true,
+          category: { not: null }
+        },
+        _count: true
+      });
 
       // Получаем доступные подкатегории
-      const subcategories = await this.demoRepository
-        .createQueryBuilder('demo')
-        .select('demo.subcategory')
-        .addSelect('COUNT(*)', 'count')
-        .where('demo.status = :status', { status: 'active' })
-        .andWhere('demo.subcategory IS NOT NULL')
-        .andWhere('demo.subcategory != :empty', { empty: '' })
-        .groupBy('demo.subcategory')
-        .orderBy('demo.subcategory', 'ASC')
-        .getRawMany();
+      const subcategories = await this.prisma.demo.groupBy({
+        by: ['subcategory'],
+        where: {
+          status: 'active',
+          isAccessible: true,
+          subcategory: { not: null }
+        },
+        _count: true
+      });
 
       return {
-        vendors: vendors.map(v => ({
-          id: v.vendor_id,
-          name: v.vendor_name,
-          count: parseInt(v.count) || 0,
-        })).filter(v => v.count > 0),
-        categories: categories.map(c => ({
-          name: c.demo_category,
-          count: parseInt(c.count) || 0,
-        })).filter(c => c.count > 0),
-        subcategories: subcategories.map(s => ({
-          name: s.demo_subcategory,
-          count: parseInt(s.count) || 0,
-        })).filter(s => s.count > 0),
+        vendors: vendors
+          .filter(v => v._count.demos > 0)
+          .map(v => ({
+            id: v.id,
+            name: v.name,
+            count: v._count.demos
+          })),
+        categories: categories
+          .filter(c => c.category)
+          .map(c => ({
+            name: c.category!,
+            count: c._count
+          })),
+        subcategories: subcategories
+          .filter(s => s.subcategory)
+          .map(s => ({
+            name: s.subcategory!,
+            count: s._count
+          })),
       };
     } catch (error) {
       console.error('Error getting available filters:', error);
@@ -218,7 +234,7 @@ export class SearchService {
     }
   }
 
-  private calculateRelevanceScore(demo: Demo, query?: string): number {
+  private calculateRelevanceScore(demo: any, query?: string): number {
     if (!query || !query.trim()) return 0;
 
     const queryLower = query.toLowerCase().trim();

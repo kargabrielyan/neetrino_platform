@@ -171,35 +171,42 @@
 }
 
 @layer components {
-  /* Liquid Glass Components */
+  /* Liquid Glass Components - Оптимизированные */
   .glass {
-    background: var(--glass-fill);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--glass-border);
-    box-shadow: 
-      0 8px 32px var(--glass-shadow),
-      inset 0 1px 0 var(--glass-highlight);
-  }
-  
-  .glass-strong {
-    background: var(--glass-fill);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border);
-    box-shadow: 
-      0 12px 40px var(--glass-shadow),
-      inset 0 1px 0 var(--glass-highlight);
-  }
-  
-  .glass-subtle {
     background: var(--glass-fill);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--glass-border);
     box-shadow: 
+      0 8px 32px var(--glass-shadow),
+      inset 0 1px 0 var(--glass-highlight);
+    /* Оптимизация производительности */
+    will-change: transform;
+    transform: translateZ(0);
+  }
+  
+  .glass-strong {
+    background: var(--glass-fill);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 
+      0 12px 40px var(--glass-shadow),
+      inset 0 1px 0 var(--glass-highlight);
+    will-change: transform;
+    transform: translateZ(0);
+  }
+  
+  .glass-subtle {
+    background: var(--glass-fill);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 
       0 4px 16px var(--glass-shadow),
       inset 0 1px 0 var(--glass-highlight);
+    will-change: transform;
+    transform: translateZ(0);
   }
   
   /* Typography */
@@ -327,4 +334,136 @@
   outline: 0;
   box-shadow: 0 0 0 2px rgba(255,255,255,.25);
   border-radius: 12px;
+}
+
+/* ===========================================
+   PARTICLES CANVAS - Оптимизированные стили
+   =========================================== */
+.particles-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  will-change: transform;
+  /* Оптимизация для GPU */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Частицы - оптимизированные */
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(0, 209, 255, 0.4);
+  border-radius: 50%;
+  will-change: transform, opacity;
+  /* Используем transform вместо left/top для производительности */
+  transform: translate(var(--particle-x, 0), var(--particle-y, 0));
+  animation: particleFloat 15s ease-in-out infinite;
+  /* Отключаем на мобильных для экономии ресурсов */
+}
+
+.particle-line {
+  position: absolute;
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, 
+    rgba(0, 209, 255, 0.3) 0%, 
+    rgba(0, 209, 255, 0) 100%);
+  will-change: transform, opacity;
+  transform: translate(var(--line-x, 0), var(--line-y, 0)) rotate(var(--line-rotate, 0deg));
+  animation: lineFloat 10s ease-in-out infinite;
+  transform-origin: center top;
+}
+
+.particle-text {
+  position: absolute;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(0, 209, 255, 0.3);
+  font-family: 'JetBrains Mono', monospace;
+  will-change: transform, opacity;
+  transform: translate(var(--text-x, 0), var(--text-y, 0));
+  animation: textFloat 12s ease-in-out infinite;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Анимации частиц - оптимизированные */
+@keyframes particleFloat {
+  0%, 100% {
+    transform: translate(var(--particle-x, 0), var(--particle-y, 0)) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translate(calc(var(--particle-x, 0) + 20px), calc(var(--particle-y, 0) - 30px)) scale(1.2);
+    opacity: 0.6;
+  }
+}
+
+@keyframes lineFloat {
+  0%, 100% {
+    transform: translate(var(--line-x, 0), var(--line-y, 0)) rotate(var(--line-rotate, 0deg)) scaleY(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate(calc(var(--line-x, 0) + 15px), calc(var(--line-y, 0) - 20px)) rotate(calc(var(--line-rotate, 0deg) + 5deg)) scaleY(1.1);
+    opacity: 0.5;
+  }
+}
+
+@keyframes textFloat {
+  0%, 100% {
+    transform: translate(var(--text-x, 0), var(--text-y, 0)) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate(calc(var(--text-x, 0) + 10px), calc(var(--text-y, 0) - 15px)) scale(1.1);
+    opacity: 0.5;
+  }
+}
+
+/* Оптимизация для десктопа - уменьшаем количество частиц через CSS */
+@media (min-width: 1024px) {
+  .particles-container .particle:nth-child(n+21) {
+    display: none; /* Скрываем частицы после 20-й на десктопе */
+  }
+  
+  .particles-container .particle-line:nth-child(n+16) {
+    display: none; /* Скрываем линии после 15-й на десктопе */
+  }
+  
+  /* Упрощаем backdrop-filter на десктопе */
+  .glass {
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+  }
+  
+  .glass-strong {
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+  }
+  
+  .glass-subtle {
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+  }
+}
+
+/* Отключаем частицы на очень больших экранах для производительности */
+@media (min-width: 1920px) {
+  .particles-container {
+    display: none;
+  }
+}
+
+/* Отключаем анимации для пользователей с prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .particle,
+  .particle-line,
+  .particle-text {
+    animation: none !important;
+    opacity: 0.2 !important;
+  }
 }

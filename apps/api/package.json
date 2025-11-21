@@ -11,7 +11,10 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "type-check": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "seed": "ts-node src/seed.ts"
+    "seed": "ts-node src/seed.ts",
+    "setup-db": "ts-node scripts/setup-database.ts",
+    "import-json": "ts-node scripts/import-json-to-prisma.ts",
+    "studio": "prisma studio --schema=./prisma/schema.prisma"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
@@ -53,6 +56,7 @@
     "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
+    "dotenv": "^16.6.1",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",

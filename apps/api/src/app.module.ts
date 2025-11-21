@@ -27,15 +27,15 @@ import { AdminModule } from './modules/admin/admin.module';
     // Подключаем Prisma глобально
     PrismaModule,
     HealthModule,
-    // Подключаем только основные модули (остальные временно отключены)
+    // Подключаем модули
     DemosModule,
-    // VendorsModule,
-    // SearchModule,
-    // OrdersModule,
-    // CheckingModule,
-    // ImportModule,
-    // DevModule,
-    // AdminModule,
+    VendorsModule,
+    SearchModule,
+    OrdersModule,
+    CheckingModule,
+    ImportModule,
+    DevModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

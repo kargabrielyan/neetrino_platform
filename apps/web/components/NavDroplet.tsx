@@ -18,7 +18,7 @@ const items: Item[] = [
   { label: "Services", to: "/services" },
   { label: "About", to: "/about" },
   { 
-    label: "Catalog", 
+    label: "Shop", 
     children: [
       { label: "Website", to: "/catalog/website" },
       { label: "App", to: "/catalog/app" }
@@ -41,6 +41,21 @@ export default function NavDroplet() {
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
   const [showDropdown, setShowDropdown] = useState<string | null>(null);
   const [hideTimeout, setHideTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [isDark, setIsDark] = useState(false);
+
+  // Проверка темы
+  useEffect(() => {
+    const checkTheme = () => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    };
+    checkTheme();
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+    return () => observer.disconnect();
+  }, []);
 
   const activeKey = useMemo(() => {
     // Сначала проверяем прямые ссылки
@@ -182,7 +197,7 @@ export default function NavDroplet() {
         tabIndex={0}
       >
         {/* Water droplet */}
-        {(target || dropdownTarget) && (
+        {target && (
           <motion.div
             aria-hidden="true"
             className="absolute rounded-full pointer-events-none"
@@ -197,11 +212,11 @@ export default function NavDroplet() {
             }}
             initial={false}
             animate={{
-              x: (dropdownTarget || target)!.x - 8,
-              y: (dropdownTarget || target)!.y - 6,
-              width: (dropdownTarget || target)!.w + 16,
-              height: (dropdownTarget || target)!.h + 12,
-              borderRadius: (dropdownTarget || target)!.h + 24,
+              x: target.x - 8,
+              y: target.y - 6,
+              width: target.w + 16,
+              height: target.h + 12,
+              borderRadius: target.h + 24,
             }}
             transition={
               reduce
@@ -243,6 +258,12 @@ export default function NavDroplet() {
                      }, 150);
                      setHideTimeout(timeout);
                    }}
+                   onClick={() => {
+                     // При клике на "Shop" переходим на /catalog/website
+                     if (item.label === "Shop") {
+                       window.location.href = "/catalog/website";
+                     }
+                   }}
                   className={[
                     "relative z-10 px-3 py-2 md:px-5 md:py-2.5 rounded-full text-xs md:text-sm lg:text-base transition-colors duration-200 focus-ring cursor-pointer inline-block",
                     isActive
@@ -281,7 +302,18 @@ export default function NavDroplet() {
                           setHideTimeout(timeout);
                         }}
                       >
-                        <ul className="menu inline-flex w-[110px] flex-col rounded-2xl bg-white/5 backdrop-blur-xl overflow-hidden p-1">
+                        <ul 
+                          className="menu inline-flex w-[110px] flex-col rounded-2xl backdrop-blur-xl overflow-hidden p-1"
+                          style={{
+                            background: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.8)',
+                            backdropFilter: 'blur(20px)',
+                            WebkitBackdropFilter: 'blur(20px)',
+                            border: isDark ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.3)',
+                            boxShadow: isDark 
+                              ? '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                              : '0 8px 32px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.6)',
+                          }}
+                        >
                           {item.children?.map((child) => (
                             <li key={child.to}>
                               <button
@@ -294,26 +326,20 @@ export default function NavDroplet() {
                                   window.location.href = child.to;
                                 }}
                                 onMouseEnter={() => {
-                                  requestAnimationFrame(() => {
-                                    const r = measureDropdown(child.to);
-                                    if (r) {
-                                      setDropdownTarget(r);
-                                      setTarget(null);
-                                    }
-                                  });
+                                  // Капсула остается на родительском элементе "Shop"
+                                  // Не меняем target при наведении на подменю
                                 }}
                                 onMouseLeave={() => {
-                                  setDropdownTarget(null);
-                                  requestAnimationFrame(() => {
-                                    const r = measure(item.label);
-                                    if (r) setTarget(r);
-                                  });
+                                  // Капсула остается на родительском элементе "Shop"
+                                  // Не меняем target при уходе с подменю
                                 }}
                                 className={[
                                   "menu-item isolate relative z-0 w-full rounded-xl px-4 py-2 text-left",
+                                  "transition-colors duration-200 ease-out",
+                                  "hover:text-ink dark:hover:text-white",
                                   child.to === activeKey
-                                    ? "text-white font-normal"
-                                    : "text-white/70 font-normal"
+                                    ? "text-ink font-normal dark:text-white"
+                                    : "text-ink/80 font-normal dark:text-white/70"
                                 ].join(" ")}
                                 style={{
                                   fontFamily: 'Inter, "Inter Fallback", sans-serif',
