@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { useMounted } from '../../../lib/use-mounted';
 import Layout from '../../../components/Layout';
-import { Brain, Cpu, Database, BarChart3, MessageSquare, Eye, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Brain, Cpu, Database, BarChart3, MessageSquare, Eye, ArrowLeft, CheckCircle, Bot, Camera, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 const features = [
@@ -42,22 +42,22 @@ const technologies = [
 const aiServices = [
   { 
     name: 'Chatbots & Virtual Assistants', 
-    icon: '🤖', 
+    icon: Bot, 
     description: 'Intelligent conversational AI for customer support and automation' 
   },
   { 
     name: 'Data Analysis & Insights', 
-    icon: '📊', 
+    icon: BarChart3, 
     description: 'AI-powered analytics to uncover hidden patterns in your data' 
   },
   { 
     name: 'Image & Video Processing', 
-    icon: '📷', 
+    icon: Camera, 
     description: 'Computer vision solutions for visual content analysis' 
   },
   { 
     name: 'Predictive Modeling', 
-    icon: '🔮', 
+    icon: Sparkles, 
     description: 'Machine learning models to predict future outcomes' 
   },
 ];
@@ -185,7 +185,9 @@ export default function AIIntegration() {
                 className="glass rounded-2xl p-6"
               >
                 <div className="flex items-start gap-4">
-                  <div className="text-3xl">{service.icon}</div>
+                  <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <service.icon className="w-6 h-6 text-primary" />
+                  </div>
                   <div>
                     <h3 className="text-xl font-semibold text-white mb-2">
                       {service.name}

@@ -19,6 +19,7 @@ export class SearchService {
     if (query.q && query.q.trim()) {
       const searchTerm = query.q.trim();
       where.OR = [
+        { sku: { equals: searchTerm, mode: 'insensitive' } }, // Точное совпадение по SKU
         { title: { contains: searchTerm, mode: 'insensitive' } },
         { description: { contains: searchTerm, mode: 'insensitive' } },
         { category: { contains: searchTerm, mode: 'insensitive' } },
@@ -75,8 +76,9 @@ export class SearchService {
     });
 
     // Преобразуем в DTO
+    // ВАЖНО: для фронтенда id = sku (бизнес-ID), а не UUID
     const data: SearchResultDto[] = demos.map(demo => ({
-      id: demo.id,
+      id: demo.sku || demo.id, // Приоритет SKU - это то, что используется в URL
       title: demo.title,
       description: demo.description || '',
       url: demo.url,
@@ -86,6 +88,8 @@ export class SearchService {
       screenshotUrl: demo.screenshotUrl || demo.imageUrl || '',
       viewCount: demo.viewCount || 0,
       isAccessible: demo.isAccessible,
+      regularPrice: demo.regularPrice ? Number(demo.regularPrice) : undefined,
+      salePrice: demo.salePrice ? Number(demo.salePrice) : undefined,
       vendor: {
         id: demo.vendor.id,
         name: demo.vendor.name,

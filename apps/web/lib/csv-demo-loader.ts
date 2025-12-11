@@ -58,12 +58,69 @@ async function loadCsvDemos(): Promise<Demo[]> {
   }
 
   try {
-    const csvFilePath = path.join(process.cwd(), '..', '..', 'data', 'demos.json');
-    const fileContent = await fs.readFile(csvFilePath, 'utf-8');
-    const csvData: CsvDemo[] = JSON.parse(fileContent);
+    // Определяем путь к файлу относительно корня проекта
+    // В Next.js API routes process.cwd() указывает на корень проекта Next.js (apps/web)
+    const projectRoot = process.cwd();
+    console.log('📁 Текущая рабочая директория:', projectRoot);
+    
+    // Пробуем разные пути к файлу
+    const possiblePaths = [
+      path.join(projectRoot, '..', '..', 'data', 'demos.json'), // Из apps/web -> корень проекта
+      path.resolve(projectRoot, '..', '..', 'data', 'demos.json'), // Абсолютный путь
+      path.join(projectRoot, 'data', 'demos.json'), // Из корня Next.js проекта
+      path.join(projectRoot, '..', 'data', 'demos.json'), // Альтернативный путь
+    ];
+    
+    console.log('🔍 Проверяем пути:', possiblePaths);
+    
+    let csvFilePath: string | null = null;
+    
+    // Пробуем найти файл по одному из путей
+    for (const filePath of possiblePaths) {
+      try {
+        await fs.access(filePath);
+        csvFilePath = filePath;
+        console.log('✅ Файл найден по пути:', filePath);
+        break;
+      } catch (accessError: any) {
+        console.log('❌ Файл не найден по пути:', filePath, accessError.code);
+        // Продолжаем поиск
+        continue;
+      }
+    }
+    
+    if (!csvFilePath) {
+      const errorMsg = `Не удалось найти файл demos.json. Проверенные пути: ${possiblePaths.join(', ')}. CWD: ${projectRoot}`;
+      console.error('❌', errorMsg);
+      throw new Error(errorMsg);
+    }
+    
+    console.log('📂 Загрузка демо из файла:', csvFilePath);
+    let fileContent: string;
+    try {
+      fileContent = await fs.readFile(csvFilePath, 'utf-8');
+      console.log('📄 Размер файла:', fileContent.length, 'символов');
+    } catch (readError: any) {
+      console.error('❌ Ошибка чтения файла:', readError.message);
+      throw new Error(`Не удалось прочитать файл: ${readError.message}`);
+    }
+    
+    let csvData: CsvDemo[];
+    try {
+      csvData = JSON.parse(fileContent);
+      console.log('📊 Загружено записей из JSON:', csvData.length);
+    } catch (parseError: any) {
+      console.error('❌ Ошибка парсинга JSON:', parseError.message);
+      throw new Error(`Не удалось распарсить JSON файл: ${parseError.message}`);
+    }
+    
+    if (!Array.isArray(csvData)) {
+      throw new Error('JSON файл должен содержать массив данных');
+    }
 
     // Преобразуем CSV данные в формат Demo
-    csvDemos = csvData.map(csvDemo => ({
+    try {
+      csvDemos = csvData.map(csvDemo => ({
       id: csvDemo.id,
       title: csvDemo.title,
       description: csvDemo.description,
@@ -85,14 +142,20 @@ async function loadCsvDemos(): Promise<Demo[]> {
       },
       createdAt: csvDemo.createdAt,
       updatedAt: csvDemo.updatedAt,
-    }));
+      }));
+    } catch (mapError: any) {
+      console.error('❌ Ошибка преобразования данных:', mapError.message);
+      throw new Error(`Ошибка при преобразовании данных: ${mapError.message}`);
+    }
 
     isLoaded = true;
     console.log(`📚 Загружено ${csvDemos.length} демо из CSV файла`);
     return csvDemos;
-  } catch (error) {
-    console.error('Ошибка загрузки CSV демо:', error);
-    return [];
+  } catch (error: any) {
+    console.error('❌ Ошибка загрузки CSV демо:', error);
+    console.error('❌ Стек ошибки:', error.stack);
+    // Не возвращаем пустой массив, а пробрасываем ошибку дальше
+    throw error;
   }
 }
 
@@ -111,8 +174,78 @@ export const csvDemoData = {
   
   // Получить демо по ID
   getById: async (id: string): Promise<Demo | undefined> => {
-    const demos = await loadCsvDemos();
-    return demos.find(demo => demo.id === id);
+    try {
+      if (!id || typeof id !== 'string') {
+        console.warn('⚠️ [CSV] Неверный ID:', id);
+        return undefined;
+      }
+      
+      const demos = await loadCsvDemos();
+      const searchId = String(id).trim();
+      console.log('🔍 [CSV] Поиск демо с ID:', searchId, 'в', demos.length, 'записях');
+      console.log('🔍 [CSV] Тип ID:', typeof searchId, 'Длина:', searchId.length);
+      
+      if (!demos || demos.length === 0) {
+        console.warn('⚠️ [CSV] Массив демо пуст');
+        return undefined;
+      }
+      
+      // Сначала пробуем точное совпадение
+      let found = demos.find(demo => {
+        if (!demo || !demo.id) return false;
+        const demoId = String(demo.id).trim();
+        return demoId === searchId;
+      });
+      
+      // Если не нашли, пробуем без учета регистра
+      if (!found) {
+        console.log('🔍 [CSV] Точное совпадение не найдено, пробуем без учета регистра...');
+        found = demos.find(demo => {
+          if (!demo || !demo.id) return false;
+          const demoId = String(demo.id).trim();
+          return demoId.toLowerCase() === searchId.toLowerCase();
+        });
+      }
+      
+      // Если все еще не нашли, пробуем частичное совпадение
+      if (!found) {
+        console.log('🔍 [CSV] Совпадение без учета регистра не найдено, пробуем частичное...');
+        found = demos.find(demo => {
+          if (!demo || !demo.id) return false;
+          const demoId = String(demo.id).trim();
+          return demoId.includes(searchId) || searchId.includes(demoId);
+        });
+      }
+      
+      if (found) {
+        console.log('✅ [CSV] Демо найдено:', found.title, 'ID:', found.id);
+      } else {
+        console.log('❌ [CSV] Демо не найдено. Искомый ID:', searchId);
+        console.log('🔍 [CSV] Первые 10 ID из базы:', demos.slice(0, 10).map(d => ({
+          id: d.id,
+          type: typeof d.id,
+          length: String(d.id).length
+        })));
+        // Пробуем найти похожие ID
+        const similar = demos.filter(d => {
+          if (!d || !d.id) return false;
+          const demoId = String(d.id).toLowerCase();
+          const searchIdLower = searchId.toLowerCase();
+          return demoId.includes(searchIdLower.substring(0, Math.min(3, searchIdLower.length))) ||
+                 searchIdLower.includes(demoId.substring(0, Math.min(3, demoId.length)));
+        }).slice(0, 5);
+        if (similar.length > 0) {
+          console.log('🔍 [CSV] Похожие ID:', similar.map(d => ({ id: d.id, title: d.title?.substring(0, 30) })));
+        }
+      }
+      return found;
+    } catch (error: any) {
+      console.error('❌ [CSV] Ошибка в getById:', error.message);
+      console.error('❌ [CSV] Тип ошибки:', error?.constructor?.name);
+      console.error('❌ [CSV] Стек ошибки:', error.stack);
+      // Возвращаем undefined вместо проброса ошибки, чтобы API мог вернуть 404
+      return undefined;
+    }
   },
   
   // Поиск демо

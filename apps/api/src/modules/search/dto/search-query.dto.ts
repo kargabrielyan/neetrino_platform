@@ -1,6 +1,6 @@
-import { IsOptional, IsString, IsNumber, Min, Max, IsArray } from 'class-validator';
+﻿import { IsOptional, IsString, IsNumber, Min, Max, IsArray } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class SearchQueryDto {
   @ApiProperty({ required: false, description: 'Search query', example: 'e-commerce' })
@@ -41,12 +41,7 @@ export class SearchQueryDto {
   @IsString({ each: true })
   subcategories?: string[];
 
-  @ApiProperty({ 
-    required: false, 
-    description: 'Sort by field', 
-    enum: ['relevance', 'createdAt', 'viewCount', 'title'],
-    default: 'relevance'
-  })
+  @ApiProperty({ required: false, description: 'Sort by field', enum: ['relevance', 'createdAt', 'viewCount', 'title'], default: 'relevance' })
   @IsOptional()
   @IsString()
   sortBy?: 'relevance' | 'createdAt' | 'viewCount' | 'title' = 'relevance';
@@ -88,6 +83,12 @@ export class SearchResultDto {
   @ApiProperty({ description: 'Is accessible' })
   isAccessible: boolean;
 
+  @ApiPropertyOptional({ description: 'Regular price' })
+  regularPrice?: number;
+
+  @ApiPropertyOptional({ description: 'Sale price' })
+  salePrice?: number;
+
   @ApiProperty({ description: 'Vendor information' })
   vendor: {
     id: string;
@@ -100,7 +101,7 @@ export class SearchResultDto {
   relevanceScore?: number;
 
   @ApiProperty({ description: 'Created at' })
-  createdAt: Date;
+  createdAt: string;
 }
 
 export class SearchResponseDto {

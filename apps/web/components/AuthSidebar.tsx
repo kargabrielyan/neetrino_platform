@@ -46,25 +46,73 @@ export default function AuthSidebar({ isOpen, onClose, initialMode = 'signin' }:
     setError('');
 
     try {
+      console.log('🔵 [AuthSidebar] Начало входа:', data.email);
+      
       const result = await signIn('credentials', {
         email: data.email,
         password: data.password,
         redirect: false,
+        callbackUrl: '/',
       });
 
-      if (result?.error) {
-        setError('Invalid email or password');
-      } else {
-        const session = await getSession();
-        if (session?.user?.role === 'ADMIN') {
-          router.push('/admin');
-        } else {
-          router.push('/');
-        }
-        onClose();
+      console.log('🔵 [AuthSidebar] Результат signIn:', { 
+        ok: result?.ok, 
+        error: result?.error,
+        status: result?.status,
+        url: result?.url,
+        hasResult: !!result
+      });
+
+      // Проверяем, что результат существует
+      if (!result) {
+        console.error('❌ [AuthSidebar] signIn вернул undefined/null');
+        setError('Sign in failed. Please try again.');
+        setIsLoading(false);
+        return;
       }
-    } catch (error) {
-      setError('An error occurred during sign in');
+
+      if (result.error) {
+        console.error('❌ [AuthSidebar] Ошибка входа:', result.error);
+        setError('Invalid email or password');
+        setIsLoading(false);
+        return;
+      }
+      
+      if (result.ok) {
+        console.log('✅ [AuthSidebar] Вход успешен, проверка сессии...');
+        // Небольшая задержка для создания сессии
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        const session = await getSession();
+        console.log('🔵 [AuthSidebar] Сессия:', session ? 'создана' : 'не найдена');
+        console.log('🔵 [AuthSidebar] Данные сессии:', session ? {
+          userId: session.user?.id,
+          email: session.user?.email,
+          role: session.user?.role
+        } : 'нет сессии');
+        
+        if (session) {
+          if (session.user?.role === 'ADMIN') {
+            console.log('✅ [AuthSidebar] Переход в админ-панель');
+            router.push('/admin');
+          } else {
+            console.log('✅ [AuthSidebar] Переход на главную');
+            router.push('/');
+          }
+          // Закрываем форму только после успешного входа
+          onClose();
+        } else {
+          console.error('❌ [AuthSidebar] Сессия не создана после успешного входа');
+          setError('Sign in successful but session not created. Please refresh the page.');
+        }
+      } else {
+        // Если нет ни ok, ни error - неожиданный результат
+        console.error('❌ [AuthSidebar] Неожиданный результат входа:', result);
+        setError('An error occurred during sign in. Please try again.');
+      }
+    } catch (error: any) {
+      console.error('❌ [AuthSidebar] Исключение при входе:', error);
+      setError(error?.message || 'An error occurred during sign in');
     } finally {
       setIsLoading(false);
     }
@@ -76,6 +124,7 @@ export default function AuthSidebar({ isOpen, onClose, initialMode = 'signin' }:
     setError('');
 
     try {
+      console.log('🔵 [AuthSidebar] Начало регистрации:', data.email);
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
@@ -88,9 +137,40 @@ export default function AuthSidebar({ isOpen, onClose, initialMode = 'signin' }:
         }),
       });
 
-      const result = await response.json();
+      // Проверяем Content-Type ответа
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('❌ [AuthSidebar] Сервер вернул не JSON:', text.substring(0, 200));
+        setError('Server returned invalid response format. Please try again later.');
+        return;
+      }
+
+      let result;
+      try {
+        result = await response.json();
+      } catch (parseError) {
+        console.error('❌ [AuthSidebar] Ошибка парсинга JSON:', parseError);
+        setError('Error processing server response');
+        return;
+      }
+      
+      console.log('🔵 [AuthSidebar] Ответ сервера:', { status: response.status, success: result.success });
+
+      if (!response.ok) {
+        // Обработка ошибок от сервера
+        const errorMessage = result.error || result.message || 'Ошибка при регистрации';
+        console.error('❌ [AuthSidebar] Ошибка регистрации:', errorMessage);
+        setError(errorMessage);
+        return;
+      }
 
       if (result.success) {
+        console.log('✅ [AuthSidebar] Регистрация успешна, ожидание синхронизации БД...');
+        // Небольшая задержка для синхронизации БД
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        console.log('🔵 [AuthSidebar] Попытка входа в систему...');
         // Automatically sign in after registration
         const signInResult = await signIn('credentials', {
           email: data.email,
@@ -98,25 +178,45 @@ export default function AuthSidebar({ isOpen, onClose, initialMode = 'signin' }:
           redirect: false,
         });
 
+        console.log('🔵 [AuthSidebar] Результат signIn:', { 
+          ok: signInResult?.ok, 
+          error: signInResult?.error,
+          status: signInResult?.status,
+          url: signInResult?.url 
+        });
+
         if (signInResult?.error) {
-          setError('Registration successful, but sign in failed. Please try signing in manually.');
+          console.error('❌ [AuthSidebar] Ошибка входа после регистрации:', signInResult.error);
+          console.error('❌ [AuthSidebar] Детали ошибки:', {
+            error: signInResult?.error,
+            status: signInResult?.status,
+            url: signInResult?.url
+          });
+          setError('Registration successful but sign in failed. Please try signing in manually.');
         } else {
+          console.log('✅ [AuthSidebar] Вход выполнен успешно, переход в личный кабинет');
+          // Дополнительная проверка сессии
+          const { getSession } = await import('next-auth/react');
+          const session = await getSession();
+          console.log('🔵 [AuthSidebar] Проверка сессии:', session ? 'сессия создана' : 'сессия не найдена');
           router.push('/my-account');
           onClose();
         }
       } else {
-        setError(result.error || 'Registration error');
+        const errorMessage = result.error || result.message || 'Ошибка при регистрации';
+        console.error('❌ [AuthSidebar] Регистрация не удалась:', errorMessage);
+        setError(errorMessage);
       }
-    } catch (error) {
-      console.error('Registration error:', error);
-      setError('An error occurred during registration');
+    } catch (error: any) {
+      console.error('❌ [AuthSidebar] Исключение при регистрации:', error);
+      setError(error?.message || 'An error occurred during registration');
     } finally {
       setIsLoading(false);
     }
   };
 
   // Handle social sign in
-  const handleSocialSignIn = async (provider: 'google' | 'github') => {
+  const handleSocialSignIn = async (provider: 'google') => {
     setIsLoading(true);
     setError('');
 
@@ -140,7 +240,12 @@ export default function AuthSidebar({ isOpen, onClose, initialMode = 'signin' }:
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
-            onClick={onClose}
+            onClick={(e) => {
+              // Закрываем только если клик не на форме и не идет загрузка
+              if (e.target === e.currentTarget && !isLoading) {
+                onClose();
+              }
+            }}
           />
 
           {/* Sidebar */}
@@ -405,12 +510,12 @@ export default function AuthSidebar({ isOpen, onClose, initialMode = 'signin' }:
                     </div>
                   </div>
 
-                  <div className="mt-4 grid grid-cols-2 gap-3">
+                  <div className="mt-4">
                     <button
                       type="button"
                       onClick={() => handleSocialSignIn('google')}
                       disabled={isLoading}
-                      className="flex justify-center items-center gap-2 py-2 px-4 glass-subtle rounded-lg text-ink hover:glass-strong transition-all duration-200 focus-ring disabled:opacity-50"
+                      className="w-full flex justify-center items-center gap-2 py-2 px-4 glass-subtle rounded-lg text-ink hover:glass-strong transition-all duration-200 focus-ring disabled:opacity-50"
                     >
                       <svg className="w-4 h-4" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -419,17 +524,6 @@ export default function AuthSidebar({ isOpen, onClose, initialMode = 'signin' }:
                         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                       </svg>
                       Google
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleSocialSignIn('github')}
-                      disabled={isLoading}
-                      className="flex justify-center items-center gap-2 py-2 px-4 glass-subtle rounded-lg text-ink hover:glass-strong transition-all duration-200 focus-ring disabled:opacity-50"
-                    >
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                      </svg>
-                      GitHub
                     </button>
                   </div>
                 </div>

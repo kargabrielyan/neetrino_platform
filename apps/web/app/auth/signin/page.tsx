@@ -34,7 +34,7 @@ export default function SignInPage() {
       });
 
       if (result?.error) {
-        setError('Неверный email или пароль');
+        setError('Invalid email or password');
       } else {
         const session = await getSession();
         if (session?.user?.role === 'ADMIN') {
@@ -44,7 +44,7 @@ export default function SignInPage() {
         }
       }
     } catch (error) {
-      setError('Произошла ошибка при входе');
+      setError('An error occurred during sign in');
     } finally {
       setIsLoading(false);
     }
@@ -55,15 +55,15 @@ export default function SignInPage() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Вход в аккаунт
+            Sign in to your account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Или{' '}
+            Or{' '}
             <Link
               href="/auth/signup"
               className="font-medium text-indigo-600 hover:text-indigo-500"
             >
-              создайте новый аккаунт
+              create a new account
             </Link>
           </p>
         </div>
@@ -73,15 +73,15 @@ export default function SignInPage() {
               {...register('email')}
               label="Email"
               type="email"
-              placeholder="Email адрес"
+              placeholder="Email address"
               required
               error={errors.email}
             />
             <FormInput
               {...register('password')}
-              label="Пароль"
+              label="Password"
               type="password"
-              placeholder="Пароль"
+              placeholder="Password"
               required
               error={errors.password}
             />
@@ -97,7 +97,7 @@ export default function SignInPage() {
               disabled={isLoading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
             >
-              {isLoading ? 'Вход...' : 'Войти'}
+              {isLoading ? 'Signing in...' : 'Sign In'}
             </button>
           </div>
 
@@ -107,24 +107,17 @@ export default function SignInPage() {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-gray-50 text-gray-500">Или войдите через</span>
+                <span className="px-2 bg-gray-50 text-gray-500">Or sign in with</span>
               </div>
             </div>
 
-            <div className="mt-6 grid grid-cols-2 gap-3">
+            <div className="mt-6">
               <button
                 type="button"
                 onClick={() => signIn('google')}
                 className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
               >
                 Google
-              </button>
-              <button
-                type="button"
-                onClick={() => signIn('github')}
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-              >
-                GitHub
               </button>
             </div>
           </div>

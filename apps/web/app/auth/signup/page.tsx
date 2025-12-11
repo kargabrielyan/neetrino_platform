@@ -27,6 +27,7 @@ export default function SignUpPage() {
     setError('');
 
     try {
+      console.log('🔵 [SignUp] Начало регистрации:', data.email);
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
@@ -39,25 +40,78 @@ export default function SignUpPage() {
         }),
       });
 
-      if (response.ok) {
+      // Проверяем Content-Type ответа
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('❌ [SignUp] Сервер вернул не JSON:', text.substring(0, 200));
+        setError('Server returned invalid response format. Please try again later.');
+        return;
+      }
+
+      let result;
+      try {
+        result = await response.json();
+      } catch (parseError) {
+        console.error('❌ [SignUp] Ошибка парсинга JSON:', parseError);
+        setError('Error processing server response');
+        return;
+      }
+      
+      console.log('🔵 [SignUp] Ответ сервера:', { status: response.status, success: result.success });
+
+      if (!response.ok) {
+        // Обработка ошибок от сервера
+        const errorMessage = result.error || result.message || 'Registration failed';
+        console.error('❌ [SignUp] Ошибка регистрации:', errorMessage);
+        setError(errorMessage);
+        return;
+      }
+
+      if (result.success) {
+        console.log('✅ [SignUp] Регистрация успешна, ожидание синхронизации БД...');
+        // Небольшая задержка для синхронизации БД
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        console.log('🔵 [SignUp] Попытка входа в систему...');
         // Автоматически входим после регистрации
-        const result = await signIn('credentials', {
+        const signInResult = await signIn('credentials', {
           email: data.email,
           password: data.password,
           redirect: false,
         });
 
-        if (result?.ok) {
+        console.log('🔵 [SignUp] Результат signIn:', { 
+          ok: signInResult?.ok, 
+          error: signInResult?.error,
+          status: signInResult?.status,
+          url: signInResult?.url 
+        });
+
+        if (signInResult?.ok) {
+          console.log('✅ [SignUp] Вход выполнен успешно, переход на главную');
+          // Дополнительная проверка сессии
+          const { getSession } = await import('next-auth/react');
+          const session = await getSession();
+          console.log('🔵 [SignUp] Проверка сессии:', session ? 'сессия создана' : 'сессия не найдена');
           router.push('/');
         } else {
-          setError('Регистрация прошла успешно, но не удалось войти. Попробуйте войти вручную.');
+          console.error('❌ [SignUp] Ошибка входа после регистрации:', signInResult?.error);
+          console.error('❌ [SignUp] Детали ошибки:', {
+            error: signInResult?.error,
+            status: signInResult?.status,
+            url: signInResult?.url
+          });
+          setError('Registration successful but sign in failed. Please try signing in manually.');
         }
       } else {
-        const responseData = await response.json();
-        setError(responseData.message || 'Ошибка при регистрации');
+        const errorMessage = result.error || result.message || 'Registration failed';
+        console.error('❌ [SignUp] Регистрация не удалась:', errorMessage);
+        setError(errorMessage);
       }
-    } catch (error) {
-      setError('Произошла ошибка при регистрации');
+    } catch (error: any) {
+      console.error('❌ [SignUp] Исключение при регистрации:', error);
+      setError(error?.message || 'An error occurred during registration');
     } finally {
       setIsLoading(false);
     }
@@ -140,20 +194,13 @@ export default function SignUpPage() {
               </div>
             </div>
 
-            <div className="mt-6 grid grid-cols-2 gap-3">
+            <div className="mt-6">
               <button
                 type="button"
                 onClick={() => signIn('google')}
                 className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
               >
                 Google
-              </button>
-              <button
-                type="button"
-                onClick={() => signIn('github')}
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-              >
-                GitHub
               </button>
             </div>
           </div>

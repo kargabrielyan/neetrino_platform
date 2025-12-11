@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useMounted } from '../../../lib/use-mounted';
 import Layout from '../../../components/Layout';
 import Navbar from '../../../components/Navbar';
-import { Cloud, Server, Database, GitBranch, Monitor, Zap, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Cloud, Server, Database, GitBranch, Monitor, Zap, ArrowLeft, CheckCircle, RefreshCw, Package, Building } from 'lucide-react';
 import Link from 'next/link';
 
 const features = [
@@ -43,22 +43,22 @@ const technologies = [
 const cloudServices = [
   { 
     name: 'Cloud Migration', 
-    icon: '☁️', 
+    icon: Cloud, 
     description: 'Move your applications and data to the cloud safely' 
   },
   { 
     name: 'DevOps Automation', 
-    icon: '🔄', 
+    icon: RefreshCw, 
     description: 'Automate your development and deployment processes' 
   },
   { 
     name: 'Container Management', 
-    icon: '📦', 
+    icon: Package, 
     description: 'Deploy and manage containerized applications at scale' 
   },
   { 
     name: 'Infrastructure Management', 
-    icon: '🏗️', 
+    icon: Building, 
     description: 'Manage cloud infrastructure with code and automation' 
   },
 ];
@@ -186,7 +186,9 @@ export default function CloudSolutions() {
                 className="glass rounded-2xl p-6"
               >
                 <div className="flex items-start gap-4">
-                  <div className="text-3xl">{service.icon}</div>
+                  <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <service.icon className="w-6 h-6 text-primary" />
+                  </div>
                   <div>
                     <h3 className="text-xl font-semibold text-white mb-2">
                       {service.name}

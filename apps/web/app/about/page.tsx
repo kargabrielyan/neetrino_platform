@@ -240,25 +240,20 @@ export default function About() {
     { icon: Heart, title: 'Passion', description: 'We love what we do and it shows in the quality and care we put into every project.' }
   ];
 
-  const team = [
-    { name: 'Alex Johnson', role: 'CEO & Founder', image: '/team/alex.jpg' },
-    { name: 'Sarah Chen', role: 'CTO', image: '/team/sarah.jpg' },
-    { name: 'Mike Rodriguez', role: 'Lead Designer', image: '/team/mike.jpg' },
-    { name: 'Emma Wilson', role: 'Head of Marketing', image: '/team/emma.jpg' }
-  ];
 
   return (
     <>
       <Head>
         <title>About Us - Neetrino Platform</title>
-        <meta name="description" content="Learn about Neetrino's journey from startup to industry leader. Discover our values, team, and commitment to revolutionizing digital solutions." />
+        <meta name="description" content="Learn about Neetrino's journey from startup to industry leader. Discover our values and commitment to revolutionizing digital solutions." />
         <meta property="og:title" content="About Us - Neetrino Platform" />
-        <meta property="og:description" content="Learn about Neetrino's journey from startup to industry leader. Discover our values, team, and commitment to revolutionizing digital solutions." />
+        <meta property="og:description" content="Learn about Neetrino's journey from startup to industry leader. Discover our values and commitment to revolutionizing digital solutions." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://co.neetrino.com/about" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="About Us - Neetrino Platform" />
-        <meta name="twitter:description" content="Learn about Neetrino's journey from startup to industry leader. Discover our values, team, and commitment to revolutionizing digital solutions." />
+        <meta name="twitter:description" content="Learn about Neetrino's journey from startup to industry leader. Discover our values and commitment to revolutionizing digital solutions." />
+        {/* Безопасное использование dangerouslySetInnerHTML для JSON-LD: JSON.stringify экранирует HTML */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -283,7 +278,7 @@ export default function About() {
         />
       </Head>
       <Layout>
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-black">
+        <div className="min-h-screen bg-white dark:bg-black">
           {/* Hero Section */}
           <section className="pt-20 pb-16">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -315,7 +310,7 @@ export default function About() {
           </section>
 
           {/* Curvilinear Timeline */}
-          <section className="py-16 sm:py-20 lg:py-24 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+          <section className="py-16 sm:py-20 lg:py-24 bg-white dark:bg-gray-800">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center mb-12 sm:mb-16">
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
@@ -335,24 +330,6 @@ export default function About() {
                     preserveAspectRatio="none"
                   >
                     <defs>
-                      {/* Single continuous gradient */}
-                      <linearGradient 
-                        id="timelineGradient" 
-                        x1="0%" 
-                        y1="0%" 
-                        x2="0%" 
-                        y2="100%" 
-                        gradientUnits="userSpaceOnUse"
-                      >
-                        <stop offset="0%" stopColor="#3B82F6" />
-                        <stop offset="16%" stopColor="#10B981" />
-                        <stop offset="32%" stopColor="#8B5CF6" />
-                        <stop offset="48%" stopColor="#F59E0B" />
-                        <stop offset="64%" stopColor="#EF4444" />
-                        <stop offset="80%" stopColor="#06B6D4" />
-                        <stop offset="100%" stopColor="#F97316" />
-                      </linearGradient>
-                      
                       {/* Glow filter for active nodes */}
                       <filter id="nodeGlow" x="-50%" y="-50%" width="200%" height="200%">
                         <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
@@ -366,7 +343,7 @@ export default function About() {
                     {/* Main S-Curve Path - Generated dynamically with fallback */}
                     <path
                       d={generateCurvePath(containerDimensions.width, timelineHeight).path}
-                      stroke="url(#timelineGradient)"
+                      stroke="#007AFF"
                       strokeWidth="2.5"
                       strokeLinecap="round"
                       fill="none"
@@ -381,7 +358,7 @@ export default function About() {
                     {/* Fallback straight line if curve fails */}
                     <path
                       d={`M ${containerDimensions.width / 2} 120 L ${containerDimensions.width / 2} ${timelineHeight - 120}`}
-                      stroke="url(#timelineGradient)"
+                      stroke="#007AFF"
                       strokeWidth="2.5"
                       strokeLinecap="round"
                       fill="none"
@@ -568,43 +545,10 @@ export default function About() {
             </div>
           </section>
 
-          {/* Team Preview Section */}
-          <section className="py-16 sm:py-20 lg:py-24 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center mb-12 sm:mb-16">
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
-                  Meet Our Team
-                </h2>
-                <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-                  The talented individuals who make our vision a reality
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 max-w-4xl mx-auto">
-                {team.map((member, index) => (
-                  <div 
-                    key={index}
-                    className="text-center group"
-                  >
-                    <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg sm:text-xl group-hover:scale-105 transition-transform duration-300">
-                      {member.name.split(' ').map(n => n[0]).join('')}
-                    </div>
-                    <h3 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white mb-1">
-                      {member.name}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                      {member.role}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
           {/* CTA Footer */}
           <section className="py-16 sm:py-20 lg:py-24">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-8 sm:p-12 lg:p-16 text-center text-white">
+              <div className="bg-blue-600 rounded-3xl p-8 sm:p-12 lg:p-16 text-center text-white">
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">
                   Ready to Start Your Project?
                 </h2>

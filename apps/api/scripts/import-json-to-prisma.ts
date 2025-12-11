@@ -100,11 +100,33 @@ async function importDemos() {
             continue;
           }
 
+          // SKU - это бизнес-ID товара (то, что используется в URL)
+          // ВАЖНО: берем из id, а НЕ из metadata.sku (там может быть мусор)
+          const sku = demoData.id;
+          
+          if (!sku || typeof sku !== 'string' || sku.trim() === '') {
+            console.warn(`⚠️  Пропущен товар без SKU: "${demoData.title}"`);
+            skippedDemos++;
+            continue;
+          }
+          
+          const cleanSku = sku.trim();
+
           const normalizedUrl = demoData.normalizedUrl || demoData.url.toLowerCase().trim();
 
-          // Проверяем, существует ли демо
+          // Обрезаем длинные поля до максимальной длины
+          const maxTitleLength = 255;
+          const maxUrlLength = 500;
+          const title = demoData.title.length > maxTitleLength 
+            ? demoData.title.substring(0, maxTitleLength - 3) + '...' 
+            : demoData.title;
+          const url = demoData.url.length > maxUrlLength 
+            ? demoData.url.substring(0, maxUrlLength - 3) + '...' 
+            : demoData.url;
+
+          // Используем upsert по sku - это гарантирует, что не будет дубликатов
           const existingDemo = await prisma.demo.findFirst({
-            where: { normalizedUrl }
+            where: { sku: cleanSku }
           });
 
           if (existingDemo) {
@@ -112,10 +134,13 @@ async function importDemos() {
             await prisma.demo.update({
               where: { id: existingDemo.id },
               data: {
-                title: demoData.title,
+                sku: cleanSku, // Всегда обновляем SKU из id
+                title: title,
                 description: demoData.description || null,
-                url: demoData.url,
-                normalizedUrl: normalizedUrl,
+                url: url,
+                normalizedUrl: normalizedUrl.length > maxUrlLength 
+                  ? normalizedUrl.substring(0, maxUrlLength - 3) + '...' 
+                  : normalizedUrl,
                 category: demoData.category || null,
                 subcategory: demoData.subcategory || null,
                 imageUrl: demoData.imageUrl || null,
@@ -127,18 +152,9 @@ async function importDemos() {
             updatedDemos++;
           } else {
             // Создаем новый демо
-            // Обрезаем длинные поля до максимальной длины
-            const maxTitleLength = 255;
-            const maxUrlLength = 500;
-            const title = demoData.title.length > maxTitleLength 
-              ? demoData.title.substring(0, maxTitleLength - 3) + '...' 
-              : demoData.title;
-            const url = demoData.url.length > maxUrlLength 
-              ? demoData.url.substring(0, maxUrlLength - 3) + '...' 
-              : demoData.url;
-            
             await prisma.demo.create({
               data: {
+                sku: cleanSku, // SKU из исходного id в JSON (очищенный)
                 title: title,
                 description: demoData.description || null,
                 url: url,

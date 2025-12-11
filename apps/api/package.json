@@ -14,6 +14,10 @@
     "seed": "ts-node src/seed.ts",
     "setup-db": "ts-node scripts/setup-database.ts",
     "import-json": "ts-node scripts/import-json-to-prisma.ts",
+    "fill-sku": "ts-node scripts/fill-sku-from-metadata.ts",
+    "check-sku": "ts-node scripts/check-demo-by-sku.ts",
+    "import-single": "ts-node scripts/import-single-demo.ts",
+    "test-api": "ts-node scripts/test-api-chain.ts",
     "studio": "prisma studio --schema=./prisma/schema.prisma"
   },
   "dependencies": {

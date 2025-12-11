@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { useMounted } from '../../lib/use-mounted';
 import Layout from '../../components/Layout';
-import { Search, Filter, Grid, List, ExternalLink, Eye } from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
+import ProductCard, { ProductCardSkeleton } from '../../components/ProductCard';
 
 interface Demo {
   id: string;
@@ -52,8 +54,8 @@ interface SearchResponse {
 }
 
 export default function Catalog() {
+  const router = useRouter();
   const isMounted = useMounted();
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [loading, setLoading] = useState(false);
   const [searchData, setSearchData] = useState<SearchResponse | null>(null);
   const [filters, setFilters] = useState<SearchFilters>({
@@ -70,6 +72,59 @@ export default function Catalog() {
   const [allDemos, setAllDemos] = useState<Demo[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [wishlistIds, setWishlistIds] = useState<Set<string>>(new Set());
+  const [wishlistLoading, setWishlistLoading] = useState<string | null>(null);
+
+  // Загружаем избранное из localStorage
+  useEffect(() => {
+    const savedWishlist = localStorage.getItem('wishlist_ids');
+    if (savedWishlist) {
+      try {
+        setWishlistIds(new Set(JSON.parse(savedWishlist)));
+      } catch (e) {
+        console.error('Ошибка загрузки избранного:', e);
+      }
+    }
+  }, []);
+
+  // Сохраняем избранное в localStorage
+  const saveWishlist = (ids: Set<string>) => {
+    localStorage.setItem('wishlist_ids', JSON.stringify(Array.from(ids)));
+    setWishlistIds(ids);
+  };
+
+  // Переключить избранное
+  const toggleWishlist = async (demoId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    setWishlistLoading(demoId);
+    
+    try {
+      // Локальное переключение
+      const newIds = new Set(wishlistIds);
+      if (newIds.has(demoId)) {
+        newIds.delete(demoId);
+        console.log('💔 Удалено из избранного:', demoId);
+      } else {
+        newIds.add(demoId);
+        console.log('❤️ Добавлено в избранное:', demoId);
+      }
+      saveWishlist(newIds);
+
+      // Синхронизация с сервером (опционально)
+      const email = localStorage.getItem('guest_email');
+      if (email) {
+        fetch('/api/wishlist/toggle', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ demoId, userEmail: email }),
+        }).catch(err => console.warn('Не удалось синхронизировать с сервером:', err));
+      }
+    } finally {
+      setWishlistLoading(null);
+    }
+  };
 
   // Функция для выполнения поиска
   const performSearch = useCallback(async (searchFilters: SearchFilters, page: number = 1, append: boolean = false) => {
@@ -473,30 +528,6 @@ export default function Catalog() {
                   <option value="title" className="text-gray-900">Name</option>
                 </select>
               </div>
-              
-              {/* Переключатель вида */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setViewMode('grid')}
-                  className={`p-2 rounded-full transition-all duration-200 focus-ring ${
-                    viewMode === 'grid' 
-                      ? 'glass-strong text-ink' 
-                      : 'glass text-ink/50 hover:text-ink hover:glass-strong'
-                  }`}
-                >
-                  <Grid className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setViewMode('list')}
-                  className={`p-2 rounded-full transition-all duration-200 focus-ring ${
-                    viewMode === 'list' 
-                      ? 'glass-strong text-ink' 
-                      : 'glass text-ink/50 hover:text-ink hover:glass-strong'
-                  }`}
-                >
-                  <List className="w-4 h-4" />
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -509,104 +540,9 @@ export default function Catalog() {
         ) : searchData && allDemos.length > 0 ? (
           <>
             {/* Сетка демо */}
-            <div className={`grid gap-6 ${
-              viewMode === 'grid' 
-                ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4' 
-                : 'grid-cols-1'
-            }`}>
+            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
               {allDemos.map((demo, index) => (
-                <div
-                  key={`${demo.id}-${index}`}
-                  className={`glass rounded-2xl overflow-hidden hover:glass-strong transition-all duration-200 focus-ring ${
-                    viewMode === 'list' ? 'flex' : ''
-                  }`}
-                >
-                  {/* Изображение с бейджем скидки */}
-                  <div className={`relative bg-a1/10 ${
-                    viewMode === 'list' ? 'w-48 h-32 flex-shrink-0' : 
-                    demo.category.toLowerCase().includes('app') || demo.title.toLowerCase().includes('app') ? 'w-[280px] h-[580px]' : 'h-48'
-                  }`}>
-                    {demo.salePrice && demo.salePrice > 0 && (
-                      <div className="absolute top-3 left-3 bg-a1 text-white px-2 py-1 rounded-full text-xs font-medium z-10">
-                        -{Math.round((1 - demo.salePrice / demo.regularPrice) * 100)}%
-                      </div>
-                    )}
-                    {demo.screenshotUrl ? (
-                      <img
-                        src={demo.screenshotUrl}
-                        alt={demo.title}
-                        className="w-full h-full object-cover"
-                        style={demo.category.toLowerCase().includes('app') || demo.title.toLowerCase().includes('app') ? 
-                          { width: '280px', height: '580px' } : {}}
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                          const placeholder = target.nextElementSibling as HTMLElement;
-                          if (placeholder) {
-                            placeholder.style.display = 'flex';
-                          }
-                        }}
-                      />
-                    ) : null}
-                    <div className={`w-full h-full ${demo.screenshotUrl ? 'hidden' : 'flex'} bg-gradient-to-br from-a1/20 to-a1/5 flex-col items-center justify-center p-4`}>
-                      <div className="w-16 h-16 bg-a1/20 rounded-full flex items-center justify-center mb-3">
-                        <svg className="w-8 h-8 text-a1/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                      <span className="text-a1/70 text-sm font-medium text-center">No Preview</span>
-                      <span className="text-a1/50 text-xs text-center mt-1">Available</span>
-                    </div>
-                  </div>
-                  
-                  {/* Контент */}
-                  <div className={`p-4 ${viewMode === 'list' ? 'flex-1' : ''}`}>
-                    <div className="mb-2">
-                      <h3 className="text-ink font-semibold text-lg mb-1">{demo.title}</h3>
-                      <div className="text-ink/60 text-sm">
-                        SKU: {demo.id}
-                      </div>
-                    </div>
-                    
-        {/* Цены - показываем только если есть цена */}
-        {demo.regularPrice > 0 && (
-          <div className="flex items-center justify-between mb-4">
-            {demo.salePrice && demo.salePrice > 0 ? (
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-ink/50 line-through">
-                  {demo.regularPrice.toLocaleString()} ֏
-                </span>
-                <span className="text-lg font-bold text-a1">
-                  {demo.salePrice.toLocaleString()} ֏
-                </span>
-              </div>
-            ) : (
-              <span className="text-lg font-bold text-ink">
-                {demo.regularPrice.toLocaleString()} ֏
-              </span>
-            )}
-          </div>
-        )}
-                    
-                    {/* Кнопки */}
-                    <div className="flex gap-2">
-                      <a
-                        href={demo.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 px-4 py-2 bg-a1 text-white rounded-lg text-sm font-medium hover:bg-a1/90 transition-all duration-200 focus-ring text-center"
-                      >
-                        Watch
-                      </a>
-                      <button
-                        onClick={() => navigator.clipboard.writeText(demo.id)}
-                        className="px-4 py-2 glass text-ink rounded-lg text-sm font-medium hover:glass-strong transition-all duration-200 focus-ring"
-                      >
-                        Copy ID
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                <ProductCard key={`${demo.id}-${index}`} demo={demo} index={index} />
               ))}
             </div>
 

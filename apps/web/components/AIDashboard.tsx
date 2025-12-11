@@ -15,10 +15,10 @@ const tabs = [
 ];
 
 const metrics = [
-  { label: 'Accuracy', value: 98.7, color: 'from-green-400 to-emerald-500' },
-  { label: 'Processing', value: 85.2, color: 'from-blue-400 to-cyan-500' },
-  { label: 'Uptime', value: 99.9, color: 'from-purple-400 to-violet-500' },
-  { label: 'Efficiency', value: 94.2, color: 'from-orange-400 to-red-500' },
+  { label: 'Accuracy', value: 98.7, color: 'bg-green-400' },
+  { label: 'Processing', value: 85.2, color: 'bg-blue-400' },
+  { label: 'Uptime', value: 99.9, color: 'bg-purple-400' },
+  { label: 'Efficiency', value: 94.2, color: 'bg-orange-400' },
 ];
 
 // Компонент для анимированного счетчика
@@ -153,7 +153,7 @@ export default function AIDashboard() {
                     
                     <div className="w-full bg-ink/10 rounded-full h-3 mb-2">
                       <motion.div
-                        className={`h-3 rounded-full bg-gradient-to-r ${metric.color}`}
+                        className={`h-3 rounded-full ${metric.color}`}
                         initial={{ width: 0 }}
                         whileInView={{ width: `${metric.value}%` }}
                         viewport={{ once: true }}

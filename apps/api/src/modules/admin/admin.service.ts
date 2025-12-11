@@ -1,227 +1,146 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Demo } from '../demos/demo.entity';
-import { Order } from '../orders/order.entity';
-import { Vendor } from '../vendors/vendor.entity';
+import { PrismaService } from '../../common/services/prisma.service';
 
 @Injectable()
 export class AdminService {
-  constructor(
-    @InjectRepository(Demo)
-    private demoRepository: Repository<Demo>,
-    @InjectRepository(Order)
-    private orderRepository: Repository<Order>,
-    @InjectRepository(Vendor)
-    private vendorRepository: Repository<Vendor>,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
-  // Demos Management
   async getDemos(query: any) {
     const { page = 1, limit = 20, search, status, category } = query;
-    const skip = (page - 1) * limit;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
 
-    const queryBuilder = this.demoRepository
-      .createQueryBuilder('demo')
-      .leftJoinAndSelect('demo.vendor', 'vendor')
-      .skip(skip)
-      .take(limit)
-      .orderBy('demo.createdAt', 'DESC');
-
+    const where: any = {};
+    if (status) where.status = status;
+    if (category) where.category = category;
     if (search) {
-      queryBuilder.andWhere(
-        '(demo.title ILIKE :search OR demo.description ILIKE :search OR vendor.name ILIKE :search)',
-        { search: `%${search}%` }
-      );
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+        { vendor: { name: { contains: search, mode: 'insensitive' } } },
+      ];
     }
 
-    if (status) {
-      queryBuilder.andWhere('demo.status = :status', { status });
-    }
+    const [data, total] = await Promise.all([
+      this.prisma.demo.findMany({
+        where,
+        include: { vendor: true },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: parseInt(limit),
+      }),
+      this.prisma.demo.count({ where }),
+    ]);
 
-    if (category) {
-      queryBuilder.andWhere('demo.category = :category', { category });
-    }
-
-    const [data, total] = await queryBuilder.getManyAndCount();
-
-    return {
-      data,
-      total,
-      page: parseInt(page),
-      limit: parseInt(limit),
-      totalPages: Math.ceil(total / limit),
-    };
+    return { data, total, page: parseInt(page), limit: parseInt(limit), totalPages: Math.ceil(total / parseInt(limit)) };
   }
 
   async createDemo(demoData: any) {
-    const demo = this.demoRepository.create(demoData);
-    return this.demoRepository.save(demo);
+    return this.prisma.demo.create({ data: demoData });
   }
 
   async updateDemo(id: string, demoData: any) {
-    await this.demoRepository.update(id, demoData);
-    return this.demoRepository.findOne({ where: { id }, relations: ['vendor'] });
+    return this.prisma.demo.update({ where: { id }, data: demoData, include: { vendor: true } });
   }
 
   async deleteDemo(id: string) {
-    return this.demoRepository.delete(id);
+    return this.prisma.demo.delete({ where: { id } });
   }
 
-  // Orders Management
   async getOrders(query: any) {
     const { page = 1, limit = 20, search, status } = query;
-    const skip = (page - 1) * limit;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
 
-    const queryBuilder = this.orderRepository
-      .createQueryBuilder('order')
-      .leftJoinAndSelect('order.demo', 'demo')
-      .leftJoinAndSelect('demo.vendor', 'vendor')
-      .skip(skip)
-      .take(limit)
-      .orderBy('order.createdAt', 'DESC');
-
+    const where: any = {};
+    if (status) where.status = status;
     if (search) {
-      queryBuilder.andWhere(
-        '(order.customerName ILIKE :search OR order.customerEmail ILIKE :search)',
-        { search: `%${search}%` }
-      );
+      where.OR = [
+        { customerName: { contains: search, mode: 'insensitive' } },
+        { customerEmail: { contains: search, mode: 'insensitive' } },
+      ];
     }
 
-    if (status) {
-      queryBuilder.andWhere('order.status = :status', { status });
-    }
+    const [data, total] = await Promise.all([
+      this.prisma.order.findMany({
+        where,
+        include: { demo: { include: { vendor: true } } },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: parseInt(limit),
+      }),
+      this.prisma.order.count({ where }),
+    ]);
 
-    const [data, total] = await queryBuilder.getManyAndCount();
-
-    return {
-      data,
-      total,
-      page: parseInt(page),
-      limit: parseInt(limit),
-      totalPages: Math.ceil(total / limit),
-    };
+    return { data, total, page: parseInt(page), limit: parseInt(limit), totalPages: Math.ceil(total / parseInt(limit)) };
   }
 
   async createOrder(orderData: any) {
-    const order = this.orderRepository.create(orderData);
-    return this.orderRepository.save(order);
+    return this.prisma.order.create({ data: orderData });
   }
 
   async updateOrder(id: string, orderData: any) {
-    await this.orderRepository.update(id, orderData);
-    return this.orderRepository.findOne({ 
-      where: { id }, 
-      relations: ['demo', 'demo.vendor'] 
-    });
+    return this.prisma.order.update({ where: { id }, data: orderData, include: { demo: { include: { vendor: true } } } });
   }
 
   async deleteOrder(id: string) {
-    return this.orderRepository.delete(id);
+    return this.prisma.order.delete({ where: { id } });
   }
 
-  // Vendors Management
   async getVendors() {
-    return this.vendorRepository.find({
-      order: { createdAt: 'DESC' },
-    });
+    return this.prisma.vendor.findMany({ orderBy: { createdAt: 'desc' } });
   }
 
   async createVendor(vendorData: any) {
-    const vendor = this.vendorRepository.create(vendorData);
-    return this.vendorRepository.save(vendor);
+    return this.prisma.vendor.create({ data: vendorData });
   }
 
   async updateVendor(id: string, vendorData: any) {
-    await this.vendorRepository.update(id, vendorData);
-    return this.vendorRepository.findOne({ where: { id } });
+    return this.prisma.vendor.update({ where: { id }, data: vendorData });
   }
 
   async deleteVendor(id: string) {
-    return this.vendorRepository.delete(id);
+    return this.prisma.vendor.delete({ where: { id } });
   }
 
-  // Analytics
   async getAnalytics() {
-    const [totalOrders, totalDemos, totalVendors] = await Promise.all([
-      this.orderRepository.count(),
-      this.demoRepository.count(),
-      this.vendorRepository.count(),
+    const [totalOrders, totalDemos, totalVendors, recentOrders, avgBudget] = await Promise.all([
+      this.prisma.order.count(),
+      this.prisma.demo.count(),
+      this.prisma.vendor.count(),
+      this.prisma.order.count({ where: { createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } } }),
+      this.prisma.order.aggregate({ _avg: { budget: true }, where: { budget: { not: null } } }),
     ]);
 
-    const recentOrders = await this.orderRepository
-      .createQueryBuilder('order')
-      .where('order.createdAt >= :date', { 
-        date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) 
-      })
-      .getCount();
-
-    const averageBudget = await this.orderRepository
-      .createQueryBuilder('order')
-      .select('AVG(order.budget)', 'avg')
-      .where('order.budget IS NOT NULL')
-      .getRawOne();
-
-    return {
-      totalOrders,
-      totalDemos,
-      totalVendors,
-      recentOrders,
-      averageBudget: averageBudget?.avg || 0,
-    };
+    return { totalOrders, totalDemos, totalVendors, recentOrders, averageBudget: avgBudget._avg.budget || 0 };
   }
 
   async getOrderAnalytics() {
-    const statusCounts = await this.orderRepository
-      .createQueryBuilder('order')
-      .select('order.status', 'status')
-      .addSelect('COUNT(*)', 'count')
-      .groupBy('order.status')
-      .getRawMany();
-
-    const byStatus = statusCounts.reduce((acc, item) => {
-      acc[item.status] = parseInt(item.count);
-      return acc;
-    }, {});
-
+    const statusCounts = await this.prisma.order.groupBy({ by: ['status'], _count: true });
+    const byStatus = statusCounts.reduce((acc, item) => { acc[item.status] = item._count; return acc; }, {});
     return { byStatus };
   }
 
   async getDemoAnalytics() {
-    const [activeDemos, draftDemos] = await Promise.all([
-      this.demoRepository.count({ where: { status: 'active' } }),
-      this.demoRepository.count({ where: { status: 'draft' } }),
+    const [activeDemos, draftDemos, categoryCounts] = await Promise.all([
+      this.prisma.demo.count({ where: { status: 'active' } }),
+      this.prisma.demo.count({ where: { status: 'draft' } }),
+      this.prisma.demo.groupBy({ by: ['category'], _count: true }),
     ]);
 
-    const categoryCounts = await this.demoRepository
-      .createQueryBuilder('demo')
-      .select('demo.category', 'category')
-      .addSelect('COUNT(*)', 'count')
-      .groupBy('demo.category')
-      .getRawMany();
-
-    return {
-      activeDemos,
-      draftDemos,
-      categoryCounts,
-    };
+    return { activeDemos, draftDemos, categoryCounts: categoryCounts.map(c => ({ category: c.category, count: c._count })) };
   }
 
-  // Settings
   async getSettings() {
-    // This would typically come from a settings table or config
     return {
       siteName: 'Neetrino Platform',
       siteDescription: 'AI-powered demo platform',
       maintenanceMode: false,
       allowRegistration: true,
-      maxFileSize: 10485760, // 10MB
+      maxFileSize: 10485760,
       supportedFormats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
     };
   }
 
   async updateSettings(settingsData: any) {
-    // This would typically update a settings table
     return { message: 'Settings updated successfully', settings: settingsData };
   }
 }

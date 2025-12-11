@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useMounted } from '../../../lib/use-mounted';
 import Layout from '../../../components/Layout';
 import Navbar from '../../../components/Navbar';
-import { TrendingUp, Search, Share2, Mail, BarChart3, Target, ArrowLeft, CheckCircle } from 'lucide-react';
+import { TrendingUp, Search, Share2, Mail, BarChart3, Target, ArrowLeft, CheckCircle, Smartphone, FileText, DollarSign } from 'lucide-react';
 import Link from 'next/link';
 
 const features = [
@@ -43,22 +43,22 @@ const technologies = [
 const marketingServices = [
   { 
     name: 'Search Engine Optimization', 
-    icon: '🔍', 
+    icon: Search, 
     description: 'Improve your website\'s visibility in search results' 
   },
   { 
     name: 'Social Media Management', 
-    icon: '📱', 
+    icon: Smartphone, 
     description: 'Professional social media presence and engagement' 
   },
   { 
     name: 'Content Marketing', 
-    icon: '📝', 
+    icon: FileText, 
     description: 'Create valuable content that attracts and converts' 
   },
   { 
     name: 'Paid Advertising', 
-    icon: '💰', 
+    icon: DollarSign, 
     description: 'Strategic paid campaigns across multiple platforms' 
   },
 ];
@@ -187,7 +187,9 @@ export default function DigitalMarketing() {
                 className="glass rounded-2xl p-6"
               >
                 <div className="flex items-start gap-4">
-                  <div className="text-3xl">{service.icon}</div>
+                  <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <service.icon className="w-6 h-6 text-primary" />
+                  </div>
                   <div>
                     <h3 className="text-xl font-semibold text-white mb-2">
                       {service.name}

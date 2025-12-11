@@ -3,7 +3,8 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { ChevronDown } from "lucide-react";
 
 type Item = { 
   label: string; 
@@ -15,15 +16,11 @@ type Rect = { x: number; y: number; w: number; h: number };
 
 const items: Item[] = [
   { label: "Home", to: "/" },
+  { label: "Website", to: "/catalog/website" },
+  { label: "App", to: "/catalog/app" },
   { label: "Services", to: "/services" },
   { label: "About", to: "/about" },
-  { 
-    label: "Shop", 
-    children: [
-      { label: "Website", to: "/catalog/website" },
-      { label: "App", to: "/catalog/app" }
-    ]
-  },
+  { label: "Team", to: "/team" },
   { label: "Portfolio", to: "/portfolio" },
   { label: "Contact", to: "/contact" },
 ];
@@ -31,6 +28,7 @@ const items: Item[] = [
 
 export default function NavDroplet() {
   const pathname = usePathname();
+  const router = useRouter();
   const reduce = useReducedMotion();
   const navRef = useRef<HTMLUListElement>(null);
   const itemRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
@@ -42,6 +40,21 @@ export default function NavDroplet() {
   const [showDropdown, setShowDropdown] = useState<string | null>(null);
   const [hideTimeout, setHideTimeout] = useState<NodeJS.Timeout | null>(null);
   const [isDark, setIsDark] = useState(false);
+
+  // Prefetch всех страниц для быстрой навигации
+  useEffect(() => {
+    // Предзагружаем все страницы из меню
+    items.forEach(item => {
+      if (item.to) {
+        router.prefetch(item.to);
+      }
+      if (item.children) {
+        item.children.forEach(child => {
+          router.prefetch(child.to);
+        });
+      }
+    });
+  }, [router]);
 
   // Проверка темы
   useEffect(() => {
@@ -258,20 +271,19 @@ export default function NavDroplet() {
                      }, 150);
                      setHideTimeout(timeout);
                    }}
-                   onClick={() => {
-                     // При клике на "Shop" переходим на /catalog/website
-                     if (item.label === "Shop") {
-                       window.location.href = "/catalog/website";
-                     }
-                   }}
                   className={[
-                    "relative z-10 px-3 py-2 md:px-5 md:py-2.5 rounded-full text-xs md:text-sm lg:text-base transition-colors duration-200 focus-ring cursor-pointer inline-block",
+                    "relative z-10 px-3 py-2 md:px-5 md:py-2.5 rounded-full text-xs md:text-sm lg:text-base transition-colors duration-200 focus-ring cursor-pointer inline-flex items-center gap-1.5",
                     isActive
                       ? "text-ink font-medium"
                       : "text-ink/70 hover:text-ink font-normal",
                   ].join(" ")}
                 >
-                  {item.label}
+                  <span>{item.label}</span>
+                  <ChevronDown 
+                    className={`w-3 h-3 md:w-4 md:h-4 transition-transform duration-200 ${
+                      showDropdown === item.label ? 'rotate-180' : ''
+                    }`}
+                  />
                   
                   {/* Dropdown menu */}
                   <AnimatePresence>
@@ -323,7 +335,7 @@ export default function NavDroplet() {
                                   }
                                 }}
                                 onClick={() => {
-                                  window.location.href = child.to;
+                                  router.push(child.to);
                                 }}
                                 onMouseEnter={() => {
                                   // Капсула остается на родительском элементе "Shop"

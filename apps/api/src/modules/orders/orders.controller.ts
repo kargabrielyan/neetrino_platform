@@ -14,7 +14,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { OrderStatus } from './order.entity';
+import { OrderStatus } from '@prisma/client';
 
 @ApiTags('orders')
 @Controller('orders')

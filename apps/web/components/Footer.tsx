@@ -182,7 +182,7 @@ export default function Footer({}: FooterProps) {
             </motion.div>
           </div>
 
-          {/* Copyright внутри большого отсека */}
+          {/* Copyright и Payment Methods */}
           <motion.div
             variants={itemVariants}
             initial="hidden"
@@ -190,24 +190,40 @@ export default function Footer({}: FooterProps) {
             viewport={{ once: true }}
             className="mt-12 pt-8 border-t border-glass-border"
           >
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-              <p className="text-ink/60 text-sm">
-                © 2025 Neetrino. All rights reserved.
-              </p>
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+              <div className="flex flex-col md:flex-row items-center gap-4">
+                <p className="text-ink/60 text-sm">
+                  © 2025 Neetrino. All rights reserved.
+                </p>
+                
+                <div className="flex items-center gap-6">
+                  <a 
+                    href="#" 
+                    className="text-ink/60 hover:text-ink text-sm transition-colors focus-ring rounded-lg p-1"
+                  >
+                    Privacy Policy
+                  </a>
+                  <a 
+                    href="#" 
+                    className="text-ink/60 hover:text-ink text-sm transition-colors focus-ring rounded-lg p-1"
+                  >
+                    Terms of Service
+                  </a>
+                </div>
+              </div>
               
-              <div className="flex items-center gap-6">
-                <a 
-                  href="#" 
-                  className="text-ink/60 hover:text-ink text-sm transition-colors focus-ring rounded-lg p-1"
-                >
-                  Privacy Policy
-                </a>
-                <a 
-                  href="#" 
-                  className="text-ink/60 hover:text-ink text-sm transition-colors focus-ring rounded-lg p-1"
-                >
-                  Terms of Service
-                </a>
+              {/* Payment Methods - справа */}
+              <div className="flex-shrink-0">
+                <img
+                  src="/card-2-2-2048x109.png"
+                  alt="Принимаемые способы оплаты: VISA, MasterCard, American Express, ArCa, MMP, Bitcoin, Tether"
+                  className="h-6 w-auto object-contain opacity-90 hover:opacity-100 transition-opacity"
+                  onError={(e) => {
+                    console.error('Ошибка загрузки изображения карт оплаты');
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                  }}
+                />
               </div>
             </div>
           </motion.div>

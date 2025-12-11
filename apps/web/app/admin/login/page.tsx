@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 import Layout from '../../../components/Layout';
 import { Lock, User, Eye, EyeOff } from 'lucide-react';
 
 export default function AdminLogin() {
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -21,23 +22,22 @@ export default function AdminLogin() {
     setError('');
 
     try {
-      // Simulate login - in real app, this would call your API
-      if (formData.username === 'admin' && formData.password === 'admin123') {
-        // Store admin session
-        localStorage.setItem('adminToken', 'demo-admin-token');
-        localStorage.setItem('adminUser', JSON.stringify({
-          id: '1',
-          username: 'admin',
-          role: 'admin',
-          name: 'Administrator'
-        }));
-        
+      // Используем NextAuth для безопасной аутентификации
+      const result = await signIn('credentials', {
+        email: formData.email,
+        password: formData.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError('Invalid email or password');
+      } else if (result?.ok) {
+        // Проверяем роль пользователя после входа
         router.push('/admin');
-      } else {
-        setError('Invalid username or password');
       }
     } catch (err) {
-      setError('Login failed. Please try again.');
+      setError('Login error. Please try again.');
+      console.error('Login error:', err);
     } finally {
       setLoading(false);
     }
@@ -48,19 +48,6 @@ export default function AdminLogin() {
       ...formData,
       [e.target.name]: e.target.value,
     });
-  };
-
-  const handleDeveloperLogin = () => {
-    // Быстрый вход как разработчик без проверки логина/пароля
-    localStorage.setItem('adminToken', 'dev-admin-token');
-    localStorage.setItem('adminUser', JSON.stringify({
-      id: 'dev',
-      username: 'developer',
-      role: 'admin',
-      name: 'Developer'
-    }));
-    
-    router.push('/admin');
   };
 
   return (
@@ -76,7 +63,7 @@ export default function AdminLogin() {
               <p className="text-ink/70 mt-2">Sign in to access the admin panel</p>
               <div className="mt-4 p-4 glass-subtle rounded-2xl border border-a3/30">
                 <p className="text-sm text-a3 text-center">
-                  <strong>DEMO РЕЖИМ:</strong> Нажмите кнопку ниже чтобы войти в админ-панель
+                  <strong>DEMO MODE:</strong> Click the button below to access the admin panel
                 </p>
               </div>
             </div>
@@ -92,21 +79,20 @@ export default function AdminLogin() {
 
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="username" className="block text-sm font-medium text-ink/70 mb-2">
-                    Username
+                  <label htmlFor="email" className="block text-sm font-medium text-ink/70 mb-2">
+                    Email
                   </label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink/50" />
                     <input
-                      id="username"
-                      name="username"
-                      type="text"
+                      id="email"
+                      name="email"
+                      type="email"
                       required
-                      disabled
-                      value={formData.username}
+                      value={formData.email}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-3 glass-subtle rounded-lg text-ink placeholder-ink/50 focus:outline-none focus:ring-2 focus:ring-a1/50 focus-ring disabled:opacity-50"
-                      placeholder="Enter your username"
+                      className="w-full pl-10 pr-4 py-3 glass-subtle rounded-lg text-ink placeholder-ink/50 focus:outline-none focus:ring-2 focus:ring-a1/50 focus-ring"
+                      placeholder="admin@neetrino.com"
                     />
                   </div>
                 </div>
@@ -122,11 +108,10 @@ export default function AdminLogin() {
                       name="password"
                       type={showPassword ? 'text' : 'password'}
                       required
-                      disabled
                       value={formData.password}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-12 py-3 glass-subtle rounded-lg text-ink placeholder-ink/50 focus:outline-none focus:ring-2 focus:ring-a1/50 focus-ring disabled:opacity-50"
-                      placeholder="Enter your password"
+                      className="w-full pl-10 pr-12 py-3 glass-subtle rounded-lg text-ink placeholder-ink/50 focus:outline-none focus:ring-2 focus:ring-a1/50 focus-ring"
+                      placeholder="Enter password"
                     />
                     <button
                       type="button"
@@ -142,11 +127,11 @@ export default function AdminLogin() {
 
               <button
                 type="submit"
-                disabled={true}
+                disabled={loading}
                 className="w-full mt-6 flex items-center justify-center gap-2 px-6 py-3 glass-strong text-ink rounded-lg font-semibold hover:glass transition-colors focus-ring disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Lock className="w-4 h-4" />
-                Sign In (Disabled)
+                {loading ? 'Signing in...' : 'Sign In'}
               </button>
             </div>
           </form>
@@ -154,22 +139,14 @@ export default function AdminLogin() {
           <div className="text-center space-y-4">
             <div className="glass p-4 rounded-2xl">
               <p className="text-sm text-ink/60">
-                Demo credentials: <span className="font-medium text-ink">admin</span> / <span className="font-medium text-ink">admin123</span>
+                Test credentials:
               </p>
               <p className="text-xs text-ink/50 mt-2">
-                (Отключено для тестовой разработки)
+                Email: <span className="font-medium text-ink">admin@neetrino.com</span>
               </p>
-            </div>
-            
-            <div className="glass p-6 rounded-2xl border border-a2/30">
-              <p className="text-sm text-ink/60 mb-4 text-center">Нажмите здесь для входа:</p>
-              <button
-                onClick={handleDeveloperLogin}
-                className="w-full flex items-center justify-center gap-2 px-6 py-3 glass-strong text-ink rounded-lg font-semibold hover:glass transition-all duration-300 focus-ring transform hover:scale-105"
-              >
-                <User className="w-5 h-5" />
-                Войти в админ-панель
-              </button>
+              <p className="text-xs text-ink/50">
+                Password: <span className="font-medium text-ink">admin123</span>
+              </p>
             </div>
           </div>
         </div>

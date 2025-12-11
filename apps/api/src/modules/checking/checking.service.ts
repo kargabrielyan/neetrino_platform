@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../common/services/prisma.service';
+import { CheckRun } from '@prisma/client';
 
 @Injectable()
 export class CheckingService {
@@ -9,110 +10,79 @@ export class CheckingService {
     const demo = await this.prisma.safeExecute(async () => {
       return await this.prisma.demo.findUnique({ where: { id: demoId } });
     });
+    
     if (!demo) {
       throw new NotFoundException(`Demo with ID ${demoId} not found`);
     }
 
-    const savedCheckRun = await this.prisma.safeExecute(async () => {
+    const checkRun = await this.prisma.safeExecute(async () => {
       return await this.prisma.checkRun.create({
-        data: {
-          demoId,
-          startedAt: new Date(),
-          status: 'running',
-        },
+        data: { demoId, startedAt: new Date(), status: 'running' },
       });
     });
 
+    if (!checkRun) throw new Error('Failed to create check run');
+
     try {
-      // Здесь будет реальная логика проверки доступности URL
-      // Пока что используем заглушку
       const isAccessible = await this.performAccessibilityCheck(demo.url);
-      
-      savedCheckRun.status = 'completed';
-      savedCheckRun.finishedAt = new Date();
-      savedCheckRun.isAccessible = isAccessible;
-      savedCheckRun.responseTime = Math.floor(Math.random() * 1000) + 100;
-      savedCheckRun.statusCode = isAccessible ? 200 : 404;
+      const responseTime = Math.floor(Math.random() * 1000) + 100;
+      const statusCode = isAccessible ? 200 : 404;
 
-      // Обновляем статус демо
-      demo.isAccessible = isAccessible;
-      demo.lastCheckedAt = new Date();
-      
-      if (!isAccessible && demo.status === 'active') {
-        demo.status = 'draft';
-      } else if (isAccessible && demo.status === 'draft') {
-        demo.status = 'active';
-      }
+      const updatedCheckRun = await this.prisma.safeExecute(async () => {
+        return await this.prisma.checkRun.update({
+          where: { id: checkRun.id },
+          data: { status: 'completed', finishedAt: new Date(), isAccessible, responseTime, statusCode },
+        });
+      });
 
-      await this.demoRepository.save(demo);
-      await this.checkRunRepository.save(savedCheckRun);
+      let newStatus = demo.status;
+      if (!isAccessible && demo.status === 'active') newStatus = 'draft';
+      else if (isAccessible && demo.status === 'draft') newStatus = 'active';
 
+      await this.prisma.safeExecute(async () => {
+        return await this.prisma.demo.update({
+          where: { id: demoId },
+          data: { isAccessible, lastCheckedAt: new Date(), status: newStatus },
+        });
+      });
+
+      return updatedCheckRun;
     } catch (error) {
-      savedCheckRun.status = 'failed';
-      savedCheckRun.finishedAt = new Date();
-      savedCheckRun.isAccessible = false;
-      savedCheckRun.error = error.message;
-      await this.checkRunRepository.save(savedCheckRun);
+      const failedCheckRun = await this.prisma.safeExecute(async () => {
+        return await this.prisma.checkRun.update({
+          where: { id: checkRun.id },
+          data: { status: 'failed', finishedAt: new Date(), isAccessible: false, error: error.message },
+        });
+      });
+      return failedCheckRun;
     }
-
-    return savedCheckRun;
   }
 
-  async getCheckRuns(
-    page: number = 1,
-    limit: number = 20,
-    demoId?: string,
-  ): Promise<{ data: CheckRun[]; total: number; page: number; limit: number }> {
-    const queryBuilder = this.checkRunRepository
-      .createQueryBuilder('checkRun')
-      .leftJoinAndSelect('checkRun.demo', 'demo')
-      .orderBy('checkRun.startedAt', 'DESC');
-
-    if (demoId) {
-      queryBuilder.where('checkRun.demoId = :demoId', { demoId });
-    }
-
-    const [data, total] = await queryBuilder
-      .skip((page - 1) * limit)
-      .take(limit)
-      .getManyAndCount();
-
+  async getCheckRuns(page: number = 1, limit: number = 20, demoId?: string): Promise<{ data: CheckRun[]; total: number; page: number; limit: number }> {
+    const where = demoId ? { demoId } : {};
+    const [data, total] = await Promise.all([
+      this.prisma.checkRun.findMany({ where, include: { demo: true }, orderBy: { startedAt: 'desc' }, skip: (page - 1) * limit, take: limit }),
+      this.prisma.checkRun.count({ where }),
+    ]);
     return { data, total, page, limit };
   }
 
   async getCheckRun(id: string): Promise<CheckRun> {
-    const checkRun = await this.checkRunRepository.findOne({
-      where: { id },
-      relations: ['demo'],
-    });
-
-    if (!checkRun) {
-      throw new NotFoundException(`Check run with ID ${id} not found`);
-    }
-
+    const checkRun = await this.prisma.checkRun.findUnique({ where: { id }, include: { demo: true } });
+    if (!checkRun) throw new NotFoundException(`Check run with ID ${id} not found`);
     return checkRun;
   }
 
   async runBulkCheck(demoIds: string[]): Promise<{ completed: number; failed: number }> {
-    let completed = 0;
-    let failed = 0;
-
+    let completed = 0, failed = 0;
     for (const demoId of demoIds) {
-      try {
-        await this.checkDemoAccessibility(demoId);
-        completed++;
-      } catch (error) {
-        failed++;
-        console.error(`Failed to check demo ${demoId}:`, error.message);
-      }
+      try { await this.checkDemoAccessibility(demoId); completed++; }
+      catch { failed++; }
     }
-
     return { completed, failed };
   }
 
   private async performAccessibilityCheck(url: string): Promise<boolean> {
-    // Заглушка для проверки доступности
-    // В реальной реализации здесь будет HTTP запрос
-    return Math.random() > 0.1; // 90% шанс что URL доступен
+    return Math.random() > 0.1;
   }
 }

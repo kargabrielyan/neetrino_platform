@@ -5,6 +5,7 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import BarMenu from './BarMenu';
 import ThemeProvider from './ThemeProvider';
+import LiveChat from './LiveChat';
 
 interface LayoutProps {
   children: ReactNode;
@@ -37,6 +38,9 @@ export default function Layout({
         
         {/* Нижнее меню для мобильных и планшетов */}
         <BarMenu />
+        
+        {/* Live Chat Widget */}
+        <LiveChat />
       </main>
     </ThemeProvider>
   );

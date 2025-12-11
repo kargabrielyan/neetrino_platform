@@ -1,23 +1,13 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Vendor } from './vendor.entity';
-import { Demo } from '../demos/demo.entity';
-import { CreateVendorDto } from './dto/create-vendor.dto';
-import { UpdateVendorDto } from './dto/update-vendor.dto';
+import { PrismaService } from '../../common/services/prisma.service';
+import { Vendor } from '@prisma/client';
 
 @Injectable()
 export class VendorsService {
-  constructor(
-    @InjectRepository(Vendor)
-    private vendorsRepository: Repository<Vendor>,
-    @InjectRepository(Demo)
-    private demoRepository: Repository<Demo>,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
-  async create(createVendorDto: CreateVendorDto): Promise<Vendor> {
-    // Check if vendor with this name already exists
-    const existingVendor = await this.vendorsRepository.findOne({
+  async create(createVendorDto: any): Promise<Vendor> {
+    const existingVendor = await this.prisma.vendor.findUnique({
       where: { name: createVendorDto.name },
     });
 
@@ -25,39 +15,29 @@ export class VendorsService {
       throw new ConflictException(`Vendor with name "${createVendorDto.name}" already exists`);
     }
 
-    const vendor = this.vendorsRepository.create(createVendorDto);
-    return await this.vendorsRepository.save(vendor);
+    return await this.prisma.vendor.create({ data: createVendorDto });
   }
 
-  async findAll(
-    page: number = 1,
-    limit: number = 20,
-    status?: string,
-  ): Promise<{ data: Vendor[]; total: number; page: number; limit: number }> {
-    const queryBuilder = this.vendorsRepository.createQueryBuilder('vendor');
+  async findAll(page: number = 1, limit: number = 20, status?: string): Promise<{ data: Vendor[]; total: number; page: number; limit: number }> {
+    const where = status ? { status } : {};
+    
+    const [data, total] = await Promise.all([
+      this.prisma.vendor.findMany({
+        where,
+        orderBy: { name: 'asc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      this.prisma.vendor.count({ where }),
+    ]);
 
-    if (status) {
-      queryBuilder.where('vendor.status = :status', { status });
-    }
-
-    const [data, total] = await queryBuilder
-      .orderBy('vendor.name', 'ASC')
-      .skip((page - 1) * limit)
-      .take(limit)
-      .getManyAndCount();
-
-    return {
-      data,
-      total,
-      page,
-      limit,
-    };
+    return { data, total, page, limit };
   }
 
   async findOne(id: string): Promise<Vendor> {
-    const vendor = await this.vendorsRepository.findOne({
+    const vendor = await this.prisma.vendor.findUnique({
       where: { id },
-      relations: ['demos'],
+      include: { demos: true },
     });
 
     if (!vendor) {
@@ -68,9 +48,7 @@ export class VendorsService {
   }
 
   async findByName(name: string): Promise<Vendor> {
-    const vendor = await this.vendorsRepository.findOne({
-      where: { name },
-    });
+    const vendor = await this.prisma.vendor.findUnique({ where: { name } });
 
     if (!vendor) {
       throw new NotFoundException(`Vendor with name "${name}" not found`);
@@ -79,12 +57,11 @@ export class VendorsService {
     return vendor;
   }
 
-  async update(id: string, updateVendorDto: UpdateVendorDto): Promise<Vendor> {
+  async update(id: string, updateVendorDto: any): Promise<Vendor> {
     const vendor = await this.findOne(id);
-    
-    // Check if new name conflicts with existing vendor
+
     if (updateVendorDto.name && updateVendorDto.name !== vendor.name) {
-      const existingVendor = await this.vendorsRepository.findOne({
+      const existingVendor = await this.prisma.vendor.findUnique({
         where: { name: updateVendorDto.name },
       });
 
@@ -93,27 +70,30 @@ export class VendorsService {
       }
     }
 
-    Object.assign(vendor, updateVendorDto);
-    return await this.vendorsRepository.save(vendor);
+    return await this.prisma.vendor.update({
+      where: { id },
+      data: updateVendorDto,
+    });
   }
 
   async remove(id: string): Promise<void> {
-    const vendor = await this.findOne(id);
-    vendor.status = 'inactive';
-    await this.vendorsRepository.save(vendor);
+    await this.findOne(id);
+    await this.prisma.vendor.update({
+      where: { id },
+      data: { status: 'inactive' },
+    });
   }
 
   async updateDemoCount(id: string): Promise<void> {
-    const vendor = await this.findOne(id);
-    
-    // Используем Demo repository для подсчета
-    const demoCount = await this.demoRepository
-      .createQueryBuilder('demo')
-      .where('demo.vendorId = :vendorId', { vendorId: id })
-      .andWhere('demo.status = :status', { status: 'active' })
-      .getCount();
+    await this.findOne(id);
 
-    vendor.demoCount = demoCount;
-    await this.vendorsRepository.save(vendor);
+    const demoCount = await this.prisma.demo.count({
+      where: { vendorId: id, status: 'active' },
+    });
+
+    await this.prisma.vendor.update({
+      where: { id },
+      data: { demoCount },
+    });
   }
 }

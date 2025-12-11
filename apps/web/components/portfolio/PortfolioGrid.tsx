@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Project } from '@/lib/portfolio-data';
 import { UsePortfolioFiltersReturn } from '@/lib/use-portfolio-filters';
 import ProjectCard from './ProjectCard';
+import { Search } from 'lucide-react';
 
 interface PortfolioGridProps {
   filters: UsePortfolioFiltersReturn;
@@ -70,7 +71,9 @@ export default function PortfolioGrid({ filters, className = '' }: PortfolioGrid
       <section className={`py-16 ${className}`}>
         <div className="container mx-auto px-4 text-center">
           <div className="glass p-12 rounded-3xl max-w-md mx-auto">
-            <div className="text-6xl mb-4">🔍</div>
+            <div className="w-16 h-16 bg-a1/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <Search className="w-8 h-8 text-a1" />
+            </div>
             <h3 className="text-2xl font-semibold text-ink mb-2">No projects found</h3>
             <p className="text-ink/70 mb-6">
               Try adjusting your filters or search terms to find what you're looking for.

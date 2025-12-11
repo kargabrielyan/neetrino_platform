@@ -12,10 +12,10 @@
     "clean": "rm -rf .next"
   },
   "dependencies": {
-    "@neetrino/ui": "file:../../packages/ui",
-    "@radix-ui/react-slot": "^1.0.2",
     "@auth/prisma-adapter": "^2.4.0",
-    "@prisma/client": "^5.22.0",
+    "@neetrino/ui": "file:../../packages/ui",
+    "@prisma/client": "^6.16.2",
+    "@radix-ui/react-slot": "^1.0.2",
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",

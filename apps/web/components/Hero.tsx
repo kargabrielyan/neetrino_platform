@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Play } from 'lucide-react';
 import { formatNumber } from '../lib/format';
 import { useMounted } from '../lib/use-mounted';
+import { useRouter } from 'next/navigation';
 import ProductSearch from './ProductSearch';
 
 const stats = [
@@ -15,6 +16,7 @@ const stats = [
 
 export default function Hero() {
   const isMounted = useMounted();
+  const router = useRouter();
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -98,7 +100,7 @@ export default function Hero() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => window.location.href = '/contact'}
+              onClick={() => router.push('/contact')}
               className="glass-strong px-6 py-3 rounded-full flex items-center gap-2 group focus-ring"
             >
               <span className="font-medium">Get Started</span>
@@ -108,7 +110,7 @@ export default function Hero() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => window.location.href = '/services'}
+              onClick={() => router.push('/services')}
               className="glass px-6 py-3 rounded-full flex items-center gap-2 group focus-ring"
             >
               <Play className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />

@@ -10,7 +10,7 @@ export async function PUT(request: NextRequest) {
     
     if (!session?.user?.id) {
       return NextResponse.json(
-        { error: 'Не авторизован' },
+        { error: 'Unauthorized' },
         { status: 401 }
       );
     }
@@ -20,7 +20,7 @@ export async function PUT(request: NextRequest) {
     // Валидация
     if (!name || !email) {
       return NextResponse.json(
-        { error: 'Имя и email обязательны' },
+        { error: 'Name and email are required' },
         { status: 400 }
       );
     }
@@ -35,7 +35,7 @@ export async function PUT(request: NextRequest) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'Email уже используется другим пользователем' },
+        { error: 'Email is already used by another user' },
         { status: 400 }
       );
     }
@@ -57,14 +57,14 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Профиль успешно обновлен',
+      message: 'Profile updated successfully',
       user: updatedUser
     });
 
   } catch (error) {
     console.error('Profile update error:', error);
     return NextResponse.json(
-      { error: 'Ошибка обновления профиля' },
+      { error: 'Profile update error' },
       { status: 500 }
     );
   }

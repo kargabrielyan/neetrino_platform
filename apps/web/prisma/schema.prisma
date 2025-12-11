@@ -1,0 +1,256 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  name          String?
+  email         String         @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          String         @default("USER")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  phone         String?        @db.VarChar(20)
+  accounts      Account[]
+  payments      Payment[]
+  sessions      Session[]
+  subscriptions Subscription[]
+  wishlist      Wishlist[]
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Vendor {
+  id          String      @id @default(uuid())
+  name        String      @unique @db.VarChar(255)
+  website     String?     @db.VarChar(500)
+  logoUrl     String?     @db.VarChar(500)
+  description String?
+  status      String      @default("active") @db.VarChar(100)
+  metadata    Json?
+  demoCount   Int         @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  demos       Demo[]
+  importRuns  ImportRun[]
+
+  @@map("vendors")
+}
+
+model Demo {
+  id            String         @id @default(uuid())
+  title         String         @db.VarChar(255)
+  description   String?
+  url           String         @db.VarChar(500)
+  normalizedUrl String?        @db.VarChar(500)
+  status        String         @default("active") @db.VarChar(100)
+  category      String?        @db.VarChar(100)
+  subcategory   String?        @db.VarChar(100)
+  imageUrl      String?        @db.VarChar(500)
+  screenshotUrl String?        @db.VarChar(500)
+  metadata      Json?
+  lastCheckedAt DateTime?
+  isAccessible  Boolean        @default(true)
+  viewCount     Int            @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  vendorId      String
+  regularPrice  Decimal?       @db.Decimal(10, 2)
+  salePrice     Decimal?       @db.Decimal(10, 2)
+  sku           String?        @db.VarChar(255)
+  checkRuns     CheckRun[]
+  vendor        Vendor         @relation(fields: [vendorId], references: [id])
+  orders        Order[]
+  subscriptions Subscription[]
+  wishlist      Wishlist[]
+
+  @@map("demos")
+}
+
+model Order {
+  id            String      @id @default(uuid())
+  customerName  String      @db.VarChar(255)
+  customerEmail String      @db.VarChar(255)
+  customerPhone String?     @db.VarChar(20)
+  demoId        String
+  requirements  String?
+  budget        Decimal?    @db.Decimal(10, 2)
+  status        OrderStatus @default(NEW)
+  notes         String?
+  assignedTo    String?     @db.VarChar(255)
+  deadline      DateTime?
+  metadata      Json?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  demo          Demo        @relation(fields: [demoId], references: [id])
+
+  @@map("orders")
+}
+
+model CheckRun {
+  id           String    @id @default(uuid())
+  demoId       String
+  startedAt    DateTime
+  finishedAt   DateTime?
+  status       String    @default("running") @db.VarChar(50)
+  isAccessible Boolean   @default(true)
+  responseTime Int?
+  statusCode   Int?
+  error        String?
+  note         String?
+  createdAt    DateTime  @default(now())
+  demo         Demo      @relation(fields: [demoId], references: [id])
+
+  @@map("check_runs")
+}
+
+model ImportRun {
+  id           String    @id @default(uuid())
+  vendorId     String
+  startedAt    DateTime
+  finishedAt   DateTime?
+  status       String    @default("running") @db.VarChar(50)
+  totalFound   Int       @default(0)
+  totalNew     Int       @default(0)
+  totalIgnored Int       @default(0)
+  totalErrors  Int       @default(0)
+  log          String?
+  metadata     Json?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  vendor       Vendor    @relation(fields: [vendorId], references: [id])
+
+  @@map("import_runs")
+}
+
+model Subscription {
+  id              String             @id @default(uuid())
+  userId          String
+  demoId          String
+  customerName    String             @db.VarChar(255)
+  customerEmail   String             @db.VarChar(255)
+  customerPhone   String?            @db.VarChar(20)
+  fullPrice       Decimal            @db.Decimal(10, 2)
+  monthlyPrice    Decimal            @db.Decimal(10, 2)
+  currency        String             @default("AMD") @db.VarChar(10)
+  totalMonths     Int                @default(10)
+  paidMonths      Int                @default(0)
+  status          SubscriptionStatus @default(PENDING)
+  startDate       DateTime?
+  nextBillingDate DateTime?
+  cancelledAt     DateTime?
+  completedAt     DateTime?
+  notes           String?
+  metadata        Json?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  payments        Payment[]
+  demo            Demo               @relation(fields: [demoId], references: [id])
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+model Payment {
+  id             String        @id @default(uuid())
+  subscriptionId String
+  userId         String
+  amount         Decimal       @db.Decimal(10, 2)
+  currency       String        @default("AMD") @db.VarChar(10)
+  status         PaymentStatus @default(PENDING)
+  monthNumber    Int
+  paidAt         DateTime?
+  dueDate        DateTime?
+  paymentMethod  String?       @db.VarChar(50)
+  notes          String?
+  metadata       Json?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  subscription   Subscription  @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model Wishlist {
+  id        String   @id @default(uuid())
+  userId    String?
+  userEmail String?  @db.VarChar(255)
+  demoId    String
+  createdAt DateTime @default(now())
+  demo      Demo     @relation(fields: [demoId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, demoId])
+  @@unique([userEmail, demoId])
+  @@map("wishlist")
+}
+
+enum OrderStatus {
+  NEW
+  IN_PROGRESS
+  DISCUSSION
+  IN_WORK
+  CANCELLED
+  COMPLETED
+}
+
+enum SubscriptionStatus {
+  PENDING
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  COMPLETED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}

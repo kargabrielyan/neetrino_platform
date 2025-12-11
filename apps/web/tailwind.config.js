@@ -75,9 +75,6 @@ module.exports = {
         'glass-strong': '0 12px 40px var(--glass-shadow)',
         'glass-subtle': '0 4px 16px var(--glass-shadow)',
       },
-      backgroundImage: {
-        'glass-gradient': 'linear-gradient(135deg, var(--glass-fill) 0%, rgba(255,255,255,0.05) 100%)',
-      },
       borderRadius: { 
         '2xl': '1rem', 
         '3xl': '1.25rem',

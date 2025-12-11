@@ -13,6 +13,9 @@ import { CheckingModule } from './modules/checking/checking.module';
 import { ImportModule } from './modules/import/import.module';
 import { DevModule } from './modules/dev/dev.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
+import { PaymentsModule } from './modules/payments/payments.module';
+import { WishlistModule } from './modules/wishlist/wishlist.module';
 
 @Module({
   imports: [
@@ -36,8 +39,14 @@ import { AdminModule } from './modules/admin/admin.module';
     ImportModule,
     DevModule,
     AdminModule,
+    // Подписки и платежи
+    SubscriptionsModule,
+    PaymentsModule,
+    // Избранное
+    WishlistModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
+// Rebuild trigger
 export class AppModule {}

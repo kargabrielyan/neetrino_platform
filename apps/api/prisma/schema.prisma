@@ -48,12 +48,16 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
+  phone         String?   @db.VarChar(20)
   role          String    @default("USER") // USER, ADMIN
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts Account[]
-  sessions Session[]
+  accounts      Account[]
+  sessions      Session[]
+  subscriptions Subscription[]
+  payments      Payment[]
+  wishlist      Wishlist[]
 
   @@map("users")
 }
@@ -90,6 +94,7 @@ model Vendor {
 // Demo model
 model Demo {
   id            String   @id @default(uuid())
+  sku           String?  @db.VarChar(255)  // SKU из CSV/JSON (например, r2ega5l7f)
   title         String   @db.VarChar(255)
   description   String?
   url           String   @db.VarChar(500)
@@ -103,14 +108,21 @@ model Demo {
   lastCheckedAt DateTime?
   isAccessible  Boolean  @default(true)
   viewCount     Int      @default(0)
+  
+  // Ценообразование
+  regularPrice  Decimal? @db.Decimal(10, 2)  // Обычная цена
+  salePrice     Decimal? @db.Decimal(10, 2)  // Цена со скидкой
+  
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   // Relations
-  vendorId   String
-  vendor     Vendor     @relation(fields: [vendorId], references: [id])
-  orders     Order[]
-  checkRuns  CheckRun[]
+  vendorId      String
+  vendor        Vendor         @relation(fields: [vendorId], references: [id])
+  orders        Order[]
+  checkRuns     CheckRun[]
+  subscriptions Subscription[]
+  wishlist      Wishlist[]
 
   @@map("demos")
 }
@@ -188,4 +200,115 @@ model ImportRun {
   vendor Vendor @relation(fields: [vendorId], references: [id])
 
   @@map("import_runs")
+}
+
+// Subscription model - подписки пользователей
+model Subscription {
+  id              String             @id @default(uuid())
+  userId          String
+  demoId          String
+  
+  // Данные клиента (на момент оформления)
+  customerName    String             @db.VarChar(255)
+  customerEmail   String             @db.VarChar(255)
+  customerPhone   String?            @db.VarChar(20)
+  
+  // Ценообразование
+  fullPrice       Decimal            @db.Decimal(10, 2)  // Полная цена продукта
+  monthlyPrice    Decimal            @db.Decimal(10, 2)  // Ежемесячный платёж (fullPrice / 10)
+  currency        String             @default("AMD") @db.VarChar(10)
+  
+  // Статус подписки
+  totalMonths     Int                @default(10)        // Всего месяцев (фиксированно 10)
+  paidMonths      Int                @default(0)         // Оплаченных месяцев
+  status          SubscriptionStatus @default(PENDING)
+  
+  // Даты
+  startDate       DateTime?                               // Дата начала подписки
+  nextBillingDate DateTime?                               // Следующая дата оплаты
+  cancelledAt     DateTime?                               // Дата отмены (если отменена)
+  completedAt     DateTime?                               // Дата завершения (если все 10 месяцев оплачены)
+  
+  // Дополнительно
+  notes           String?
+  metadata        Json?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  // Relations
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  demo     Demo      @relation(fields: [demoId], references: [id])
+  payments Payment[]
+
+  @@map("subscriptions")
+}
+
+// Subscription status enum
+enum SubscriptionStatus {
+  PENDING      // Ожидает первого платежа
+  ACTIVE       // Активная подписка
+  PAST_DUE     // Просрочен платёж
+  CANCELLED    // Отменена пользователем
+  COMPLETED    // Завершена (10 месяцев оплачено)
+}
+
+// Payment status enum
+enum PaymentStatus {
+  PENDING    // Ожидает оплаты
+  SUCCESS    // Успешно оплачен
+  FAILED     // Ошибка оплаты
+  REFUNDED   // Возвращён
+}
+
+// Payment model - история платежей
+model Payment {
+  id             String        @id @default(uuid())
+  subscriptionId String
+  userId         String
+  
+  // Сумма
+  amount         Decimal       @db.Decimal(10, 2)
+  currency       String        @default("AMD") @db.VarChar(10)
+  
+  // Статус платежа
+  status         PaymentStatus @default(PENDING)
+  monthNumber    Int                                    // Какой месяц оплачивается (1-10)
+  
+  // Даты
+  paidAt         DateTime?                              // Дата фактической оплаты
+  dueDate        DateTime?                              // Дата когда должен быть оплачен
+  
+  // Дополнительно
+  paymentMethod  String?       @db.VarChar(50)         // Метод оплаты (card, cash, transfer)
+  notes          String?
+  metadata       Json?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  // Relations
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+// Wishlist model - избранное
+model Wishlist {
+  id        String   @id @default(uuid())
+  
+  // Связи
+  userId    String?                          // ID пользователя (если авторизован)
+  userEmail String?  @db.VarChar(255)        // Email (для неавторизованных)
+  demoId    String
+  
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  demo Demo  @relation(fields: [demoId], references: [id], onDelete: Cascade)
+
+  // Уникальность: один пользователь/email не может добавить один и тот же товар дважды
+  @@unique([userId, demoId])
+  @@unique([userEmail, demoId])
+  @@map("wishlist")
 }

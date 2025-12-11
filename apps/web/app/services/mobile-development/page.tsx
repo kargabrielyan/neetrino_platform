@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useMounted } from '../../../lib/use-mounted';
 import Layout from '../../../components/Layout';
 import Navbar from '../../../components/Navbar';
-import { Smartphone, Code, Database, Cloud, Shield, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Smartphone, Code, Database, Cloud, Shield, ArrowLeft, CheckCircle, Apple, Bot, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 
 const features = [
@@ -41,9 +41,9 @@ const technologies = [
 ];
 
 const platforms = [
-  { name: 'iOS', icon: '🍎', features: ['Native iOS Development', 'Swift/Objective-C', 'App Store Optimization'] },
-  { name: 'Android', icon: '🤖', features: ['Native Android Development', 'Kotlin/Java', 'Google Play Optimization'] },
-  { name: 'Cross-Platform', icon: '🔄', features: ['React Native', 'Flutter', 'Single Codebase'] },
+  { name: 'iOS', icon: Apple, features: ['Native iOS Development', 'Swift/Objective-C', 'App Store Optimization'] },
+  { name: 'Android', icon: Bot, features: ['Native Android Development', 'Kotlin/Java', 'Google Play Optimization'] },
+  { name: 'Cross-Platform', icon: RefreshCw, features: ['React Native', 'Flutter', 'Single Codebase'] },
 ];
 
 export default function MobileDevelopment() {
@@ -168,7 +168,9 @@ export default function MobileDevelopment() {
                 whileHover={{ scale: 1.05 }}
                 className="glass rounded-2xl p-6 text-center"
               >
-                <div className="text-4xl mb-4">{platform.icon}</div>
+                <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <platform.icon className="w-8 h-8 text-primary" />
+                </div>
                 <h3 className="text-xl font-semibold text-white mb-4">
                   {platform.name}
                 </h3>

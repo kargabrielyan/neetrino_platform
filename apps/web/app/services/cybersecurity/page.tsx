@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useMounted } from '../../../lib/use-mounted';
 import Layout from '../../../components/Layout';
 import Navbar from '../../../components/Navbar';
-import { Shield, Lock, Eye, AlertTriangle, CheckCircle, Database, ArrowLeft } from 'lucide-react';
+import { Shield, Lock, Eye, AlertTriangle, CheckCircle, Database, ArrowLeft, Search, FileText, Bell } from 'lucide-react';
 import Link from 'next/link';
 
 const features = [
@@ -43,22 +43,22 @@ const technologies = [
 const securityServices = [
   { 
     name: 'Security Assessment', 
-    icon: '🔍', 
+    icon: Search, 
     description: 'Comprehensive evaluation of your security posture' 
   },
   { 
     name: 'Threat Protection', 
-    icon: '🛡️', 
+    icon: Shield, 
     description: 'Advanced protection against cyber threats and attacks' 
   },
   { 
     name: 'Compliance Management', 
-    icon: '📋', 
+    icon: FileText, 
     description: 'Ensure compliance with industry standards and regulations' 
   },
   { 
     name: 'Incident Response', 
-    icon: '🚨', 
+    icon: Bell, 
     description: 'Rapid response and recovery from security incidents' 
   },
 ];
@@ -186,7 +186,9 @@ export default function Cybersecurity() {
                 className="glass rounded-2xl p-6"
               >
                 <div className="flex items-start gap-4">
-                  <div className="text-3xl">{service.icon}</div>
+                  <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <service.icon className="w-6 h-6 text-primary" />
+                  </div>
                   <div>
                     <h3 className="text-xl font-semibold text-white mb-2">
                       {service.name}

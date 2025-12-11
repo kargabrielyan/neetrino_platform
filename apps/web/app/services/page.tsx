@@ -219,8 +219,8 @@ export default function Services() {
           }}
         />
         
-        {/* Dark Theme Background Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black dark:opacity-100 opacity-0 transition-opacity duration-300" />
+        {/* Dark Theme Background */}
+        <div className="absolute inset-0 bg-black dark:opacity-100 opacity-0 transition-opacity duration-300" />
         
         
         <div className="relative z-10">

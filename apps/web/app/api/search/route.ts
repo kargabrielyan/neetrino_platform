@@ -45,6 +45,19 @@ export async function GET(request: NextRequest) {
 
       const apiData = await apiResponse.json();
       console.log(`✅ API returned ${apiData.data?.length || 0} demos`);
+      
+      // Логируем первый товар для отладки цен
+      if (apiData.data && apiData.data.length > 0) {
+        const firstDemo = apiData.data[0];
+        console.log('💰 [Search API] Первый товар:', {
+          id: firstDemo.id,
+          title: firstDemo.title,
+          regularPrice: firstDemo.regularPrice,
+          salePrice: firstDemo.salePrice,
+          regularPriceType: typeof firstDemo.regularPrice,
+          salePriceType: typeof firstDemo.salePrice
+        });
+      }
 
       return NextResponse.json(apiData);
     } catch (apiError: any) {

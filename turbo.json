@@ -4,7 +4,11 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
+      "env": ["NEXT_PUBLIC_API_URL", "DATABASE_URL", "NEXTAUTH_SECRET", "NEXTAUTH_URL"]
+    },
+    "@neetrino/api#build": {
+      "cache": false
     },
     "dev": {
       "cache": false,

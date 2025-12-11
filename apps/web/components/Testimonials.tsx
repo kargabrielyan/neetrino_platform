@@ -103,7 +103,7 @@ export default function Testimonials() {
 
               {/* Author */}
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-a1/20 to-a4/20 rounded-full flex items-center justify-center">
+                <div className="w-12 h-12 bg-a1/20 rounded-full flex items-center justify-center">
                   <span className="text-ink font-semibold text-sm">
                     {testimonial.avatar}
                   </span>

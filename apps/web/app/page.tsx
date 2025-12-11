@@ -3,8 +3,10 @@
 import Layout from '../components/Layout';
 import Hero from '../components/Hero';
 import ServicesGrid from '../components/ServicesGrid';
-import AIDashboard from '../components/AIDashboard';
-import Pricing from '../components/Pricing';
+import BestOfferings from '../components/BestOfferings';
+import BestSellers from '../components/BestSellers';
+import FeaturedWebsites from '../components/FeaturedWebsites';
+import ChooseWebsite from '../components/ChooseWebsite';
 import Testimonials from '../components/Testimonials';
 
 export default function Home() {
@@ -12,8 +14,10 @@ export default function Home() {
     <Layout>
       <Hero />
       <ServicesGrid />
-      <AIDashboard />
-      <Pricing />
+      <BestOfferings />
+      <BestSellers />
+      <FeaturedWebsites />
+      <ChooseWebsite />
       <Testimonials />
     </Layout>
   );

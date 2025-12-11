@@ -59,7 +59,7 @@ export default function WordPressAdminLayout({ children, currentPage = 'dashboar
       <div className="relative backdrop-blur-2xl bg-white/70 dark:bg-gray-800/70 border-b border-white/20 dark:border-gray-700/30 px-4 py-3 flex items-center justify-between shadow-2xl shadow-blue-500/10 dark:shadow-blue-400/5">
         {/* Logo */}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+          <div className="w-10 h-10 bg-blue-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
             <span className="text-white font-bold text-lg">N</span>
           </div>
           <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">NEETRINO</h1>

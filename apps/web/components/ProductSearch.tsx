@@ -298,7 +298,7 @@ export default function ProductSearch() {
                             }}
                           />
                         ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-a1/20 to-a1/5 flex items-center justify-center">
+                          <div className="w-full h-full bg-a1/10 flex items-center justify-center">
                             <Eye className="w-5 h-5 text-a1/60" />
                           </div>
                         )}

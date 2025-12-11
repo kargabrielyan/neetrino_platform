@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Menu, X, User } from 'lucide-react';
+import { Menu, X, User, Heart, LogOut, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
 import { useMounted } from '../lib/use-mounted';
+import { useTheme } from '../lib/use-theme';
 import NavDroplet from './NavDroplet';
 import ThemeToggle from './ThemeToggle';
 import AuthSidebar from './AuthSidebar';
@@ -14,14 +16,41 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthSidebarOpen, setIsAuthSidebarOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
   const isMounted = useMounted();
   const pathname = usePathname();
+  const { isDark, isLoaded } = useTheme();
+  const { data: session, status } = useSession();
+
+  // Load cart count from localStorage
+  useEffect(() => {
+    const updateCartCount = () => {
+      if (typeof window !== 'undefined') {
+        const cart = localStorage.getItem('cart');
+        if (cart) {
+          try {
+            const items = JSON.parse(cart);
+            setCartCount(Array.isArray(items) ? items.length : 0);
+          } catch (e) {
+            setCartCount(0);
+          }
+        } else {
+          setCartCount(0);
+        }
+      }
+    };
+
+    updateCartCount();
+    window.addEventListener('cartUpdated', updateCartCount);
+    return () => window.removeEventListener('cartUpdated', updateCartCount);
+  }, []);
 
   const menuItems = [
     { key: 'home', label: 'Home', href: '/' },
+    { key: 'programs', label: 'Shop', href: '/catalog' },
     { key: 'services', label: 'Services', href: '/services' },
     { key: 'about', label: 'About', href: '/about' },
-    { key: 'programs', label: 'Shop', href: '/catalog' },
+    { key: 'team', label: 'Team', href: '/team' },
     { key: 'portfolio', label: 'Portfolio', href: '/portfolio' },
     { key: 'contact', label: 'Contact', href: '/contact' },
   ];
@@ -49,7 +78,7 @@ export default function Navbar() {
   return (
     <motion.nav
       initial={{ y: -100 }}
-      animate={isMounted ? { y: 0 } : { y: -100 }}
+      animate={{ y: 0 }}
       transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
       className="fixed top-6 left-4 right-4 md:left-8 md:right-8 z-50"
       role="navigation"
@@ -80,16 +109,79 @@ export default function Navbar() {
 
           {/* Right side buttons */}
           <div className="flex items-center gap-4">
-            {/* Sign In Button */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setIsAuthSidebarOpen(true)}
-              className="hidden md:flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-ink font-medium rounded-full transition-all duration-200 focus-ring"
+            {/* User Menu or Sign In Button */}
+            {status === 'loading' ? (
+              <div className="hidden md:flex items-center gap-2 px-4 py-2">
+                <div className="w-4 h-4 border-2 border-ink/30 border-t-ink rounded-full animate-spin"></div>
+              </div>
+            ) : session?.user ? (
+              <div className="hidden md:flex items-center gap-3">
+                <Link
+                  href="/my-account"
+                  className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-ink font-medium rounded-full transition-all duration-200 focus-ring"
+                >
+                  <User className="w-4 h-4" />
+                  <span className="max-w-[120px] truncate">
+                    {session.user.name || session.user.email?.split('@')[0] || 'Account'}
+                  </span>
+                </Link>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    // Clear cart when signing out
+                    if (typeof window !== 'undefined') {
+                      localStorage.removeItem('cart');
+                      window.dispatchEvent(new Event('cartUpdated'));
+                    }
+                    signOut({ callbackUrl: '/' });
+                  }}
+                  className="p-2 rounded-full text-ink/70 hover:text-ink hover:bg-white/10 transition-all duration-200 focus-ring"
+                  title="Sign Out"
+                >
+                  <LogOut className="w-4 h-4" />
+                </motion.button>
+              </div>
+            ) : (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setIsAuthSidebarOpen(true)}
+                className="hidden md:flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-ink font-medium rounded-full transition-all duration-200 focus-ring"
+              >
+                <User className="w-4 h-4" />
+                Sign In
+              </motion.button>
+            )}
+
+            {/* Cart button */}
+            <Link
+              href="/cart"
+              className="hidden md:flex relative p-2 rounded-full text-ink/70 hover:text-ink transition-colors focus-ring hover:bg-white/10"
+              aria-label="Shopping Cart"
             >
-              <User className="w-4 h-4" />
-              Sign In
-            </motion.button>
+              <ShoppingCart className="w-5 h-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-a1 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              )}
+            </Link>
+
+            {/* Wishlist button */}
+            {isLoaded ? (
+              <Link
+                href="/my-account/wishlist"
+                className="hidden md:flex p-2 rounded-full text-red-500 transition-colors focus-ring hover:text-red-600"
+                aria-label="Wishlist"
+              >
+                <Heart className="w-5 h-5 fill-current" />
+              </Link>
+            ) : (
+              <div className="hidden md:flex p-2 rounded-full text-red-500">
+                <Heart className="w-5 h-5 fill-current" />
+              </div>
+            )}
 
             {/* Theme toggle */}
             <ThemeToggle />
@@ -119,19 +211,80 @@ export default function Navbar() {
           <div className="py-4 space-y-2 px-4">
             <NavDroplet />
             
-            {/* Mobile Sign In Button */}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => {
-                setIsMobileMenuOpen(false);
-                setIsAuthSidebarOpen(true);
-              }}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/10 hover:bg-white/20 text-ink font-medium rounded-full transition-all duration-200 focus-ring"
-            >
-              <User className="w-4 h-4" />
-              Sign In
-            </motion.button>
+            {/* Mobile Cart and Wishlist */}
+            <div className="flex items-center gap-2">
+              <Link
+                href="/cart"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="relative flex items-center justify-center p-3 rounded-full text-ink/70 hover:text-ink hover:bg-white/10 transition-colors focus-ring"
+                aria-label="Shopping Cart"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-a1 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                    {cartCount > 99 ? '99+' : cartCount}
+                  </span>
+                )}
+              </Link>
+              <Link
+                href="/my-account/wishlist"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center justify-center p-3 rounded-full text-red-500 hover:text-red-600 hover:bg-red-500/10 transition-colors focus-ring"
+                aria-label="Wishlist"
+              >
+                <Heart className="w-5 h-5 fill-current" />
+              </Link>
+            </div>
+
+            {/* Mobile User Menu or Sign In Button */}
+            {status === 'loading' ? (
+              <div className="w-full flex items-center justify-center gap-2 px-4 py-3">
+                <div className="w-4 h-4 border-2 border-ink/30 border-t-ink rounded-full animate-spin"></div>
+              </div>
+            ) : session?.user ? (
+              <div className="space-y-2">
+                <Link
+                  href="/my-account"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/10 hover:bg-white/20 text-ink font-medium rounded-full transition-all duration-200 focus-ring"
+                >
+                  <User className="w-4 h-4" />
+                  <span className="truncate">
+                    {session.user.name || session.user.email?.split('@')[0] || 'Account'}
+                  </span>
+                </Link>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    // Clear cart when signing out
+                    if (typeof window !== 'undefined') {
+                      localStorage.removeItem('cart');
+                      window.dispatchEvent(new Event('cartUpdated'));
+                    }
+                    signOut({ callbackUrl: '/' });
+                  }}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 font-medium rounded-full transition-all duration-200 focus-ring"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </motion.button>
+              </div>
+            ) : (
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  setIsAuthSidebarOpen(true);
+                }}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/10 hover:bg-white/20 text-ink font-medium rounded-full transition-all duration-200 focus-ring"
+              >
+                <User className="w-4 h-4" />
+                Sign In
+              </motion.button>
+            )}
           </div>
         </motion.div>
       </div>

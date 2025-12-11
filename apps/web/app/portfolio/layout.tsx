@@ -82,6 +82,7 @@ export default function PortfolioLayout({
 
   return (
     <>
+      {/* Безопасное использование dangerouslySetInnerHTML для JSON-LD: JSON.stringify экранирует HTML */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

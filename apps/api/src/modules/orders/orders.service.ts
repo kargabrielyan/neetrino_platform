@@ -1,68 +1,44 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Order, OrderStatus } from './order.entity';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { PrismaService } from '../../common/services/prisma.service';
+import { Order, OrderStatus } from '@prisma/client';
 
 @Injectable()
 export class OrdersService {
-  constructor(
-    @InjectRepository(Order)
-    private ordersRepository: Repository<Order>,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
-  async create(createOrderDto: CreateOrderDto): Promise<Order> {
-    const order = this.ordersRepository.create({
-      ...createOrderDto,
-      deadline: createOrderDto.deadline ? new Date(createOrderDto.deadline) : null,
+  async create(createOrderDto: any): Promise<Order> {
+    return await this.prisma.order.create({
+      data: {
+        ...createOrderDto,
+        deadline: createOrderDto.deadline ? new Date(createOrderDto.deadline) : null,
+      },
     });
-    
-    return await this.ordersRepository.save(order);
   }
 
-  async findAll(
-    page: number = 1,
-    limit: number = 20,
-    status?: OrderStatus,
-    assignedTo?: string,
-    customerEmail?: string,
-  ): Promise<{ data: Order[]; total: number; page: number; limit: number }> {
-    const queryBuilder = this.ordersRepository
-      .createQueryBuilder('order')
-      .leftJoinAndSelect('order.demo', 'demo')
-      .leftJoinAndSelect('demo.vendor', 'vendor');
+  async findAll(page: number = 1, limit: number = 20, status?: OrderStatus, assignedTo?: string, customerEmail?: string): Promise<{ data: Order[]; total: number; page: number; limit: number }> {
+    const where: any = {};
+    if (status) where.status = status;
+    if (assignedTo) where.assignedTo = assignedTo;
+    if (customerEmail) where.customerEmail = { contains: customerEmail, mode: 'insensitive' };
 
-    if (status) {
-      queryBuilder.andWhere('order.status = :status', { status });
-    }
+    const [data, total] = await Promise.all([
+      this.prisma.order.findMany({
+        where,
+        include: { demo: { include: { vendor: true } } },
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      this.prisma.order.count({ where }),
+    ]);
 
-    if (assignedTo) {
-      queryBuilder.andWhere('order.assignedTo = :assignedTo', { assignedTo });
-    }
-
-    if (customerEmail) {
-      queryBuilder.andWhere('order.customerEmail ILIKE :email', { email: `%${customerEmail}%` });
-    }
-
-    const [data, total] = await queryBuilder
-      .orderBy('order.createdAt', 'DESC')
-      .skip((page - 1) * limit)
-      .take(limit)
-      .getManyAndCount();
-
-    return {
-      data,
-      total,
-      page,
-      limit,
-    };
+    return { data, total, page, limit };
   }
 
   async findOne(id: string): Promise<Order> {
-    const order = await this.ordersRepository.findOne({
+    const order = await this.prisma.order.findUnique({
       where: { id },
-      relations: ['demo', 'demo.vendor'],
+      include: { demo: { include: { vendor: true } } },
     });
 
     if (!order) {
@@ -72,76 +48,58 @@ export class OrdersService {
     return order;
   }
 
-  async update(id: string, updateOrderDto: UpdateOrderDto): Promise<Order> {
-    const order = await this.findOne(id);
-    
-    Object.assign(order, {
-      ...updateOrderDto,
-      deadline: updateOrderDto.deadline ? new Date(updateOrderDto.deadline) : order.deadline,
-    });
+  async update(id: string, updateOrderDto: any): Promise<Order> {
+    await this.findOne(id);
 
-    return await this.ordersRepository.save(order);
+    return await this.prisma.order.update({
+      where: { id },
+      data: {
+        ...updateOrderDto,
+        deadline: updateOrderDto.deadline ? new Date(updateOrderDto.deadline) : undefined,
+      },
+    });
   }
 
   async remove(id: string): Promise<void> {
-    const order = await this.findOne(id);
-    await this.ordersRepository.remove(order);
+    await this.findOne(id);
+    await this.prisma.order.delete({ where: { id } });
   }
 
   async updateStatus(id: string, status: OrderStatus, notes?: string): Promise<Order> {
-    const order = await this.findOne(id);
-    order.status = status;
-    if (notes) {
-      order.notes = notes;
-    }
-    return await this.ordersRepository.save(order);
+    await this.findOne(id);
+    return await this.prisma.order.update({
+      where: { id },
+      data: { status, notes: notes || undefined },
+    });
   }
 
-  async getStatistics(): Promise<{
-    total: number;
-    byStatus: Record<OrderStatus, number>;
-    recent: number;
-    averageBudget: number;
-  }> {
-    const total = await this.ordersRepository.count();
-    
-    const byStatus = await this.ordersRepository
-      .createQueryBuilder('order')
-      .select('order.status', 'status')
-      .addSelect('COUNT(*)', 'count')
-      .groupBy('order.status')
-      .getRawMany();
+  async getStatistics(): Promise<any> {
+    const total = await this.prisma.order.count();
 
-    const statusCounts = byStatus.reduce((acc, item) => {
-      acc[item.status] = parseInt(item.count);
-      return acc;
-    }, {} as Record<OrderStatus, number>);
-
-    // Заполняем нулями для статусов без заказов
-    Object.values(OrderStatus).forEach(status => {
-      if (!statusCounts[status]) {
-        statusCounts[status] = 0;
-      }
+    const byStatusRaw = await this.prisma.order.groupBy({
+      by: ['status'],
+      _count: true,
     });
 
-    const recent = await this.ordersRepository
-      .createQueryBuilder('order')
-      .where('order.createdAt >= :date', { date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) })
-      .getCount();
+    const byStatus = byStatusRaw.reduce((acc, item) => {
+      acc[item.status] = item._count;
+      return acc;
+    }, {} as Record<string, number>);
 
-    const avgBudgetResult = await this.ordersRepository
-      .createQueryBuilder('order')
-      .select('AVG(order.budget)', 'avg')
-      .where('order.budget IS NOT NULL')
-      .getRawOne();
+    const recent = await this.prisma.order.count({
+      where: { createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } },
+    });
 
-    const averageBudget = avgBudgetResult?.avg ? parseFloat(avgBudgetResult.avg) : 0;
+    const avgBudget = await this.prisma.order.aggregate({
+      _avg: { budget: true },
+      where: { budget: { not: null } },
+    });
 
     return {
       total,
-      byStatus: statusCounts,
+      byStatus,
       recent,
-      averageBudget,
+      averageBudget: avgBudget._avg.budget || 0,
     };
   }
 }

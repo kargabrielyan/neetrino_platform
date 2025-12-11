@@ -20,22 +20,30 @@ async function bootstrap() {
   
   app.enableCors({
     origin: (origin, callback) => {
-      // Разрешаем запросы без origin (например, мобильные приложения или Postman)
-      if (!origin) return callback(null, true);
+      // В продакшене запрещаем запросы без origin
+      if (!origin) {
+        if (process.env.NODE_ENV === 'production') {
+          return callback(new Error('Origin required in production'));
+        }
+        // В разработке разрешаем (для Postman, мобильных приложений)
+        return callback(null, true);
+      }
       
       // Проверяем разрешенные origins
       if (allowedOrigins.some(allowed => origin.startsWith(allowed))) {
         return callback(null, true);
       }
       
-      // Разрешаем локальные IP адреса (для разработки)
-      if (origin.match(/^http:\/\/192\.168\.\d+\.\d+:\d+$/)) {
+      // Разрешаем локальные IP адреса только в разработке
+      if (process.env.NODE_ENV !== 'production' && origin.match(/^http:\/\/192\.168\.\d+\.\d+:\d+$/)) {
         return callback(null, true);
       }
       
       callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   // Swagger документация
