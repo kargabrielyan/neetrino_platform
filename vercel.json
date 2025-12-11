@@ -1,6 +1,7 @@
 {
-    "buildCommand": "npm install; cd packages/ui; npm run build; cd ../../apps/web; npm run build",
-    "outputDirectory": ".next",
+    "buildCommand": "npm install && turbo run build --filter=@neetrino/web",
+    "outputDirectory": "apps/web/.next",
     "installCommand": "npm install",
-    "framework": "nextjs"
+    "framework": "nextjs",
+    "rootDirectory": "apps/web"
   }  
