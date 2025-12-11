@@ -2,6 +2,5 @@
     "buildCommand": "npm install && turbo run build --filter=@neetrino/web",
     "outputDirectory": "apps/web/.next",
     "installCommand": "npm install",
-    "framework": "nextjs",
-    "rootDirectory": "apps/web"
+    "framework": "nextjs"
   }  
