@@ -28,15 +28,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         try {
           // Маскируем email для логирования
-          const maskedEmail = credentials.email?.replace(/(.{2})(.*)(@.*)/, (_, start, middle, domain) => {
+          const emailStr = typeof credentials.email === 'string' ? credentials.email : '';
+          const maskedEmail = emailStr ? emailStr.replace(/(.{2})(.*)(@.*)/, (_, start, middle, domain) => {
             return start + '*'.repeat(Math.min(middle?.length || 0, 5)) + domain;
-          }) || 'unknown';
+          }) : 'unknown';
           
           console.log('🔵 [AUTH] Попытка авторизации для:', maskedEmail);
           
           // Ищем пользователя в базе данных
           const user = await prisma.user.findUnique({
-            where: { email: credentials.email as string },
+            where: { email: emailStr },
           });
 
           if (!user) {
