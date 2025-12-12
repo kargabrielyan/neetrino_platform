@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs';
 import { getPrismaClient } from './prisma';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true, // Разрешаем NextAuth автоматически определять базовый URL
   providers: [
     // Email/Password провайдер с проверкой базы данных
     Credentials({

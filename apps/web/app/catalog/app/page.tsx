@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMounted } from '../../../lib/use-mounted';
 import Layout from '../../../components/Layout';
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter, Grid, List } from 'lucide-react';
 import ProductCard, { ProductCardSkeleton } from '../../../components/ProductCard';
 
 interface Demo {
@@ -74,6 +74,7 @@ export default function AppCatalog() {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [wishlistIds, setWishlistIds] = useState<Set<string>>(new Set());
   const [wishlistLoading, setWishlistLoading] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Загружаем избранное из localStorage
   useEffect(() => {
