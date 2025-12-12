@@ -114,7 +114,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   pages: {
     signIn: '/auth/signin',
-    signUp: '/auth/signup',
+    // signUp не поддерживается в NextAuth - страница регистрации работает как обычный роут
     // error page removed - credentials errors handled in sidebar, OAuth errors will show inline
   },
   secret: (() => {
