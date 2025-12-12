@@ -50,11 +50,12 @@ export default function MyAccountPage() {
       const subsData = await subsRes.json();
       const paymentsData = await paymentsRes.json();
 
-      setStats({
+      setStats(prev => ({
+        ...prev,
         subscriptions: subsData.total || 0,
         payments: paymentsData.total || 0,
         orders: 0, // TODO: Добавить orders endpoint
-      });
+      }));
     } catch (error) {
       console.error('❌ Ошибка загрузки статистики:', error);
     }
