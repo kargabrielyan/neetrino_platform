@@ -167,7 +167,11 @@ function AdminContent() {
           category: 'E-commerce',
           subcategory: 'Online Store',
           imageUrl: '/no image.png',
+          screenshotUrl: '/no image.png',
+          viewCount: 0,
+          isAccessible: true,
           vendor: {
+            id: 'temp-vendor-1',
             name: 'TechCorp',
             website: 'https://techcorp.com',
             logoUrl: '/no image.png'
@@ -184,7 +188,11 @@ function AdminContent() {
           category: 'Portfolio',
           subcategory: 'Creative',
           imageUrl: '/no image.png',
+          screenshotUrl: '/no image.png',
+          viewCount: 0,
+          isAccessible: true,
           vendor: {
+            id: 'temp-vendor-2',
             name: 'DesignStudio',
             website: 'https://designstudio.com',
             logoUrl: '/no image.png'
