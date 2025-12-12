@@ -38,15 +38,19 @@ export default function DemoViewer() {
   const handleViewportChange = (size: ViewportSize) => {
     setViewportSize(size);
     // Обновляем URL с новым viewport параметром
-    const url = new URL(window.location.href);
-    url.searchParams.set('viewport', size);
-    window.history.pushState({}, '', url.toString());
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('viewport', size);
+      window.history.pushState({}, '', url.toString());
+    }
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(window.location.href);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (typeof window !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   if (!demoUrl) {

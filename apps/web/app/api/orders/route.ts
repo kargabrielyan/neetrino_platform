@@ -38,12 +38,12 @@ export async function POST(request: NextRequest) {
     const validationResult = createOrderSchema.safeParse(body);
     
     if (!validationResult.success) {
-      console.error('❌ [ORDERS API] Validation error:', validationResult.error.errors);
+      console.error('❌ [ORDERS API] Validation error:', validationResult.error.issues);
       return NextResponse.json(
         {
           error: 'Validation failed',
           message: 'Invalid order data',
-          details: validationResult.error.errors,
+          details: validationResult.error.issues,
         },
         { status: 400 }
       );
