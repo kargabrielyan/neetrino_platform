@@ -1,5 +1,5 @@
 {
-  "buildCommand": "turbo run build --filter=@neetrino/web",
+  "buildCommand": "npm run dev",
   "outputDirectory": "apps/web/.next",
   "installCommand": "npm install",
   "framework": "nextjs"
