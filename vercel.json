@@ -1,6 +1,7 @@
 {
-  "buildCommand": "npm run dev",
-  "outputDirectory": "apps/web/.next",
+  "buildCommand": "npx turbo run build --filter=@neetrino/web",
+  "devCommand": "npx turbo run dev --filter=@neetrino/web",
   "installCommand": "npm install",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "outputDirectory": "apps/web/.next"
 }  
