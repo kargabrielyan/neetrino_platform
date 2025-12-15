@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Monitor, Tablet, Smartphone, Copy, Check, X, Home } from 'lucide-react';
 import Link from 'next/link';
@@ -13,7 +13,7 @@ const viewportConfigs: Record<ViewportSize, { width: number; height: number }> =
   mobile: { width: 375, height: 667 }
 };
 
-export default function DemoViewer() {
+function DemoViewerContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [viewportSize, setViewportSize] = useState<ViewportSize>('desktop');
@@ -160,6 +160,21 @@ export default function DemoViewer() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function DemoViewer() {
+  return (
+    <Suspense fallback={
+      <div className="fixed inset-0 flex items-center justify-center bg-ink/5">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-a1 mx-auto mb-4"></div>
+          <p className="text-ink/70">Loading...</p>
+        </div>
+      </div>
+    }>
+      <DemoViewerContent />
+    </Suspense>
   );
 }
 

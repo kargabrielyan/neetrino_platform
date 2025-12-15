@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Layout from '../../../components/Layout';
@@ -34,7 +34,7 @@ const statusConfig = {
   REFUNDED: { label: 'Refunded', icon: RotateCcw, color: 'text-blue-500', bg: 'bg-blue-500/10' },
 };
 
-export default function PaymentsPage() {
+function PaymentsContent() {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -232,6 +232,23 @@ export default function PaymentsPage() {
         )}
       </div>
     </Layout>
+  );
+}
+
+export default function PaymentsPage() {
+  return (
+    <Suspense fallback={
+      <Layout>
+        <div className="container mx-auto px-4 py-8 pt-24 max-w-4xl">
+          <div className="glass rounded-3xl p-8 text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-a1 mx-auto"></div>
+            <p className="text-ink/70 mt-4">Loading...</p>
+          </div>
+        </div>
+      </Layout>
+    }>
+      <PaymentsContent />
+    </Suspense>
   );
 }
 
