@@ -1,15 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
-const { demoData } = require('../../../../../lib/demo-data.js');
+import { prisma } from '../../../../../lib/prisma';
 
-// GET - получить конкретное демо
+// GET - получить демо по ID
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
-    const demo = demoData.getById(id);
-    
+    console.log('📦 API: Получение демо:', id);
+
+    const demo = await prisma.demo.findUnique({
+      where: { id },
+      include: {
+        vendor: {
+          select: {
+            id: true,
+            name: true,
+            website: true,
+            logoUrl: true
+          }
+        }
+      }
+    });
+
     if (!demo) {
       return NextResponse.json(
         { success: false, error: 'Demo not found' },
@@ -22,7 +36,7 @@ export async function GET(
       data: demo
     });
   } catch (error) {
-    console.error('Admin demo GET error:', error);
+    console.error('❌ Admin demo GET error:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch demo' },
       { status: 500 }
@@ -38,31 +52,46 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
+    console.log('🔄 API: Обновление демо:', id);
+
+    const updateData: any = {};
     
-    const updatedDemo = demoData.update(id, {
-      title: body.title,
-      description: body.description,
-      url: body.url,
-      status: body.status,
-      category: body.category,
-      subcategory: body.subcategory,
-      imageUrl: body.imageUrl,
-    });
-    
-    if (!updatedDemo) {
-      return NextResponse.json(
-        { success: false, error: 'Demo not found' },
-        { status: 404 }
-      );
+    if (body.title !== undefined) updateData.title = body.title;
+    if (body.description !== undefined) updateData.description = body.description;
+    if (body.url !== undefined) updateData.url = body.url;
+    if (body.status !== undefined) updateData.status = body.status;
+    if (body.category !== undefined) updateData.category = body.category;
+    if (body.subcategory !== undefined) updateData.subcategory = body.subcategory;
+    if (body.imageUrl !== undefined) updateData.imageUrl = body.imageUrl;
+    if (body.regularPrice !== undefined) {
+      updateData.regularPrice = body.regularPrice ? parseFloat(body.regularPrice) : null;
     }
+    if (body.salePrice !== undefined) {
+      updateData.salePrice = body.salePrice ? parseFloat(body.salePrice) : null;
+    }
+
+    const demo = await prisma.demo.update({
+      where: { id },
+      data: updateData,
+      include: {
+        vendor: {
+          select: {
+            id: true,
+            name: true
+          }
+        }
+      }
+    });
+
+    console.log('✅ API: Демо обновлено:', demo.id);
 
     return NextResponse.json({
       success: true,
-      data: updatedDemo,
+      data: demo,
       message: 'Demo updated successfully'
     });
   } catch (error) {
-    console.error('Admin demo PUT error:', error);
+    console.error('❌ Admin demo PUT error:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to update demo' },
       { status: 500 }
@@ -77,26 +106,44 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    console.log('🗑️ API: Начинаем удаление демо с ID:', id);
-    
-    const success = demoData.delete(id);
-    console.log('🗑️ API: Результат удаления:', success);
-    
-    if (!success) {
-      console.log('❌ API: Демо не найдено для удаления');
-      return NextResponse.json(
-        { success: false, error: 'Demo not found' },
-        { status: 404 }
-      );
+    console.log('🗑️ API: Удаление демо:', id);
+
+    // Сначала проверим, нет ли связанных заказов или подписок
+    const relatedOrders = await prisma.order.count({
+      where: { demoId: id }
+    });
+
+    const relatedSubscriptions = await prisma.subscription.count({
+      where: { demoId: id }
+    });
+
+    if (relatedOrders > 0 || relatedSubscriptions > 0) {
+      // Вместо удаления помечаем как deleted
+      await prisma.demo.update({
+        where: { id },
+        data: { status: 'deleted' }
+      });
+
+      console.log('⚠️ API: Демо помечено как deleted (есть связанные данные)');
+
+      return NextResponse.json({
+        success: true,
+        message: 'Demo marked as deleted (has related orders/subscriptions)'
+      });
     }
 
-    console.log('✅ API: Демо успешно удалено');
+    await prisma.demo.delete({
+      where: { id }
+    });
+
+    console.log('✅ API: Демо удалено:', id);
+
     return NextResponse.json({
       success: true,
       message: 'Demo deleted successfully'
     });
   } catch (error) {
-    console.error('💥 API: Критическая ошибка при удалении:', error);
+    console.error('❌ Admin demo DELETE error:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to delete demo' },
       { status: 500 }
