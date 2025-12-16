@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "cd apps/web && npx prisma generate && npm run build",
-  "devCommand": "cd apps/web && npm run dev",
+  "buildCommand": "cd apps/web; npx prisma generate; npm run build",
+  "devCommand": "cd apps/web; npm run dev",
   "installCommand": "npm install",
   "framework": "nextjs",
   "outputDirectory": "apps/web/.next"
