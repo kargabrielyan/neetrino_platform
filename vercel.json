@@ -1,7 +1,9 @@
 {
-  "buildCommand": "npx turbo run build --filter=@neetrino/web",
-  "devCommand": "npx turbo run dev --filter=@neetrino/web",
+  "version": 2,
+  "buildCommand": "cd apps/web && npx prisma generate && npm run build",
+  "devCommand": "cd apps/web && npm run dev",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "outputDirectory": "apps/web/.next"
+  "outputDirectory": "apps/web/.next",
+  "rootDirectory": "apps/web"
 }  

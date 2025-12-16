@@ -190,7 +190,8 @@ export default function AppCatalog() {
         
         // Try NestJS API as fallback
         try {
-          const nestResponse = await fetch(`http://localhost:3001/search?${params.toString()}`, {
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'http://localhost:3001';
+          const nestResponse = await fetch(`${apiUrl}/search?${params.toString()}`, {
             signal: controller.signal,
             headers: {
               'Content-Type': 'application/json',

@@ -65,7 +65,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: https: blob:",
               "font-src 'self' data: https://fonts.gstatic.com",
-              "connect-src 'self' http://localhost:3001 https:",
+              "connect-src 'self' https:",
               "frame-src 'self'",
               "object-src 'none'",
               "base-uri 'self'",
@@ -97,19 +97,21 @@ const nextConfig = {
     // Перенаправляем только не-auth API запросы на внешний API
     // НЕ включаем /api/demos, так как у нас есть Next.js API route для этого
     
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'http://localhost:3001';
+    
     rewrites.push({
       source: '/api/orders/:path*',
-      destination: `${process.env.API_URL || 'http://localhost:3001'}/api/orders/:path*`,
+      destination: `${apiUrl}/api/orders/:path*`,
     });
     
     rewrites.push({
       source: '/api/vendors/:path*',
-      destination: `${process.env.API_URL || 'http://localhost:3001'}/api/vendors/:path*`,
+      destination: `${apiUrl}/api/vendors/:path*`,
     });
     
     rewrites.push({
       source: '/api/search/:path*',
-      destination: `${process.env.API_URL || 'http://localhost:3001'}/api/search/:path*`,
+      destination: `${apiUrl}/api/search/:path*`,
     });
     
     return rewrites;
