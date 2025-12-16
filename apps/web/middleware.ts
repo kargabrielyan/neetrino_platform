@@ -1,10 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { auth } from '@/lib/auth';
 
 export async function middleware(request: NextRequest) {
-  const session = await auth();
-  
   // Защита админ-роутов
   if (request.nextUrl.pathname.startsWith('/admin')) {
     // Пропускаем страницу логина
@@ -12,16 +9,18 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     }
     
-    // Проверяем авторизацию
-    if (!session) {
+    // Проверяем наличие сессионной cookie (легкая проверка для Edge)
+    // Полная проверка авторизации и роли будет на уровне страницы через AdminGuard
+    // NextAuth v5 использует разные имена cookie в зависимости от окружения
+    const sessionToken = request.cookies.get('authjs.session-token')?.value || 
+                         request.cookies.get('__Secure-authjs.session-token')?.value ||
+                         request.cookies.get('next-auth.session-token')?.value ||
+                         request.cookies.get('__Secure-next-auth.session-token')?.value;
+    
+    if (!sessionToken) {
       const signInUrl = new URL('/auth/signin', request.url);
       signInUrl.searchParams.set('callbackUrl', request.nextUrl.pathname);
       return NextResponse.redirect(signInUrl);
-    }
-    
-    // Проверяем роль администратора
-    if (session.user?.role !== 'ADMIN') {
-      return NextResponse.redirect(new URL('/', request.url));
     }
   }
   
